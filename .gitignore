@@ -1,0 +1,9 @@
+# Compiled Source
+*.o
+
+# Project-Generated Files
+Makefile
+moc_*.o
+moc_*.cpp
+*.pro
+Test4
