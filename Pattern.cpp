@@ -3,7 +3,6 @@
 Pattern::Pattern()
 {
 	loadedTiles = false;
-	loadPattern();
 }
 
 Pattern::~Pattern()

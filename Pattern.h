@@ -14,7 +14,7 @@ class Pattern
 public:
 	Pattern();
 	~Pattern();
-	void loadPattern(QDir dir = QDir("./Patterns/Knit/Small"));
+	void loadPattern(QDir dir);
 	
 	int getW();
 	int getH();
