@@ -13,6 +13,7 @@ Renderer::Renderer(QWidget *parent)
 	gridX = 1;
 	gridY = 1;
 	outline = Qt::black;
+	brush = Qt::black;
 
 	this->setPalette(QPalette(this->backgroundRole(), Qt::white));
 }
@@ -47,6 +48,11 @@ void Renderer::setBackgroundColor(QColor color)
 void Renderer::setOutlineColor(QColor color)
 {
 	outline = color;
+}
+
+void Renderer::setBrushColor(QColor color)
+{
+	brush = color;
 }
 
 void Renderer::rotateTranspose()
