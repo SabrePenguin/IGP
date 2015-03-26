@@ -36,20 +36,34 @@ void Renderer::loadImage(QString imagePath)
 	updatePatternSize();
 }
 
-void Renderer::rotateImage()
+void Renderer::rotateTranspose()
 {
-	if (hasImage)
-	{
-		QTransform matrix(0,-1,-1,0,1,1);
-		QImage newImage = image.transformed(matrix);
-		image.swap(newImage); 
-		//std::cout << "Image rotated to size: " << gridX << "x" << gridY << "\n";
+	rotate(QTransform(0,-1,-1,0,1,1));
+}
 
-		gridX = image.width();
-		gridY = image.height();
-		
-		updatePatternSize();
-	}
+void Renderer::rotateClockwise()
+{
+	rotate(QTransform(0,1,-1,0,1,1));
+}
+
+void Renderer::rotateCounterClockwise()
+{
+	rotate(QTransform(0,-1,1,0,1,1));
+}
+
+void Renderer::rotate180()
+{
+	rotate(QTransform(-1,0,0,-1,1,1));
+}
+
+void Renderer::rotateFlipX()
+{
+	rotate(QTransform(-1,0,0,1,1,1));
+}
+
+void Renderer::rotateFlipY()
+{
+	rotate(QTransform(1,0,0,-1,1,1));
 }
 
 void Renderer::zoomIn()
@@ -142,6 +156,20 @@ void Renderer::updatePatternSize()
 		sizeY = int((pattern.getH()+pattern.getY()/pattern.getReadY()*(gridY-1))*zoom*zoom);
 		//std::cout << "Min field size: " << sizeX << "x" << sizeY << "\n";
 		update();
+	}
+}
+
+void Renderer::rotate(QTransform matrix)
+{
+	if (hasImage)
+	{
+		QImage newImage = image.transformed(matrix);
+		image.swap(newImage); 
+
+		gridX = image.width();
+		gridY = image.height();
+		
+		updatePatternSize();
 	}
 }
 

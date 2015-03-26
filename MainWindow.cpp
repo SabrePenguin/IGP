@@ -49,9 +49,39 @@ void MainWindow::openPattern(QString dir)
 	renderWidget->resize(renderWidget->getMinSize());
 }
 
-void MainWindow::rotateImage()
+void MainWindow::rotateTranspose()
 {
-	renderWidget->rotateImage();
+	renderWidget->rotateTranspose();
+	renderWidget->resize(renderWidget->getMinSize());
+}
+
+void MainWindow::rotateClockwise()
+{
+	renderWidget->rotateClockwise();
+	renderWidget->resize(renderWidget->getMinSize());
+}
+
+void MainWindow::rotateCounterClockwise()
+{
+	renderWidget->rotateCounterClockwise();
+	renderWidget->resize(renderWidget->getMinSize());
+}
+
+void MainWindow::rotate180()
+{
+	renderWidget->rotate180();
+	renderWidget->resize(renderWidget->getMinSize());
+}
+
+void MainWindow::rotateFlipX()
+{
+	renderWidget->rotateFlipX();
+	renderWidget->resize(renderWidget->getMinSize());
+}
+
+void MainWindow::rotateFlipY()
+{
+	renderWidget->rotateFlipY();
 	renderWidget->resize(renderWidget->getMinSize());
 }
 
@@ -92,24 +122,42 @@ void MainWindow::createActions()
     saveAct->setStatusTip(tr("Save an opened file"));
     connect(saveAct, SIGNAL(triggered()), this, SLOT(saveFile()));
 
-	// Rotate Image Action
-	rotateImageAct = new QAction(tr("&Rotate Image"), this);
-    rotateImageAct->setStatusTip(tr("Rotates the source image file"));
-    connect(rotateImageAct, SIGNAL(triggered()), this, SLOT(rotateImage()));
+	// Rotate Image Actions
+	rotateTransposeAct = new QAction(tr("Transpose Image"), this);
+    rotateTransposeAct->setStatusTip(tr("Transposes the source image file"));
+    connect(rotateTransposeAct, SIGNAL(triggered()), this, SLOT(rotateTranspose()));
 
-	// Zoom In Action
+	rotateClockwiseAct = new QAction(tr("Rotate Clockwise"), this);
+    rotateClockwiseAct->setStatusTip(tr("Rotates the source image file by 90 degrees clockwise"));
+    connect(rotateClockwiseAct, SIGNAL(triggered()), this, SLOT(rotateClockwise()));
+
+	rotateCounterClockwiseAct = new QAction(tr("Rotate Counter-Clockwise"), this);
+    rotateCounterClockwiseAct->setStatusTip(tr("Rotates the source image file by 90 degrees counter-clockwise"));
+    connect(rotateCounterClockwiseAct, SIGNAL(triggered()), this, SLOT(rotateCounterClockwise()));
+
+	rotate180Act = new QAction(tr("Rotate 180"), this);
+    rotate180Act->setStatusTip(tr("Rotates the source image file by 180 degrees"));
+    connect(rotate180Act, SIGNAL(triggered()), this, SLOT(rotate180()));
+
+	rotateFlipXAct = new QAction(tr("Reflect X axis"), this);
+    rotateFlipXAct->setStatusTip(tr("Reflects the source image files X axis"));
+    connect(rotateFlipXAct, SIGNAL(triggered()), this, SLOT(rotateFlipX()));
+
+	rotateFlipYAct = new QAction(tr("Reflect Y axis"), this);
+    rotateFlipYAct->setStatusTip(tr("Reflects the source image files Y axis"));
+    connect(rotateFlipYAct, SIGNAL(triggered()), this, SLOT(rotateFlipY()));
+
+	// Zoom Actions
 	zoomInAct = new QAction(tr("Zoom In"), this);
 	zoomInAct->setShortcuts(QKeySequence::ZoomIn);
     zoomInAct->setStatusTip(tr("Increases size of image by 10%"));
     connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
 
-	// Zoom Out Action
 	zoomOutAct = new QAction(tr("Zoom Out"), this);
 	zoomOutAct->setShortcuts(QKeySequence::ZoomOut);
     zoomOutAct->setStatusTip(tr("Decreases size of image by 10%"));
     connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
 
-	// Zoom Normal Action
 	zoomNormalAct = new QAction(tr("Zoom Reset"), this);
     zoomNormalAct->setStatusTip(tr("Resets the zoom to 100%"));
     connect(zoomNormalAct, SIGNAL(triggered()), this, SLOT(zoomNormal()));
@@ -128,10 +176,17 @@ void MainWindow::createMenus()
 	fileMenu->addAction(saveAct);
 
 	editMenu = menuBar()->addMenu(tr("&Edit"));
-	editMenu->addAction(rotateImageAct);
-	editMenu->addAction(zoomInAct);
-	editMenu->addAction(zoomOutAct);
-	editMenu->addAction(zoomNormalAct);
+	transformSubMenu = editMenu->addMenu(tr("&Transforms"));
+	transformSubMenu->addAction(rotateTransposeAct);
+	transformSubMenu->addAction(rotateClockwiseAct);
+	transformSubMenu->addAction(rotateCounterClockwiseAct);
+	transformSubMenu->addAction(rotate180Act);
+	transformSubMenu->addAction(rotateFlipXAct);
+	transformSubMenu->addAction(rotateFlipYAct);
+	zoomSubMenu = editMenu->addMenu(tr("&Zoom"));
+	zoomSubMenu->addAction(zoomInAct);
+	zoomSubMenu->addAction(zoomOutAct);
+	zoomSubMenu->addAction(zoomNormalAct);
 
 	colorMenu = menuBar()->addMenu(tr("&Color"));
 

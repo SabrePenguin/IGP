@@ -21,7 +21,12 @@ public slots:
 	void openFile();
 	void saveFile();
 	void openPattern(QString dir);
-	void rotateImage();
+	void rotateTranspose();
+	void rotateClockwise();
+	void rotateCounterClockwise();
+	void rotate180();
+	void rotateFlipX();
+	void rotateFlipY();
 	void zoomIn();
 	void zoomOut();
 	void zoomNormal();
@@ -38,6 +43,8 @@ private:
 	// Menus
 	QMenu *fileMenu;
 	QMenu *editMenu;
+	QMenu *transformSubMenu;
+	QMenu *zoomSubMenu;
 	QMenu *colorMenu;
 	QMenu *patternMenu;
 	QMenu *aboutMenu;
@@ -45,7 +52,12 @@ private:
 	// Actions
 	QAction *openAct;
 	QAction *saveAct;
-	QAction *rotateImageAct;
+	QAction *rotateTransposeAct;
+	QAction *rotateClockwiseAct;
+	QAction *rotateCounterClockwiseAct;
+	QAction *rotate180Act;
+	QAction *rotateFlipXAct;
+	QAction *rotateFlipYAct;
 	QAction *zoomInAct;
 	QAction *zoomOutAct;
 	QAction *zoomNormalAct;

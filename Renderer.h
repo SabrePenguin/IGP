@@ -18,7 +18,12 @@ public:
 	~Renderer();
 
 	void loadImage(QString imagePath);
-	void rotateImage();
+	void rotateTranspose();
+	void rotateClockwise();
+	void rotateCounterClockwise();
+	void rotate180();
+	void rotateFlipX();
+	void rotateFlipY();
 	void zoomIn();
 	void zoomOut();
 	void zoomNormal();
@@ -32,6 +37,7 @@ protected:
 private:
 	// Helper Functions
 	void updatePatternSize();
+	void rotate(QTransform matrix);
 
 	// Painting Variables
 	bool antialiased;
