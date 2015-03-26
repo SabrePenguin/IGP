@@ -20,6 +20,8 @@ public:
 public slots:
 	void openFile();
 	void saveFile();
+	void setBackgroundColor();
+	void setOutlineColor();
 	void openPattern(QString dir);
 	void rotateTranspose();
 	void rotateClockwise();
@@ -61,6 +63,8 @@ private:
 	QAction *zoomInAct;
 	QAction *zoomOutAct;
 	QAction *zoomNormalAct;
+	QAction *setBackgroundColorAct;
+	QAction *setOutlineColorAct;
 	QAction *aboutAct;
 	QSignalMapper *signalMapper;
 };

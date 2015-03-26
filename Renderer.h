@@ -18,6 +18,8 @@ public:
 	~Renderer();
 
 	void loadImage(QString imagePath);
+	void setBackgroundColor(QColor color);
+	void setOutlineColor(QColor color);
 	void rotateTranspose();
 	void rotateClockwise();
 	void rotateCounterClockwise();
@@ -50,6 +52,7 @@ private:
 	int sizeX;
 	int sizeY;
 	QImage image;
+	QColor outline;
 };
 
 #endif

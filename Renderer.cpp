@@ -12,6 +12,9 @@ Renderer::Renderer(QWidget *parent)
     antialiased = true;
 	gridX = 1;
 	gridY = 1;
+	outline = Qt::black;
+
+	this->setPalette(QPalette(this->backgroundRole(), Qt::white));
 }
 
 Renderer::~Renderer()
@@ -34,6 +37,16 @@ void Renderer::loadImage(QString imagePath)
 		hasImage = true;
 	}
 	updatePatternSize();
+}
+
+void Renderer::setBackgroundColor(QColor color)
+{
+	this->setPalette(QPalette(this->backgroundRole(), color));
+}
+
+void Renderer::setOutlineColor(QColor color)
+{
+	outline = color;
 }
 
 void Renderer::rotateTranspose()
@@ -125,7 +138,7 @@ void Renderer::paintEvent(QPaintEvent *)
 				painter.scale(zoom,zoom);
 
 				// Background.
-				painter.setPen(QColor(0,0,0));		
+				painter.setPen(outline);		
 				painter.drawPixmap(0,0,QBitmap(pattern.getBackground()));
 
 				// Painted Tiles

@@ -43,6 +43,20 @@ void MainWindow::saveFile()
 		renderWidget->saveImage(fileName);
 }
 
+void MainWindow::setBackgroundColor()
+{
+	QColor color = QColorDialog::getColor(Qt::white, this, tr("Select Background Color"));
+	if (color.isValid())
+		renderWidget->setBackgroundColor(color);
+}
+
+void MainWindow::setOutlineColor()
+{
+	QColor color = QColorDialog::getColor(Qt::black, this, tr("Select Background Color"));
+	if (color.isValid())
+		renderWidget->setOutlineColor(color);
+}
+
 void MainWindow::openPattern(QString dir)
 {
 	renderWidget->setPattern(QDir(dir));
@@ -162,6 +176,15 @@ void MainWindow::createActions()
     zoomNormalAct->setStatusTip(tr("Resets the zoom to 100%"));
     connect(zoomNormalAct, SIGNAL(triggered()), this, SLOT(zoomNormal()));
 
+	// Color Actions
+	setBackgroundColorAct = new QAction(tr("&Background"), this);
+    setBackgroundColorAct->setStatusTip(tr("Select a new background color"));
+    connect(setBackgroundColorAct, SIGNAL(triggered()), this, SLOT(setBackgroundColor()));
+
+	setOutlineColorAct = new QAction(tr("&Outline"), this);
+    setOutlineColorAct->setStatusTip(tr("Select a new outline color"));
+    connect(setOutlineColorAct, SIGNAL(triggered()), this, SLOT(setOutlineColor()));
+
 	// About Action
 	aboutAct = new QAction(tr("&About"), this);
     aboutAct->setShortcuts(QKeySequence::HelpContents);
@@ -189,6 +212,8 @@ void MainWindow::createMenus()
 	zoomSubMenu->addAction(zoomNormalAct);
 
 	colorMenu = menuBar()->addMenu(tr("&Color"));
+	colorMenu->addAction(setBackgroundColorAct);
+	colorMenu->addAction(setOutlineColorAct);
 
 	patternMenu = menuBar()->addMenu(tr("&Patterns"));
 	connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(openPattern(QString)));
