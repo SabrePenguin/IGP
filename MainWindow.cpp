@@ -43,6 +43,13 @@ void MainWindow::saveFile()
 		renderWidget->saveImage(fileName);
 }
 
+void MainWindow::setBrushColor()
+{
+	QColor color = QColorDialog::getColor(Qt::white, this, tr("Select Brush Color"));
+	if (color.isValid())
+		renderWidget->setBrushColor(color);
+}
+
 void MainWindow::setBackgroundColor()
 {
 	QColor color = QColorDialog::getColor(Qt::white, this, tr("Select Background Color"));
@@ -177,7 +184,11 @@ void MainWindow::createActions()
     connect(zoomNormalAct, SIGNAL(triggered()), this, SLOT(zoomNormal()));
 
 	// Color Actions
-	setBackgroundColorAct = new QAction(tr("&Background"), this);
+	setBrushColorAct = new QAction(tr("&Brush"), this);
+    setBrushColorAct->setStatusTip(tr("Select a new brush color"));
+    connect(setBrushColorAct, SIGNAL(triggered()), this, SLOT(setBrushColor()));
+
+	setBackgroundColorAct = new QAction(tr("Back&ground"), this);
     setBackgroundColorAct->setStatusTip(tr("Select a new background color"));
     connect(setBackgroundColorAct, SIGNAL(triggered()), this, SLOT(setBackgroundColor()));
 
@@ -212,6 +223,7 @@ void MainWindow::createMenus()
 	zoomSubMenu->addAction(zoomNormalAct);
 
 	colorMenu = menuBar()->addMenu(tr("&Color"));
+	colorMenu->addAction(setBrushColorAct);
 	colorMenu->addAction(setBackgroundColorAct);
 	colorMenu->addAction(setOutlineColorAct);
 

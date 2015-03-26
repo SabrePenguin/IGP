@@ -20,6 +20,7 @@ public:
 public slots:
 	void openFile();
 	void saveFile();
+	void setBrushColor();
 	void setBackgroundColor();
 	void setOutlineColor();
 	void openPattern(QString dir);
@@ -63,6 +64,7 @@ private:
 	QAction *zoomInAct;
 	QAction *zoomOutAct;
 	QAction *zoomNormalAct;
+	QAction *setBrushAct;
 	QAction *setBackgroundColorAct;
 	QAction *setOutlineColorAct;
 	QAction *aboutAct;
