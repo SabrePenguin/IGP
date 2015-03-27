@@ -64,7 +64,7 @@ private:
 	QAction *zoomInAct;
 	QAction *zoomOutAct;
 	QAction *zoomNormalAct;
-	QAction *setBrushAct;
+	QAction *setBrushColorAct;
 	QAction *setBackgroundColorAct;
 	QAction *setOutlineColorAct;
 	QAction *aboutAct;
