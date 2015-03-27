@@ -35,7 +35,8 @@ public:
 	bool saveImage(QString saveFileName);
 
 protected:
-    void paintEvent(QPaintEvent *event);
+    void paintEvent(QPaintEvent *);
+	void mousePressEvent(QMouseEvent *e);
 
 private:
 	// Helper Functions

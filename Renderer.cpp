@@ -167,6 +167,20 @@ void Renderer::paintEvent(QPaintEvent *)
 	}
 }
 
+void Renderer::mousePressEvent(QMouseEvent *e)
+{
+	if (hasImage && hasPattern)
+	{
+		//std::cout << "Clicked: " << e->x() << ", " << e->y() << "\n";
+		// Find the closest 4 grid locations and test tiles in area
+		int xPos = int(e->x()*gridX/(pattern.getW()+pattern.getX()/pattern.getReadX()*(gridX-1))*zoom*zoom);
+		int yPos = int(e->y()*gridY/(pattern.getH()+pattern.getY()/pattern.getReadY()*(gridY-1))*zoom*zoom);
+
+		image.setPixel(xPos,yPos,brush.rgb());
+		update();
+	}
+}
+
 void Renderer::updatePatternSize()
 {
 	if (hasImage && hasPattern)
