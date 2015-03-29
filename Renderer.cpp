@@ -209,15 +209,49 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 {
 	if (hasImage && hasPattern)
 	{
-		//std::cout << "Clicked: " << e->x() << ", " << e->y() << "\n";
-		// Find the closest 4 grid locations and test tiles in area
-		int xPos = int(e->x()*gridX/(pattern.getW()+pattern.getX()/pattern.getReadX()*(gridX-1))*zoom*zoom);
-		int yPos = int(e->y()*gridY/(pattern.getH()+pattern.getY()/pattern.getReadY()*(gridY-1))*zoom*zoom);
+		// Starting positions to test
+		int eX = int(e->x()/zoom/zoom);
+		int eY = int(e->y()/zoom/zoom);
+		int startX = int(e->x()/zoom/zoom/pattern.getX());
+		int startY = int(e->y()/zoom/zoom/pattern.getY());
 
-		if (xPos<gridX && yPos<gridY)
+		// Search 3x3 patterned area
+		for (int i=-1; i<2; i++)
 		{
-			image.setPixel(xPos,yPos,brush.rgb());
-			update();
+			for (int j=-1; j<2; j++)
+			{
+				int curX = i+startX;
+				int curY = j+startY;
+
+				if (curX >= 0 && curX < gridX && curY >= 0 && curY < gridY)
+				{
+					// Search all subtiles
+					for (int tileX=0; tileX<pattern.getReadX(); tileX++)
+					{
+						for (int tileY=0; tileY<pattern.getReadY(); tileY++)
+						{
+							QBitmap tile = pattern.getTile(tileX,tileY);
+							int xTest = eX-(curX*pattern.getX()+pattern.getTileX(tileX,tileY));
+							int yTest = eY-(curY*pattern.getY()+pattern.getTileY(tileX,tileY));
+							if (tile.rect().contains(xTest,yTest))
+							{
+								// Check if clicked pixel is within tile mask
+								if (QColor(tile.toImage().pixel(xTest,yTest)).black()>0)
+								{
+									int pixelX = curX*pattern.getReadX()+pattern.getTileReadX(tileX,tileY);
+									int pixelY = curY*pattern.getReadY()+pattern.getTileReadY(tileX,tileY);
+									// Make sure clicked image pixel is inside the image
+									if (pixelX < gridX && pixelY < gridY)
+									{
+										image.setPixel(pixelX,pixelY,brush.rgb());
+										update();
+									}
+								}
+							}
+						}
+					}
+				}
+			}	
 		}
 	}
 }
