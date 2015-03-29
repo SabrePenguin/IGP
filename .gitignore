@@ -5,5 +5,4 @@
 Makefile
 moc_*.o
 moc_*.cpp
-*.pro
-Test4
+IGP
