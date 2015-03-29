@@ -18,6 +18,7 @@ public:
 	MainWindow();
 
 public slots:
+	void newFile();
 	void openFile();
 	void saveFile();
 	void setBrushColor();
@@ -53,6 +54,7 @@ private:
 	QMenu *aboutMenu;
 
 	// Actions
+	QAction *newAct;
 	QAction *openAct;
 	QAction *saveAct;
 	QAction *rotateTransposeAct;

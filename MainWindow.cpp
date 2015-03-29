@@ -27,6 +27,15 @@ MainWindow::MainWindow()
 	this->setWindowIcon(QIcon("./Resources/IGP.png"));
 }
 
+void MainWindow::newFile()
+{
+	int x = QInputDialog::getInt(this, tr("Set X"), tr("Set image width"), 1, 1);
+	int y = QInputDialog::getInt(this, tr("Set Y"), tr("Set image height"), 1, 1);
+
+	renderWidget->newImage(x,y);
+	renderWidget->resize(renderWidget->getMinSize());
+}
+
 void MainWindow::openFile()
 {
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), "./Img/", tr("Image Files (*.png *.jpg *.bmp)"));
@@ -131,6 +140,12 @@ void MainWindow::about()
 
 void MainWindow::createActions()
 {
+	// NewFile Action
+	newAct = new QAction(tr("&New"), this);
+    newAct->setShortcuts(QKeySequence::New);
+    newAct->setStatusTip(tr("Create a new image grid"));
+    connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
+
 	// Open Action
 	openAct = new QAction(tr("&Open"), this);
     openAct->setShortcuts(QKeySequence::Open);
@@ -206,6 +221,7 @@ void MainWindow::createActions()
 void MainWindow::createMenus()
 {
 	fileMenu = menuBar()->addMenu(tr("&File"));
+	fileMenu->addAction(newAct);
 	fileMenu->addAction(openAct);
 	fileMenu->addAction(saveAct);
 

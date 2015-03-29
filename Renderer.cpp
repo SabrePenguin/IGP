@@ -13,7 +13,7 @@ Renderer::Renderer(QWidget *parent)
 	gridX = 1;
 	gridY = 1;
 	outline = Qt::black;
-	brush = Qt::black;
+	brush = Qt::white;
 
 	this->setPalette(QPalette(this->backgroundRole(), Qt::white));
 }
@@ -24,6 +24,18 @@ Renderer::~Renderer()
 	{
 		hasImage = false;
 	}
+}
+
+void Renderer::newImage(int x, int y)
+{
+	image = QImage(x,y,QImage::Format_RGB32);
+	image.fill(brush.rgb());
+
+	gridX = x;
+	gridY = y;
+	hasImage = true;
+	
+	updatePatternSize();
 }
 
 void Renderer::loadImage(QString imagePath)

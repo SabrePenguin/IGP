@@ -17,6 +17,7 @@ public:
 	Renderer(QWidget *parent = 0);
 	~Renderer();
 
+	void newImage(int x, int y);
 	void loadImage(QString imagePath);
 	void setBackgroundColor(QColor color);
 	void setOutlineColor(QColor color);
