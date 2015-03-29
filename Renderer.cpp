@@ -188,8 +188,11 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 		int xPos = int(e->x()*gridX/(pattern.getW()+pattern.getX()/pattern.getReadX()*(gridX-1))*zoom*zoom);
 		int yPos = int(e->y()*gridY/(pattern.getH()+pattern.getY()/pattern.getReadY()*(gridY-1))*zoom*zoom);
 
-		image.setPixel(xPos,yPos,brush.rgb());
-		update();
+		if (xPos<gridX && yPos<gridY)
+		{
+			image.setPixel(xPos,yPos,brush.rgb());
+			update();
+		}
 	}
 }
 
@@ -197,9 +200,14 @@ void Renderer::updatePatternSize()
 {
 	if (hasImage && hasPattern)
 	{
-		sizeX = int((pattern.getW()+pattern.getX()/pattern.getReadX()*(gridX-1))*zoom*zoom);
-		sizeY = int((pattern.getH()+pattern.getY()/pattern.getReadY()*(gridY-1))*zoom*zoom);
-		//std::cout << "Min field size: " << sizeX << "x" << sizeY << "\n";
+		int gridXCount = int(gridX/pattern.getReadX());
+		int gridYCount = int(gridY/pattern.getReadY());
+		int lastTileX = gridX%pattern.getReadX();
+		int lastTileY = gridY%pattern.getReadY();
+
+		sizeX = int((pattern.getX()*gridXCount+pattern.getTileW(lastTileX)+pattern.getTileX(lastTileX))*zoom*zoom);
+		sizeY = int((pattern.getY()*gridYCount+pattern.getTileH(lastTileY)+pattern.getTileY(lastTileY))*zoom*zoom);
+
 		update();
 	}
 }
