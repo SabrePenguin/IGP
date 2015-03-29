@@ -7,6 +7,16 @@ Pattern::Pattern()
 
 Pattern::~Pattern()
 {
+	for (int i=0; i<xReadWrite; i++)
+	{
+		delete[] tileOffsetX[i];
+		delete[] tileOffsetY[i];
+		delete[] tileReadX[i];
+		delete[] tileReadY[i];
+		delete[] tileWidth[i];
+		delete[] tileHeight[i];
+		delete[] tiles[i];
+	}
 	delete[] tileOffsetX;
 	delete[] tileOffsetY;
 	delete[] tileReadX;
@@ -23,6 +33,16 @@ void Pattern::loadPattern(QDir dir)
 	// Delete previously loaded tiles
 	if (loadedTiles)
 	{
+		for (int i=0; i<xReadWrite; i++)
+		{
+			delete[] tileOffsetX[i];
+			delete[] tileOffsetY[i];
+			delete[] tileReadX[i];
+			delete[] tileReadY[i];
+			delete[] tileWidth[i];
+			delete[] tileHeight[i];
+			delete[] tiles[i];
+		}
 		delete[] tileOffsetX;
 		delete[] tileOffsetY;
 		delete[] tileReadX;
@@ -108,71 +128,95 @@ void Pattern::loadPattern(QDir dir)
 	}
 
 	// Expect the number of subtiles
-	tileOffsetX = new int[subTiles];
-	tileOffsetY = new int[subTiles];
-	tileWidth = new int[subTiles];
-	tileHeight = new int[subTiles];
-	tileReadX = new int[subTiles];
-	tileReadY = new int[subTiles];
-	tiles = new QPixmap[subTiles];
+	tileOffsetX = new int*[xReadWrite];
+	tileOffsetY = new int*[xReadWrite];
+	tileWidth = new int*[xReadWrite];
+	tileHeight = new int*[xReadWrite];
+	tileReadX = new int*[xReadWrite];
+	tileReadY = new int*[xReadWrite];
+	tiles = new QPixmap*[xReadWrite];
 
-	// Loop for the subtiles
+	// Loop for the x subtiles
 	bool allFound = false;
-	for (int i=0; i<subTiles; i++)
+	for (int i=0; i<xReadWrite; i++)
 	{
-		// Ignore the subtile square bracket tags
-		inifile.getline(value, 256);
-		// Ignore return upon next iteration
-		if (allFound)
+		tileOffsetX[i] = new int[yReadWrite];
+		tileOffsetY[i] = new int[yReadWrite];
+		tileWidth[i] = new int[yReadWrite];
+		tileHeight[i] = new int[yReadWrite];
+		tileReadX[i] = new int[yReadWrite];
+		tileReadY[i] = new int[yReadWrite];
+		tiles[i] = new QPixmap[yReadWrite];
+		for (int j=0; j<yReadWrite; j++)
+		{ 
+			// Ignore the subtile square bracket tags
 			inifile.getline(value, 256);
-		allFound = false;
-		while(!allFound && std::string(value).find("["))
+			// Ignore return upon next iteration
+			if (allFound)
+				inifile.getline(value, 256);
+			allFound = false;
+			while(!allFound && std::string(value).find("["))
+			{
+				char * pch;
+				pch = strtok (value,"=");
+
+				if (std::string(pch)=="Filename")
+				{
+					pch = strtok(NULL,"=");
+					char tileLoadName[256];
+					strcpy(tileLoadName, pathName);
+					strcat(tileLoadName, pch);
+					tiles[i][j].load(std::string(tileLoadName).substr(0,strlen(tileLoadName)-1).c_str());
+					//std::cout << "Loaded tile: " << std::string(tileLoadName).substr(0,strlen(tileLoadName)-1).c_str() << "\n";
+				}
+				else if (std::string(pch)=="Width")
+				{
+					pch = strtok(NULL,"=");
+					tileWidth[i][j] = atoi(pch);
+				}
+				else if (std::string(pch)=="Height")
+				{
+					pch = strtok(NULL,"=");
+					tileHeight[i][j] = atoi(pch);
+				}
+				else if (std::string(pch)=="PatternXOffset")
+				{
+					pch = strtok(NULL,"=");
+					tileOffsetX[i][j] = atoi(pch);
+				}
+				else if (std::string(pch)=="PatternYOffset")
+				{
+					pch = strtok(NULL,"=");
+					tileOffsetY[i][j] = atoi(pch);
+				}
+				else if (std::string(pch)=="ReadWriteXOffset")
+				{
+					pch = strtok(NULL,"=");
+					tileReadX[i][j] = atoi(pch);
+				}
+				else if (std::string(pch)=="ReadWriteYOffset")
+				{
+					pch = strtok(NULL,"=");
+					tileReadY[i][j] = atoi(pch);
+					allFound = true;
+				}
+
+				inifile.getline(value, 256);
+			}
+		}
+	}
+
+	// Fill in largest x and y values
+	largestX = 0;
+	largestY = 0;
+	for (int i=0; i<xReadWrite; i++)
+	{
+		for (int j=0; j<yReadWrite; j++)
 		{
-			char * pch;
-			pch = strtok (value,"=");
-
-			if (std::string(pch)=="Filename")
-			{
-				pch = strtok(NULL,"=");
-				char tileLoadName[256];
-				strcpy(tileLoadName, pathName);
-				strcat(tileLoadName, pch);
-				tiles[i].load(std::string(tileLoadName).substr(0,strlen(tileLoadName)-1).c_str());
-				//std::cout << "Loaded tile: " << std::string(tileLoadName).substr(0,strlen(tileLoadName)-1).c_str() << "\n";
-			}
-			else if (std::string(pch)=="Width")
-			{
-				pch = strtok(NULL,"=");
-				tileWidth[i] = atoi(pch);
-			}
-			else if (std::string(pch)=="Height")
-			{
-				pch = strtok(NULL,"=");
-				tileHeight[i] = atoi(pch);
-			}
-			else if (std::string(pch)=="PatternXOffset")
-			{
-				pch = strtok(NULL,"=");
-				tileOffsetX[i] = atoi(pch);
-			}
-			else if (std::string(pch)=="PatternYOffset")
-			{
-				pch = strtok(NULL,"=");
-				tileOffsetY[i] = atoi(pch);
-			}
-			else if (std::string(pch)=="ReadWriteXOffset")
-			{
-				pch = strtok(NULL,"=");
-				tileReadX[i] = atoi(pch);
-			}
-			else if (std::string(pch)=="ReadWriteYOffset")
-			{
-				pch = strtok(NULL,"=");
-				tileReadY[i] = atoi(pch);
-				allFound = true;
-			}
-
-			inifile.getline(value, 256);
+			if (largestX < tileWidth[i][j] + tileOffsetX[i][j])
+				largestX = tileWidth[i][j] + tileOffsetX[i][j];
+			if (largestY < tileHeight[i][j] + tileOffsetY[i][j])
+				largestY = tileHeight[i][j] + tileOffsetY[i][j];
 		}
 	}
 }
@@ -212,9 +256,19 @@ int Pattern::getSubTileNum()
 	return subTiles;
 }
 
-QPixmap Pattern::getTile(int index)
+int Pattern::getLargestTileOffsetX()
 {
-	return tiles[index];
+	return largestX;
+}
+
+int Pattern::getLargestTileOffsetY()
+{
+	return largestY;
+}
+
+QPixmap Pattern::getTile(int x, int y)
+{
+	return tiles[x][y];
 }
 
 QPixmap Pattern::getBackground()
@@ -222,33 +276,33 @@ QPixmap Pattern::getBackground()
 	return background;
 }
 
-int Pattern::getTileW(int index)
+int Pattern::getTileW(int x, int y)
 {
-	return tileWidth[index];
+	return tileWidth[x][y];
 }
 
-int Pattern::getTileH(int index)
+int Pattern::getTileH(int x, int y)
 {
-	return tileHeight[index];
+	return tileHeight[x][y];
 }
 
-int Pattern::getTileX(int index)
+int Pattern::getTileX(int x, int y)
 {
-	return tileOffsetX[index];
+	return tileOffsetX[x][y];
 }
 
-int Pattern::getTileY(int index)
+int Pattern::getTileY(int x, int y)
 {
-	return tileOffsetY[index];
+	return tileOffsetY[x][y];
 }
 
-int Pattern::getTileReadX(int index)
+int Pattern::getTileReadX(int x, int y)
 {
-	return tileReadX[index];
+	return tileReadX[x][y];
 }
 
-int Pattern::getTileReadY(int index)
+int Pattern::getTileReadY(int x, int y)
 {
-	return tileReadY[index];
+	return tileReadY[x][y];
 }
 

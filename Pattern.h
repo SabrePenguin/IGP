@@ -23,17 +23,19 @@ public:
 	int getReadX();
 	int getReadY();
 	int getSubTileNum();
+	int getLargestTileOffsetX();
+	int getLargestTileOffsetY();
 
-	QPixmap getTile(int index);
+	QPixmap getTile(int x, int y);
 	QPixmap getBackground();
 	char *getBackgroundName();
 
-	int getTileW(int index);
-	int getTileH(int index);
-	int getTileX(int index);
-	int getTileY(int index);
-	int getTileReadX(int index);
-	int getTileReadY(int index);
+	int getTileW(int x, int y);
+	int getTileH(int x, int y);
+	int getTileX(int x, int y);
+	int getTileY(int x, int y);
+	int getTileReadX(int x, int y);
+	int getTileReadY(int x, int y);
 
 protected:
 	std::string description;
@@ -46,16 +48,18 @@ protected:
 	int subTiles;
 	int xReadWrite;
 	int yReadWrite;
+	int largestX;
+	int largestY;
 
-	int *tileOffsetX;
-	int *tileOffsetY;
-	int *tileReadX;
-	int *tileReadY;
-	int *tileWidth;
-	int *tileHeight;
+	int **tileOffsetX;
+	int **tileOffsetY;
+	int **tileReadX;
+	int **tileReadY;
+	int **tileWidth;
+	int **tileHeight;
 
 	QPixmap background;
-	QPixmap *tiles;
+	QPixmap **tiles;
 };
 
 #endif

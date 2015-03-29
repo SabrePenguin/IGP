@@ -141,31 +141,59 @@ bool Renderer::saveImage(QString saveFileName)
 
 void Renderer::paintEvent(QPaintEvent *)
 {
+	QPainter painter(this);
+
 	if (hasPattern && hasImage)
 	{
-		QPainter painter(this);
+		// Paint the outline background
 		int x=0;
-		for (int i=0; i<=gridX/pattern.getReadX()+1; i++)
+		int y=0;
+		int gridCountX = int(gridX/pattern.getReadX());
+		int gridCountY = int(gridY/pattern.getReadY());
+		for (int i=0; i<=gridCountX+1; i++)
 		{
-			int y=0;
-			for (int j=0; j<=gridY/pattern.getReadY()+1; j++)
+			y=0;
+			for (int j=0; j<=gridCountY+1; j++)
 			{
 				painter.save();
 				painter.scale(zoom,zoom);
 				painter.translate(x,y);
 				painter.scale(zoom,zoom);
 
-				// Background.
-				painter.setPen(outline);		
+				painter.setPen(outline);
 				painter.drawPixmap(0,0,QBitmap(pattern.getBackground()));
 
-				// Painted Tiles
-				if (i<gridX/pattern.getReadX() && j<gridY/pattern.getReadY())
+				painter.restore();
+				y+=int(pattern.getY()*zoom);
+			}
+			x+=int(pattern.getX()*zoom);
+		}
+
+		// Paint the imageGrid
+		x=0;
+		y=0;
+		for (int i=0; i<=gridCountX; i++)
+		{
+			y=0;
+			for (int j=0; j<=gridCountY; j++)
+			{
+				painter.save();
+				painter.scale(zoom,zoom);
+				painter.translate(x,y);
+				painter.scale(zoom,zoom);
+
+				// Paint tiles
+				for (int tileX=0; tileX < pattern.getReadX(); tileX++)
 				{
-					for (int tileNum=0; tileNum < pattern.getSubTileNum(); tileNum++)
+					for (int tileY=0; tileY < pattern.getReadY(); tileY++)
 					{
-						painter.setPen(image.pixel(i*(pattern.getReadX())+pattern.getTileReadX(tileNum),j*(pattern.getReadY())+pattern.getTileReadY(tileNum)));
-						painter.drawPixmap(pattern.getTileX(tileNum),pattern.getTileY(tileNum), QBitmap(pattern.getTile(tileNum)));
+						int pixelX = i*(pattern.getReadX())+pattern.getTileReadX(tileX, tileY);
+						int pixelY = j*(pattern.getReadY())+pattern.getTileReadY(tileX, tileY);
+						if (pixelX < gridX && pixelY < gridY)
+						{
+							painter.setPen(image.pixel(pixelX, pixelY));
+							painter.drawPixmap(pattern.getTileX(tileX, tileY),pattern.getTileY(tileX, tileY), QBitmap(pattern.getTile(tileX, tileY)));
+						}
 					}
 				}
 				painter.restore();
@@ -173,10 +201,8 @@ void Renderer::paintEvent(QPaintEvent *)
 			}
 			x += int(pattern.getX()*zoom);
 		}
-
-		//std::cout << "Painted scene\n";
-		painter.end();
 	}
+	painter.end();
 }
 
 void Renderer::mousePressEvent(QMouseEvent *e)
@@ -202,11 +228,9 @@ void Renderer::updatePatternSize()
 	{
 		int gridXCount = int(gridX/pattern.getReadX());
 		int gridYCount = int(gridY/pattern.getReadY());
-		int lastTileX = gridX%pattern.getReadX();
-		int lastTileY = gridY%pattern.getReadY();
 
-		sizeX = int((pattern.getX()*gridXCount+pattern.getTileW(lastTileX)+pattern.getTileX(lastTileX))*zoom*zoom);
-		sizeY = int((pattern.getY()*gridYCount+pattern.getTileH(lastTileY)+pattern.getTileY(lastTileY))*zoom*zoom);
+		sizeX = int((pattern.getX()*gridXCount+pattern.getLargestTileOffsetX())*zoom*zoom);
+		sizeY = int((pattern.getY()*gridYCount+pattern.getLargestTileOffsetY())*zoom*zoom);
 
 		update();
 	}
