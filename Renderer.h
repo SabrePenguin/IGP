@@ -40,7 +40,7 @@ public:
 	bool saveImage(QString saveFileName);
 
 protected:
-    void paintEvent(QPaintEvent *);
+    void paintEvent(QPaintEvent *e);
 	void mousePressEvent(QMouseEvent *e);
 
 private:
@@ -52,6 +52,7 @@ private:
 	bool antialiased;
 	bool hasPattern;
 	bool hasImage;
+	bool paintedOutline;
 	Pattern pattern;
 	double zoom;
 	int gridX;
@@ -60,6 +61,7 @@ private:
 	int sizeY;
 	QImage image;
 	QColor outline;
+	QColor background;
 	QColor brush;
 };
 

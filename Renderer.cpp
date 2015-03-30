@@ -10,12 +10,16 @@ Renderer::Renderer(QWidget *parent)
 	hasPattern = false;
 	hasImage = false;
     antialiased = true;
+	paintedOutline = false;
 	gridX = 1;
 	gridY = 1;
 	outline = Qt::black;
 	brush = Qt::white;
+	background = Qt::white;
 
-	this->setPalette(QPalette(this->backgroundRole(), Qt::white));
+	this->setAttribute(Qt::WA_NoBackground);
+	//this->setAutoFillBackground(false);
+	//this->setPalette(QPalette(this->backgroundRole(), Qt::white));
 }
 
 Renderer::~Renderer()
@@ -103,12 +107,15 @@ void Renderer::changePalette(QString colorFile)
 
 void Renderer::setBackgroundColor(QColor color)
 {
-	this->setPalette(QPalette(this->backgroundRole(), color));
+	//this->setPalette(QPalette(this->backgroundRole(), color));
+	background = color;
+	paintedOutline = false;
 }
 
 void Renderer::setOutlineColor(QColor color)
 {
 	outline = color;
+	paintedOutline = false;
 }
 
 void Renderer::setBrushColor(QColor color)
@@ -195,22 +202,39 @@ bool Renderer::saveImage(QString saveFileName)
 	return false;
 }
 
-void Renderer::paintEvent(QPaintEvent *)
+void Renderer::paintEvent(QPaintEvent *e)
 {
 	QPainter painter(this);
 
 	if (hasPattern && hasImage)
 	{
-		// Paint the outline background
 		int x=0;
 		int y=0;
 		int gridCountX = int(gridX/pattern.getReadX());
+		int gridXStart = int(e->region().boundingRect().left()/zoom/zoom/pattern.getX())-1;
+		int gridXEnd = int(e->region().boundingRect().right()/zoom/zoom/pattern.getX())+1;
 		int gridCountY = int(gridY/pattern.getReadY());
-		for (int i=0; i<=gridCountX+1; i++)
+		int gridYStart = int(e->region().boundingRect().top()/zoom/zoom/pattern.getY())-1;
+		int gridYEnd = int(e->region().boundingRect().bottom()/zoom/zoom/pattern.getY())+1;
+
+		if (gridXStart<0)
+			gridXStart=0;
+		if (gridYStart<0)
+			gridYStart=0;
+		if (gridXEnd>gridCountX)
+			gridXEnd=gridCountX;
+		if (gridYEnd>gridCountY)
+			gridYEnd=gridCountY;
+
+		// Paint the outline and background
+		painter.setBackgroundMode(Qt::OpaqueMode);
+		painter.setBackground(QBrush(background));
+		for (int i=gridXStart; i<=gridXEnd+1; i++)
 		{
-			y=0;
-			for (int j=0; j<=gridCountY+1; j++)
+			x=int(pattern.getX()*zoom)*i;
+			for (int j=gridYStart; j<=gridYEnd+1; j++)
 			{
+				y=int(pattern.getY()*zoom)*j;
 				painter.save();
 				painter.scale(zoom,zoom);
 				painter.translate(x,y);
@@ -220,19 +244,17 @@ void Renderer::paintEvent(QPaintEvent *)
 				painter.drawPixmap(0,0,QBitmap(pattern.getBackground()));
 
 				painter.restore();
-				y+=int(pattern.getY()*zoom);
 			}
-			x+=int(pattern.getX()*zoom);
 		}
+		painter.setBackgroundMode(Qt::TransparentMode);
 
 		// Paint the imageGrid
-		x=0;
-		y=0;
-		for (int i=0; i<=gridCountX; i++)
+		for (int i=gridXStart; i<=gridXEnd; i++)
 		{
-			y=0;
-			for (int j=0; j<=gridCountY; j++)
+			x=int(pattern.getX()*zoom)*i;
+			for (int j=gridYStart; j<=gridYEnd; j++)
 			{
+				y=int(pattern.getY()*zoom)*j;
 				painter.save();
 				painter.scale(zoom,zoom);
 				painter.translate(x,y);
@@ -253,9 +275,7 @@ void Renderer::paintEvent(QPaintEvent *)
 					}
 				}
 				painter.restore();
-				y += int(pattern.getY()*zoom);
 			}
-			x += int(pattern.getX()*zoom);
 		}
 	}
 	painter.end();
@@ -322,6 +342,7 @@ void Renderer::updatePatternSize()
 		sizeX = int((pattern.getX()*gridXCount+pattern.getLargestTileOffsetX())*zoom*zoom);
 		sizeY = int((pattern.getY()*gridYCount+pattern.getLargestTileOffsetY())*zoom*zoom);
 
+		paintedOutline = false;
 		update();
 	}
 }
