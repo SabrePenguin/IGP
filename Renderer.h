@@ -19,6 +19,7 @@ public:
 
 	void newImage(int x, int y);
 	void loadImage(QString imagePath);
+	void changePalette(QString colorFile);
 	void setBackgroundColor(QColor color);
 	void setOutlineColor(QColor color);
 	void setBrushColor(QColor color);

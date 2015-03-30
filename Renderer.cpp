@@ -52,6 +52,26 @@ void Renderer::loadImage(QString imagePath)
 	updatePatternSize();
 }
 
+void Renderer::changePalette(QString colorFile)
+{
+	if (!image.isNull())
+	{
+		QVector<QRgb> newColorTable;
+		QImage paletteImage;
+		paletteImage.load(colorFile);
+		if (!paletteImage.isNull())
+		{
+			for (int i=0; i<paletteImage.width(); i++)
+			{
+				newColorTable.push_back(paletteImage.pixel(i,0));
+			}
+			image = image.convertToFormat(QImage::Format_Indexed8, newColorTable, Qt::ColorOnly);
+			image = image.convertToFormat(QImage::Format_RGB32, newColorTable, Qt::ColorOnly);
+			update();
+		}
+	}
+}
+
 void Renderer::setBackgroundColor(QColor color)
 {
 	this->setPalette(QPalette(this->backgroundRole(), color));

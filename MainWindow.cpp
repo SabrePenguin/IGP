@@ -73,6 +73,14 @@ void MainWindow::setOutlineColor()
 		renderWidget->setOutlineColor(color);
 }
 
+void MainWindow::posterize()
+{
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Palette"), "./Palettes/", tr("Image Files (*.png *.jpg *.bmp)"));
+	if (!fileName.isEmpty())
+		renderWidget->changePalette(fileName);
+
+}
+
 void MainWindow::openPattern(QString dir)
 {
 	renderWidget->setPattern(QDir(dir));
@@ -211,6 +219,10 @@ void MainWindow::createActions()
     setOutlineColorAct->setStatusTip(tr("Select a new outline color"));
     connect(setOutlineColorAct, SIGNAL(triggered()), this, SLOT(setOutlineColor()));
 
+	posterizeAct = new QAction(tr("&Palette Change"), this);
+    posterizeAct->setStatusTip(tr("Limit colors to the current image"));
+    connect(posterizeAct, SIGNAL(triggered()), this, SLOT(posterize()));
+
 	// About Action
 	aboutAct = new QAction(tr("&About"), this);
     aboutAct->setShortcuts(QKeySequence::HelpContents);
@@ -242,6 +254,7 @@ void MainWindow::createMenus()
 	colorMenu->addAction(setBrushColorAct);
 	colorMenu->addAction(setBackgroundColorAct);
 	colorMenu->addAction(setOutlineColorAct);
+	colorMenu->addAction(posterizeAct);
 
 	patternMenu = menuBar()->addMenu(tr("&Patterns"));
 	connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(openPattern(QString)));

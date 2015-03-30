@@ -24,6 +24,7 @@ public slots:
 	void setBrushColor();
 	void setBackgroundColor();
 	void setOutlineColor();
+	void posterize();
 	void openPattern(QString dir);
 	void rotateTranspose();
 	void rotateClockwise();
@@ -69,6 +70,7 @@ private:
 	QAction *setBrushColorAct;
 	QAction *setBackgroundColorAct;
 	QAction *setOutlineColorAct;
+	QAction *posterizeAct;
 	QAction *aboutAct;
 	QSignalMapper *signalMapper;
 };
