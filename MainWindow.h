@@ -20,11 +20,13 @@ public:
 public slots:
 	void newFile();
 	void openFile();
+	void openFileImport();
+	void resizeImage();
 	void saveFile();
 	void setBrushColor();
 	void setBackgroundColor();
 	void setOutlineColor();
-	void posterize();
+	void setColorPalette();
 	void openPattern(QString dir);
 	void rotateTranspose();
 	void rotateClockwise();
@@ -57,6 +59,8 @@ private:
 	// Actions
 	QAction *newAct;
 	QAction *openAct;
+	QAction *openImportAct;
+	QAction *resizeImageAct;
 	QAction *saveAct;
 	QAction *rotateTransposeAct;
 	QAction *rotateClockwiseAct;
@@ -70,7 +74,7 @@ private:
 	QAction *setBrushColorAct;
 	QAction *setBackgroundColorAct;
 	QAction *setOutlineColorAct;
-	QAction *posterizeAct;
+	QAction *setColorPaletteAct;
 	QAction *aboutAct;
 	QSignalMapper *signalMapper;
 };

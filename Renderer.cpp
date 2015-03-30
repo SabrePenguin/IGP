@@ -52,6 +52,35 @@ void Renderer::loadImage(QString imagePath)
 	updatePatternSize();
 }
 
+void Renderer::loadImage(QString imagePath, int x, int y)
+{
+	image.load(imagePath);
+	if (!image.isNull())
+	{
+		// Resize
+		image = image.scaled(x,y);
+
+		gridX = image.width();
+		gridY = image.height();
+
+		hasImage = true;
+	}
+	updatePatternSize();
+}
+
+void Renderer::resizeImage(int x, int y)
+{
+	if (!image.isNull())
+	{
+		image = image.scaled(x,y);
+		
+		gridX = image.width();
+		gridY = image.height();
+
+		updatePatternSize();
+	}
+}
+
 void Renderer::changePalette(QString colorFile)
 {
 	if (!image.isNull())
@@ -148,6 +177,13 @@ QSize Renderer::getMinSize()
 {
 	return QSize(sizeX,sizeY);
 	
+}
+
+QSize Renderer::getImageSize()
+{
+	if (!image.isNull())
+		return image.size();
+	return QSize(1,1);
 }
 
 bool Renderer::saveImage(QString saveFileName)

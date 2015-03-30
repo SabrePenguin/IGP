@@ -45,6 +45,29 @@ void MainWindow::openFile()
 	renderWidget->resize(renderWidget->getMinSize());
 }
 
+void MainWindow::openFileImport()
+{
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), "./Img/", tr("Image Files (*.png *.jpg *.bmp)"));
+	if (!fileName.isEmpty())
+	{
+		int x = QInputDialog::getInt(this, tr("Set X"), tr("Set image width"), 1, 1);
+		int y = QInputDialog::getInt(this, tr("Set Y"), tr("Set image height"), 1, 1);
+		renderWidget->loadImage(fileName, x, y);
+	}
+
+	renderWidget->resize(renderWidget->getMinSize());
+}
+
+void MainWindow::resizeImage()
+{
+	QSize currentSize = renderWidget->getImageSize();
+	int x = QInputDialog::getInt(this, tr("Set X"), tr("Set image width"), currentSize.width(), 1);
+	int y = QInputDialog::getInt(this, tr("Set Y"), tr("Set image height"), currentSize.height(), 1);
+
+	renderWidget->resizeImage(x,y);
+	renderWidget->resize(renderWidget->getMinSize());
+}
+
 void MainWindow::saveFile()
 {
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Save Image"), "./Img/", tr("Image Files (*.png *.jpg *.bmp)"));
@@ -73,7 +96,7 @@ void MainWindow::setOutlineColor()
 		renderWidget->setOutlineColor(color);
 }
 
-void MainWindow::posterize()
+void MainWindow::setColorPalette()
 {
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Palette"), "./Palettes/", tr("Image Files (*.png *.jpg *.bmp)"));
 	if (!fileName.isEmpty())
@@ -148,22 +171,28 @@ void MainWindow::about()
 
 void MainWindow::createActions()
 {
-	// NewFile Action
+	// File Actions
 	newAct = new QAction(tr("&New"), this);
     newAct->setShortcuts(QKeySequence::New);
     newAct->setStatusTip(tr("Create a new image grid"));
     connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
 
-	// Open Action
 	openAct = new QAction(tr("&Open"), this);
     openAct->setShortcuts(QKeySequence::Open);
-    openAct->setStatusTip(tr("Open an existing file"));
+    openAct->setStatusTip(tr("Open an existing image"));
     connect(openAct, SIGNAL(triggered()), this, SLOT(openFile()));
 
-	// Save Action
+	openImportAct = new QAction(tr("&Import"), this);
+    openImportAct->setStatusTip(tr("Open an existing image and scale it"));
+    connect(openImportAct, SIGNAL(triggered()), this, SLOT(openFileImport()));
+
+	resizeImageAct = new QAction(tr("&Resize"), this);
+    resizeImageAct->setStatusTip(tr("Resize current image"));
+    connect(resizeImageAct, SIGNAL(triggered()), this, SLOT(resizeImage()));
+
 	saveAct = new QAction(tr("&Save"), this);
     saveAct->setShortcuts(QKeySequence::Save);
-    saveAct->setStatusTip(tr("Save an opened file"));
+    saveAct->setStatusTip(tr("Save the opened image"));
     connect(saveAct, SIGNAL(triggered()), this, SLOT(saveFile()));
 
 	// Rotate Image Actions
@@ -219,9 +248,9 @@ void MainWindow::createActions()
     setOutlineColorAct->setStatusTip(tr("Select a new outline color"));
     connect(setOutlineColorAct, SIGNAL(triggered()), this, SLOT(setOutlineColor()));
 
-	posterizeAct = new QAction(tr("&Palette Change"), this);
-    posterizeAct->setStatusTip(tr("Limit colors to the current image"));
-    connect(posterizeAct, SIGNAL(triggered()), this, SLOT(posterize()));
+	setColorPaletteAct = new QAction(tr("&Palette Change"), this);
+    setColorPaletteAct->setStatusTip(tr("Limit colors to the current image"));
+    connect(setColorPaletteAct, SIGNAL(triggered()), this, SLOT(setColorPalette()));
 
 	// About Action
 	aboutAct = new QAction(tr("&About"), this);
@@ -235,6 +264,8 @@ void MainWindow::createMenus()
 	fileMenu = menuBar()->addMenu(tr("&File"));
 	fileMenu->addAction(newAct);
 	fileMenu->addAction(openAct);
+	fileMenu->addAction(openImportAct);
+	fileMenu->addAction(resizeImageAct);
 	fileMenu->addAction(saveAct);
 
 	editMenu = menuBar()->addMenu(tr("&Edit"));
@@ -254,7 +285,7 @@ void MainWindow::createMenus()
 	colorMenu->addAction(setBrushColorAct);
 	colorMenu->addAction(setBackgroundColorAct);
 	colorMenu->addAction(setOutlineColorAct);
-	colorMenu->addAction(posterizeAct);
+	colorMenu->addAction(setColorPaletteAct);
 
 	patternMenu = menuBar()->addMenu(tr("&Patterns"));
 	connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(openPattern(QString)));
