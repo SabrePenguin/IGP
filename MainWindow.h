@@ -6,6 +6,7 @@
 #include <QSignalMapper>
 #include <QIcon>
 #include "Renderer.h"
+#include "ResizeDialog.h"
 
 class QAction;
 class QMenu;

@@ -29,11 +29,13 @@ MainWindow::MainWindow()
 
 void MainWindow::newFile()
 {
-	int x = QInputDialog::getInt(this, tr("Set X"), tr("Set image width"), 1, 1);
-	int y = QInputDialog::getInt(this, tr("Set Y"), tr("Set image height"), 1, 1);
-
-	renderWidget->newImage(x,y);
-	renderWidget->resize(renderWidget->getMinSize());
+	ResizeDialog resizeDialog(1, 1, 1, 1, 2000, 2000, QString("New Image Size"));
+	
+	if (resizeDialog.exec() == QDialog::Accepted)
+	{
+		renderWidget->newImage(resizeDialog.getWidth(),resizeDialog.getHeight());
+		renderWidget->resize(renderWidget->getMinSize());;
+	}
 }
 
 void MainWindow::openFile()
@@ -50,9 +52,8 @@ void MainWindow::openFileImport()
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), "./Img/", tr("Image Files (*.png *.jpg *.bmp)"));
 	if (!fileName.isEmpty())
 	{
-		int x = QInputDialog::getInt(this, tr("Set X"), tr("Set image width"), 1, 1);
-		int y = QInputDialog::getInt(this, tr("Set Y"), tr("Set image height"), 1, 1);
-		renderWidget->loadImage(fileName, x, y);
+		renderWidget->loadImage(fileName);
+		resizeImage();
 	}
 
 	renderWidget->resize(renderWidget->getMinSize());
@@ -61,11 +62,13 @@ void MainWindow::openFileImport()
 void MainWindow::resizeImage()
 {
 	QSize currentSize = renderWidget->getImageSize();
-	int x = QInputDialog::getInt(this, tr("Set X"), tr("Set image width"), currentSize.width(), 1);
-	int y = QInputDialog::getInt(this, tr("Set Y"), tr("Set image height"), currentSize.height(), 1);
-
-	renderWidget->resizeImage(x,y);
-	renderWidget->resize(renderWidget->getMinSize());
+	ResizeDialog resizeDialog(currentSize.width(), currentSize.height(), 1, 1, 2000, 2000);
+	
+	if (resizeDialog.exec() == QDialog::Accepted)
+	{
+		renderWidget->resizeImage(resizeDialog.getWidth(),resizeDialog.getHeight());
+		renderWidget->resize(renderWidget->getMinSize());;
+	}
 }
 
 void MainWindow::saveFile()
