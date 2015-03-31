@@ -7,23 +7,27 @@ Pattern::Pattern()
 
 Pattern::~Pattern()
 {
-	for (int i=0; i<xReadWrite; i++)
+	// Delete previously loaded tiles
+	if (loadedTiles)
 	{
-		delete[] tileOffsetX[i];
-		delete[] tileOffsetY[i];
-		delete[] tileReadX[i];
-		delete[] tileReadY[i];
-		delete[] tileWidth[i];
-		delete[] tileHeight[i];
-		delete[] tiles[i];
+		for (int i=0; i<xReadWrite; i++)
+		{
+			delete[] tileOffsetX[i];
+			delete[] tileOffsetY[i];
+			delete[] tileReadX[i];
+			delete[] tileReadY[i];
+			delete[] tileWidth[i];
+			delete[] tileHeight[i];
+			delete[] tiles[i];
+		}
+		delete[] tileOffsetX;
+		delete[] tileOffsetY;
+		delete[] tileReadX;
+		delete[] tileReadY;
+		delete[] tileWidth;
+		delete[] tileHeight;
+		delete[] tiles;
 	}
-	delete[] tileOffsetX;
-	delete[] tileOffsetY;
-	delete[] tileReadX;
-	delete[] tileReadY;
-	delete[] tileWidth;
-	delete[] tileHeight;
-	delete[] tiles;
 }
 
 // Imports all the pattern data to memory
