@@ -338,6 +338,10 @@ void Renderer::updatePatternSize()
 	{
 		int gridXCount = int(gridX/pattern.getReadX());
 		int gridYCount = int(gridY/pattern.getReadY());
+		if (gridX%pattern.getReadX()==0)
+			gridXCount--;
+		if (gridY%pattern.getReadY()==0)
+			gridYCount--;
 
 		sizeX = int((pattern.getX()*gridXCount+pattern.getLargestTileOffsetX())*zoom*zoom);
 		sizeY = int((pattern.getY()*gridYCount+pattern.getLargestTileOffsetY())*zoom*zoom);
