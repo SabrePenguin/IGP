@@ -169,7 +169,7 @@ void MainWindow::zoomNormal()
 
 void MainWindow::about()
 {
-	QMessageBox::about(this, tr("About IGP 3.0"), tr("The <b>Irregular Grid Painter</b> [IGP] allows the user to paint patterned tiles. This program's first version originated within the chainmaille community at M.A.I.L. by user Zlosk. The second version, written by user aganim, ended up being a HTML5 port. This final version is written by user TrenchCoatGuy [Brian Geuther] using the QT framework."));
+	QMessageBox::about(this, tr("About IGP 3.0"), tr("The <b>Irregular Grid Painter</b> [IGP] allows the user to paint patterned tiles. This program's first version originated within the chainmaille community at M.A.I.L. by user Zlosk using the .Net framework. The second version, written by user aganim, used javascript and HTML5. This version is written by user TrenchCoatGuy [Brian Geuther] using the QT framework."));
 }
 
 void MainWindow::createActions()
