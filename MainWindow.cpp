@@ -109,8 +109,10 @@ void MainWindow::setColorPalette()
 
 void MainWindow::openPattern(QString dir)
 {
-	renderWidget->setPattern(QDir(dir));
-	renderWidget->resize(renderWidget->getMinSize());
+	if (renderWidget->setPattern(QDir(dir)))
+		renderWidget->resize(renderWidget->getMinSize());
+	else
+		QMessageBox::warning(this, tr("Pattern Load Failed"), tr("There was an error while loading the pattern."));
 }
 
 void MainWindow::rotateTranspose()

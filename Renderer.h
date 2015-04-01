@@ -34,7 +34,7 @@ public:
 	void zoomIn();
 	void zoomOut();
 	void zoomNormal();
-	void setPattern(QDir dir);
+	bool setPattern(QDir dir);
 	QSize getMinSize();
 	QSize getImageSize();
 	bool saveImage(QString saveFileName);

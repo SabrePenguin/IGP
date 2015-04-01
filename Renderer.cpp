@@ -171,7 +171,7 @@ void Renderer::zoomNormal()
 	updatePatternSize();
 }
 
-void Renderer::setPattern(QDir dir)
+bool Renderer::setPattern(QDir dir)
 {
 	//std::cout << "Loaded Pattern: " << dir.dirName().toStdString() << "\n";
 	if (pattern.loadPattern(dir))
@@ -179,7 +179,9 @@ void Renderer::setPattern(QDir dir)
 		zoom = 1;
 		hasPattern = true;
 		updatePatternSize();
+		return true;
 	}
+	return false;
 }
 
 QSize Renderer::getMinSize()
