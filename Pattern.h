@@ -7,6 +7,8 @@
 #include <QPixmap>
 #include <QWidget>
 #include <QDir>
+#include <QStringList>
+#include <QTextStream>
 
 class Pattern
 {
@@ -14,7 +16,7 @@ class Pattern
 public:
 	Pattern();
 	~Pattern();
-	void loadPattern(QDir dir);
+	bool loadPattern(QDir dir);
 	
 	int getW();
 	int getH();
@@ -38,7 +40,7 @@ public:
 	int getTileReadY(int x, int y);
 
 protected:
-	std::string description;
+	QString description;
 	bool loadedTiles;
 
 	int width;

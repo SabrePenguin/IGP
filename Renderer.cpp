@@ -174,10 +174,12 @@ void Renderer::zoomNormal()
 void Renderer::setPattern(QDir dir)
 {
 	//std::cout << "Loaded Pattern: " << dir.dirName().toStdString() << "\n";
-	pattern.loadPattern(dir);
-	zoom = 1;
-	hasPattern = true;
-	updatePatternSize();
+	if (pattern.loadPattern(dir))
+	{
+		zoom = 1;
+		hasPattern = true;
+		updatePatternSize();
+	}
 }
 
 QSize Renderer::getMinSize()

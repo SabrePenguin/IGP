@@ -32,7 +32,7 @@ Pattern::~Pattern()
 
 // Imports all the pattern data to memory
 // ToDo: Better handle file reading loop. Possible infinite loop if the last parameter is never found for any of the subtiles.
-void Pattern::loadPattern(QDir dir)
+bool Pattern::loadPattern(QDir dir)
 {
 	// Delete previously loaded tiles
 	if (loadedTiles)
@@ -56,173 +56,150 @@ void Pattern::loadPattern(QDir dir)
 		delete[] tiles;
 	}
 
-	// Set up background image
-	char pathName[256] = "";
-	strcat(pathName,dir.path().toStdString().c_str());
-	strcat(pathName,"/");
-	char iniFileName[256];
-	strcpy(iniFileName, pathName);
-	strcat(iniFileName,dir.dirName().toStdString().c_str());
-	strcat(iniFileName,".ini");
-
-	// Set up file reader values
-	std::ifstream inifile;
-	inifile.open(iniFileName);
-	char value[256];
-
-	// Read and import general information
-	inifile.getline(value, 256); // ignore first line with [General] tag
-	inifile.getline(value, 256);
-	while(!inifile.eof() && std::string(value).find("["))
+	QString fileName(dir.path()+"/"+dir.dirName()+".ini");
+	QFile file(fileName);
+	file.open(QIODevice::ReadOnly|QIODevice::Text);
+	QTextStream iniFile(&file);
+	QString line;
+	if (file.exists())
 	{
-		char * pch;
-		pch = strtok (value,"=");
-
-		if (std::string(pch)=="Description")
+		line = iniFile.readLine(100); // Ignore [General] tag
+		line = iniFile.readLine(100);
+		while (iniFile.status()==QTextStream::Ok && !line.contains("["))
 		{
-			pch = strtok(NULL,"=");
-			description = std::string(pch);
-		}
-		else if (std::string(pch)=="OutlineFilename")
-		{
-			pch = strtok(NULL,"=");
-			char backgroundFileName[256];
-			strcpy(backgroundFileName, pathName);
-			strcat(backgroundFileName, pch);
-			background.load(std::string(backgroundFileName).substr(0,strlen(backgroundFileName)-1).c_str());
-			//std::cout << "Background loaded: " << std::string(backgroundFileName).substr(0,strlen(backgroundFileName)-1).c_str() << "\n";;
-		}
-		else if (std::string(pch)=="Width")
-		{
-			pch = strtok(NULL,"=");
-			width = atoi(pch);
-		}
-		else if (std::string(pch)=="Height")
-		{
-			pch = strtok(NULL,"=");
-			height = atoi(pch);
-		}
-		else if (std::string(pch)=="XRepeat")
-		{
-			pch = strtok(NULL,"=");
-			xRepeat = atoi(pch);
-		}
-		else if (std::string(pch)=="YRepeat")
-		{
-			pch = strtok(NULL,"=");
-			yRepeat = atoi(pch);
-		}
-		else if (std::string(pch)=="NumSubTiles")
-		{
-			pch = strtok(NULL,"=");
-			subTiles = atoi(pch);
-		}
-		else if (std::string(pch)=="xReadWrite")
-		{
-			pch = strtok(NULL,"=");
-			xReadWrite = atoi(pch);
-		}
-		else if (std::string(pch)=="yReadWrite")
-		{
-			pch = strtok(NULL,"=");
-			yReadWrite = atoi(pch);
-		}
-
-		inifile.getline(value,256);
-	}
-
-	// Expect the number of subtiles
-	tileOffsetX = new int*[xReadWrite];
-	tileOffsetY = new int*[xReadWrite];
-	tileWidth = new int*[xReadWrite];
-	tileHeight = new int*[xReadWrite];
-	tileReadX = new int*[xReadWrite];
-	tileReadY = new int*[xReadWrite];
-	tiles = new QPixmap*[xReadWrite];
-
-	// Loop for the x subtiles
-	bool allFound = false;
-	for (int i=0; i<xReadWrite; i++)
-	{
-		tileOffsetX[i] = new int[yReadWrite];
-		tileOffsetY[i] = new int[yReadWrite];
-		tileWidth[i] = new int[yReadWrite];
-		tileHeight[i] = new int[yReadWrite];
-		tileReadX[i] = new int[yReadWrite];
-		tileReadY[i] = new int[yReadWrite];
-		tiles[i] = new QPixmap[yReadWrite];
-		for (int j=0; j<yReadWrite; j++)
-		{ 
-			// Ignore the subtile square bracket tags
-			inifile.getline(value, 256);
-			// Ignore return upon next iteration
-			if (allFound)
-				inifile.getline(value, 256);
-			allFound = false;
-			while(!allFound && std::string(value).find("["))
+			if (line.contains("="))
 			{
-				char * pch;
-				pch = strtok (value,"=");
+				QStringList list = line.split("=");
+				QString id, value;
+				id = QString(list.at(0).toLocal8Bit().constData());
+				value = QString(list.at(1).toLocal8Bit().constData());
+				if (id=="Description")
+				{
+					description = value;
+				}
+				else if (id=="OutlineFilename")
+				{
+					background.load(QString(dir.path()+"/"+value));
+				}
+				else if (id=="Width")
+				{
+					width = value.toInt();
+				}
+				else if (id=="Height")
+				{
+					height = value.toInt();
+				}
+				else if (id=="XRepeat")
+				{
+					xRepeat = value.toInt();
+				}
+				else if (id=="YRepeat")
+				{
+					yRepeat = value.toInt();
+				}
+				else if (id=="NumSubTiles")
+				{
+					subTiles = value.toInt();
+				}
+				else if (id=="xReadWrite")
+				{
+					xReadWrite = value.toInt();
+				}
+				else if (id=="yReadWrite")
+				{
+					yReadWrite = value.toInt();
+				}
+			}
+			line = iniFile.readLine(100);
+		}
+		// Expect the number of subtiles
+		tileOffsetX = new int*[xReadWrite];
+		tileOffsetY = new int*[xReadWrite];
+		tileWidth = new int*[xReadWrite];
+		tileHeight = new int*[xReadWrite];
+		tileReadX = new int*[xReadWrite];
+		tileReadY = new int*[xReadWrite];
+		tiles = new QPixmap*[xReadWrite];
 
-				if (std::string(pch)=="Filename")
-				{
-					pch = strtok(NULL,"=");
-					char tileLoadName[256];
-					strcpy(tileLoadName, pathName);
-					strcat(tileLoadName, pch);
-					tiles[i][j].load(std::string(tileLoadName).substr(0,strlen(tileLoadName)-1).c_str());
-					//std::cout << "Loaded tile: " << std::string(tileLoadName).substr(0,strlen(tileLoadName)-1).c_str() << "\n";
-				}
-				else if (std::string(pch)=="Width")
-				{
-					pch = strtok(NULL,"=");
-					tileWidth[i][j] = atoi(pch);
-				}
-				else if (std::string(pch)=="Height")
-				{
-					pch = strtok(NULL,"=");
-					tileHeight[i][j] = atoi(pch);
-				}
-				else if (std::string(pch)=="PatternXOffset")
-				{
-					pch = strtok(NULL,"=");
-					tileOffsetX[i][j] = atoi(pch);
-				}
-				else if (std::string(pch)=="PatternYOffset")
-				{
-					pch = strtok(NULL,"=");
-					tileOffsetY[i][j] = atoi(pch);
-				}
-				else if (std::string(pch)=="ReadWriteXOffset")
-				{
-					pch = strtok(NULL,"=");
-					tileReadX[i][j] = atoi(pch);
-				}
-				else if (std::string(pch)=="ReadWriteYOffset")
-				{
-					pch = strtok(NULL,"=");
-					tileReadY[i][j] = atoi(pch);
-					allFound = true;
-				}
+		// Loop for the x subtiles
+		bool allFound = false;
+		for (int i=0; i<xReadWrite; i++)
+		{
+			tileOffsetX[i] = new int[yReadWrite];
+			tileOffsetY[i] = new int[yReadWrite];
+			tileWidth[i] = new int[yReadWrite];
+			tileHeight[i] = new int[yReadWrite];
+			tileReadX[i] = new int[yReadWrite];
+			tileReadY[i] = new int[yReadWrite];
+			tiles[i] = new QPixmap[yReadWrite];
+			for (int j=0; j<yReadWrite; j++)
+			{ 
+				// Navigate to the next tag
+				while (iniFile.status()==QTextStream::Ok && !line.contains("["))
+					line = iniFile.readLine(100);
+				line = iniFile.readLine(100);
+				allFound = false;
 
-				inifile.getline(value, 256);
+				while(!allFound && iniFile.status()==QTextStream::Ok && !line.contains("["))
+				{
+					if (line.contains("="))
+					{
+						QStringList list = line.split("=");
+						QString id, value;
+						id = QString(list.at(0).toLocal8Bit().constData());
+						value = QString(list.at(1).toLocal8Bit().constData());
+
+						if (id=="Filename")
+						{
+							tiles[i][j].load(QString(dir.path()+"/"+value));
+						}
+						else if (id=="Width")
+						{
+							tileWidth[i][j] = value.toInt();
+						}
+						else if (id=="Height")
+						{
+							tileHeight[i][j] = value.toInt();
+						}
+						else if (id=="PatternXOffset")
+						{
+							tileOffsetX[i][j] = value.toInt();
+						}
+						else if (id=="PatternYOffset")
+						{
+							tileOffsetY[i][j] = value.toInt();
+						}
+						else if (id=="ReadWriteXOffset")
+						{
+							tileReadX[i][j] = value.toInt();
+						}
+						else if (id=="ReadWriteYOffset")
+						{
+							tileReadY[i][j] = value.toInt();
+							allFound = true;
+						}
+
+						line = iniFile.readLine(100);
+					}
+				}
 			}
 		}
-	}
-
-	// Fill in largest x and y values
-	largestX = 0;
-	largestY = 0;
-	for (int i=0; i<xReadWrite; i++)
-	{
-		for (int j=0; j<yReadWrite; j++)
+		// Fill in largest x and y values
+		largestX = 0;
+		largestY = 0;
+		for (int i=0; i<xReadWrite; i++)
 		{
-			if (largestX < tileWidth[i][j] + tileOffsetX[i][j])
-				largestX = tileWidth[i][j] + tileOffsetX[i][j];
-			if (largestY < tileHeight[i][j] + tileOffsetY[i][j])
-				largestY = tileHeight[i][j] + tileOffsetY[i][j];
+			for (int j=0; j<yReadWrite; j++)
+			{
+				if (largestX < tileWidth[i][j] + tileOffsetX[i][j])
+					largestX = tileWidth[i][j] + tileOffsetX[i][j];
+				if (largestY < tileHeight[i][j] + tileOffsetY[i][j])
+					largestY = tileHeight[i][j] + tileOffsetY[i][j];
+			}
 		}
+		return true;
 	}
+	return false;
 }
 
 int Pattern::getW()
