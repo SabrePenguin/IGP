@@ -182,8 +182,8 @@ void Renderer::setPattern(QDir dir)
 
 QSize Renderer::getMinSize()
 {
+	updatePatternSize();
 	return QSize(sizeX,sizeY);
-	
 }
 
 QSize Renderer::getImageSize()
@@ -212,10 +212,10 @@ void Renderer::paintEvent(QPaintEvent *e)
 		int y=0;
 		int gridCountX = int(gridX/pattern.getReadX());
 		int gridXStart = int(e->region().boundingRect().left()/zoom/zoom/pattern.getX())-1;
-		int gridXEnd = int(e->region().boundingRect().right()/zoom/zoom/pattern.getX())+1;
+		int gridXEnd = int(e->region().boundingRect().right()/zoom/zoom/pattern.getX())+2;
 		int gridCountY = int(gridY/pattern.getReadY());
 		int gridYStart = int(e->region().boundingRect().top()/zoom/zoom/pattern.getY())-1;
-		int gridYEnd = int(e->region().boundingRect().bottom()/zoom/zoom/pattern.getY())+1;
+		int gridYEnd = int(e->region().boundingRect().bottom()/zoom/zoom/pattern.getY())+2;
 
 		if (gridXStart<0)
 			gridXStart=0;
@@ -336,8 +336,8 @@ void Renderer::updatePatternSize()
 {
 	if (hasImage && hasPattern)
 	{
-		int gridXCount = int(gridX/pattern.getReadX());
-		int gridYCount = int(gridY/pattern.getReadY());
+		float gridXCount = gridX/pattern.getReadX();
+		float gridYCount = gridY/pattern.getReadY();
 		if (gridX%pattern.getReadX()==0)
 			gridXCount--;
 		if (gridY%pattern.getReadY()==0)
