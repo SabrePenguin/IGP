@@ -6,7 +6,7 @@ ResizeDialog::ResizeDialog(int setX, int setY, int minX, int minY, int maxX, int
 {
     widthLabel = new QLabel(tr("Width:"));
 	heightLabel = new QLabel(tr("Height:"));
-	heightLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+	//heightLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
 	widthBox = new QSpinBox;
 	widthBox->setMinimum(minX);
