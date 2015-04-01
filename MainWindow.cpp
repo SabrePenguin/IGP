@@ -112,7 +112,10 @@ void MainWindow::openPattern(QString dir)
 	if (renderWidget->setPattern(QDir(dir)))
 		renderWidget->resize(renderWidget->getMinSize());
 	else
-		QMessageBox::warning(this, tr("Pattern Load Failed"), tr("There was an error while loading the pattern."));
+	{
+		QMessageBox::warning(this, tr("Pattern Load Failed"), tr("There was an error while loading the pattern. Please select a new pattern."));
+		renderWidget->resize(renderWidget->getMinSize());
+	}
 }
 
 void MainWindow::rotateTranspose()

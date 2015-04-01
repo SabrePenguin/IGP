@@ -31,7 +31,6 @@ Pattern::~Pattern()
 }
 
 // Imports all the pattern data to memory
-// ToDo: Better handle file reading loop. Possible infinite loop if the last parameter is never found for any of the subtiles.
 bool Pattern::loadPattern(QDir dir)
 {
 	// Delete previously loaded tiles
@@ -54,6 +53,7 @@ bool Pattern::loadPattern(QDir dir)
 		delete[] tileWidth;
 		delete[] tileHeight;
 		delete[] tiles;
+		loadedTiles = false;
 	}
 
 	QString fileName(dir.path()+"/"+dir.dirName()+".ini");
@@ -61,12 +61,15 @@ bool Pattern::loadPattern(QDir dir)
 	file.open(QIODevice::ReadOnly|QIODevice::Text);
 	QTextStream iniFile(&file);
 	QString line;
+	bool allFound = false;
 	if (file.exists())
 	{
 		line = iniFile.readLine(100); // Ignore [General] tag
 		line = iniFile.readLine(100);
 		while (iniFile.status()==QTextStream::Ok && !line.contains("["))
 		{
+			if (line.isNull())
+				return false;
 			if (line.contains("="))
 			{
 				QStringList list = line.split("=");
@@ -113,6 +116,7 @@ bool Pattern::loadPattern(QDir dir)
 			line = iniFile.readLine(100);
 		}
 		// Expect the number of subtiles
+		loadedTiles = true;
 		tileOffsetX = new int*[xReadWrite];
 		tileOffsetY = new int*[xReadWrite];
 		tileWidth = new int*[xReadWrite];
@@ -122,7 +126,6 @@ bool Pattern::loadPattern(QDir dir)
 		tiles = new QPixmap*[xReadWrite];
 
 		// Loop for the x subtiles
-		bool allFound = false;
 		for (int i=0; i<xReadWrite; i++)
 		{
 			tileOffsetX[i] = new int[yReadWrite];
@@ -132,16 +135,25 @@ bool Pattern::loadPattern(QDir dir)
 			tileReadX[i] = new int[yReadWrite];
 			tileReadY[i] = new int[yReadWrite];
 			tiles[i] = new QPixmap[yReadWrite];
+		}
+		allFound = true;
+		for (int i=0; i<xReadWrite; i++)
+		{
 			for (int j=0; j<yReadWrite; j++)
 			{ 
 				// Navigate to the next tag
 				while (iniFile.status()==QTextStream::Ok && !line.contains("["))
 					line = iniFile.readLine(100);
 				line = iniFile.readLine(100);
-				allFound = false;
+				if (allFound)
+					allFound = false;
+				else
+					return false;
 
 				while(!allFound && iniFile.status()==QTextStream::Ok && !line.contains("["))
 				{
+					if (line.isNull())
+						return false;
 					if (line.contains("="))
 					{
 						QStringList list = line.split("=");
@@ -178,9 +190,8 @@ bool Pattern::loadPattern(QDir dir)
 							tileReadY[i][j] = value.toInt();
 							allFound = true;
 						}
-
-						line = iniFile.readLine(100);
 					}
+					line = iniFile.readLine(100);
 				}
 			}
 		}
@@ -197,7 +208,7 @@ bool Pattern::loadPattern(QDir dir)
 					largestY = tileHeight[i][j] + tileOffsetY[i][j];
 			}
 		}
-		return true;
+		return allFound;
 	}
 	return false;
 }

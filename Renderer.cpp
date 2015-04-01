@@ -107,7 +107,6 @@ void Renderer::changePalette(QString colorFile)
 
 void Renderer::setBackgroundColor(QColor color)
 {
-	//this->setPalette(QPalette(this->backgroundRole(), color));
 	background = color;
 	paintedOutline = false;
 }
@@ -181,6 +180,9 @@ bool Renderer::setPattern(QDir dir)
 		updatePatternSize();
 		return true;
 	}
+	else
+		hasPattern = false;
+	updatePatternSize();
 	return false;
 }
 
@@ -352,6 +354,11 @@ void Renderer::updatePatternSize()
 
 		paintedOutline = false;
 		update();
+	}
+	else
+	{
+		sizeX = 1;
+		sizeY = 1;
 	}
 }
 
