@@ -115,11 +115,19 @@ void MainWindow::getColorCount()
 	QVector<int> *counts = new QVector<int>;
 	renderWidget->countColors(colors, counts);
 
-	// Display color counts in a dialog
-	std::cout << "Detected colors: " << colors->size() << "\n";
-	for (int i=0; i<colors->size(); i++)
+	if (colors->count()>25)
 	{
-		std::cout << counts->value(i) << "\n";
+		int selection = QMessageBox::question(this, tr("Lots of Colors"), QString("There are "+QString::number(colors->count())+" different colors. Are you sure you wish to display every single one? Doing so may take awhile.\n\nIf you wish to reduce the number of colors, please use the \"Color\"->\"Palette Change\" function."), QMessageBox::Yes, QMessageBox::No);
+		if (selection==QMessageBox::Yes)
+		{
+			ColorCountDialog dialog(colors,counts);
+			dialog.exec();
+		}
+	}
+	else
+	{
+		ColorCountDialog dialog(colors,counts);
+		dialog.exec();
 	}
 
 	delete colors;

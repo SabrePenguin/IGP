@@ -7,6 +7,7 @@
 #include <QIcon>
 #include "Renderer.h"
 #include "ResizeDialog.h"
+#include "ColorCountDialog.h"
 
 class QAction;
 class QMenu;
