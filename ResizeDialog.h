@@ -8,10 +8,6 @@
 #include <QSpinBox>
 #include <QDialogButtonBox>
 
-class QListWidget;
-class QListWidgetItem;
-class QStackedWidget;
-
 class ResizeDialog : public QDialog
 {
     Q_OBJECT

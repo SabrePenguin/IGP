@@ -3,8 +3,6 @@
 
 #include <QPixmap>
 #include <QWidget>
-#include <QScrollArea>
-#include <QLabel>
 #include <QTransform>
 #include <QDir>
 #include "Pattern.h"

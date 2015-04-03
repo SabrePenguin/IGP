@@ -4,13 +4,11 @@
 #include <QMainWindow>
 #include <QDir>
 #include <QSignalMapper>
+#include <QScrollArea>
 #include <QIcon>
 #include "Renderer.h"
 #include "ResizeDialog.h"
 #include "ColorCountDialog.h"
-
-class QAction;
-class QMenu;
 
 class MainWindow : public QMainWindow
 {

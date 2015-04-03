@@ -1,11 +1,7 @@
 #ifndef PATTERN_H
 #define PATTERN_H
 
-#include <fstream>
-#include <iostream>
-#include <string>
 #include <QPixmap>
-#include <QWidget>
 #include <QDir>
 #include <QStringList>
 #include <QTextStream>

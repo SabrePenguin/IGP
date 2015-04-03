@@ -4,13 +4,6 @@
 #include <QWidget>
 #include <QScrollArea>
 #include <QDialog>
-#include <QVector>
-#include <QGroupBox>
-#include <QDialogButtonBox>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QGridLayout>
-#include <iostream>
 
 class ColorCountDialog : public QDialog
 {
