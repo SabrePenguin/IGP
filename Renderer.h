@@ -38,6 +38,7 @@ public:
 	QSize getMinSize();
 	QSize getImageSize();
 	bool saveImage(QString saveFileName);
+	bool imageChanged();
 
 protected:
     void paintEvent(QPaintEvent *e);
@@ -53,6 +54,7 @@ private:
 	bool hasPattern;
 	bool hasImage;
 	bool paintedOutline;
+	bool hasImageChanged;
 	Pattern pattern;
 	double zoom;
 	int gridX;

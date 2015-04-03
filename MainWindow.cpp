@@ -187,6 +187,14 @@ void MainWindow::closeEvent(QCloseEvent *)
 
 	output << "WindowWidth=" << QString::number(this->size().width()) << "\nWindowHeight=" << QString::number(this->size().height()) << "\n";
 	output.flush();
+
+	// Prompt if image unsaved
+	if (renderWidget->imageChanged())
+	{
+		int selection = QMessageBox::question(this, tr("File Unsaved"), tr("You have made changes to the currently opened image. Would you like to save your changes?"), QMessageBox::Yes, QMessageBox::No);
+		if (selection==QMessageBox::Yes)
+			saveFile();
+	}
 }
 
 void MainWindow::createActions()

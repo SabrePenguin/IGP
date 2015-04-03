@@ -11,6 +11,7 @@ Renderer::Renderer(QWidget *parent)
 	hasImage = false;
     antialiased = true;
 	paintedOutline = false;
+	hasImageChanged = false;
 	gridX = 1;
 	gridY = 1;
 	outline = Qt::black;
@@ -38,6 +39,7 @@ void Renderer::newImage(int x, int y)
 	gridX = x;
 	gridY = y;
 	hasImage = true;
+	hasImageChanged = true;
 	
 	updatePatternSize();
 }
@@ -52,6 +54,7 @@ void Renderer::loadImage(QString imagePath)
 		//std::cout << "Image loaded: " << imagePath.toStdString() << " size: " << gridX << "x" << gridY << "\n";
 
 		hasImage = true;
+		hasImageChanged = false;
 	}
 	updatePatternSize();
 }
@@ -68,6 +71,7 @@ void Renderer::loadImage(QString imagePath, int x, int y)
 		gridY = image.height();
 
 		hasImage = true;
+		hasImageChanged = true;
 	}
 	updatePatternSize();
 }
@@ -82,6 +86,7 @@ void Renderer::resizeImage(int x, int y)
 		gridY = image.height();
 
 		updatePatternSize();
+		hasImageChanged = true;
 	}
 }
 
@@ -101,6 +106,7 @@ void Renderer::changePalette(QString colorFile)
 			image = image.convertToFormat(QImage::Format_Indexed8, newColorTable, Qt::ColorOnly);
 			image = image.convertToFormat(QImage::Format_RGB32, newColorTable, Qt::ColorOnly);
 			update();
+			hasImageChanged = true;
 		}
 	}
 }
@@ -203,8 +209,18 @@ bool Renderer::saveImage(QString saveFileName)
 {
 	if (hasImage)
 	{
-		return image.save(saveFileName);
+		bool wasSaved = image.save(saveFileName);
+		if (wasSaved)
+			hasImageChanged = false;
+		return wasSaved;
 	}
+	return false;
+}
+
+bool Renderer::imageChanged()
+{
+	if (hasImage && hasPattern)
+		return hasImageChanged;
 	return false;
 }
 
@@ -327,6 +343,7 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 									{
 										image.setPixel(pixelX,pixelY,brush.rgb());
 										update();
+										hasImageChanged = true;
 									}
 								}
 							}
@@ -373,6 +390,7 @@ void Renderer::rotate(QTransform matrix)
 		gridY = image.height();
 		
 		updatePatternSize();
+		hasImageChanged = true;
 	}
 }
 
