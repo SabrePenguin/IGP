@@ -257,6 +257,11 @@ bool Renderer::imageChanged()
 	return false;
 }
 
+bool Renderer::hasPatternSelected()
+{
+	return hasPattern;
+}
+
 void Renderer::countColors(QVector<QRgb> *colors, QVector<int> *counts)
 {
 	if (hasImage)

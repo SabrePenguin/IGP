@@ -62,14 +62,18 @@ void MainWindow::openFileImport()
 
 void MainWindow::openFileSmart()
 {
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), "./Img/", tr("Image Files (*.png *.jpg *.bmp)"));
-	if (!fileName.isEmpty())
+	if (renderWidget->hasPatternSelected())
 	{
-		renderWidget->loadImage(fileName);
-		smartResizeImage();
+		QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), "./Img/", tr("Image Files (*.png *.jpg *.bmp)"));
+		if (!fileName.isEmpty())
+		{
+			renderWidget->loadImage(fileName);
+			smartResizeImage();
+			renderWidget->resize(renderWidget->getMinSize());
+		}
 	}
-
-	renderWidget->resize(renderWidget->getMinSize());
+	else
+		QMessageBox::warning(this, tr("Warning"), tr("First select a pattern from the pattern menu to use this function."));
 }
 
 void MainWindow::resizeImage()
@@ -88,7 +92,7 @@ void MainWindow::smartResizeImage()
 {
 	QSize currentSize = renderWidget->getImageSize();
 	ResizeDialog resizeDialog(currentSize.width(), currentSize.height(), 1, 1, 2000, 2000);
-	
+
 	if (resizeDialog.exec() == QDialog::Accepted)
 	{
 		renderWidget->smartResize(resizeDialog.getWidth(),resizeDialog.getHeight());

@@ -39,6 +39,7 @@ public:
 	QSize getImageSize();
 	bool saveImage(QString saveFileName);
 	bool imageChanged();
+	bool hasPatternSelected();
 	void countColors(QVector<QRgb> *colors, QVector<int> *counts);
 
 protected:
