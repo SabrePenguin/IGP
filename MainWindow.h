@@ -24,6 +24,7 @@ public slots:
 	void openFileImport();
 	void resizeImage();
 	void saveFile();
+	void getColorCount();
 	void setBrushColor();
 	void setBackgroundColor();
 	void setOutlineColor();
@@ -75,6 +76,7 @@ private:
 	QAction *zoomInAct;
 	QAction *zoomOutAct;
 	QAction *zoomNormalAct;
+	QAction *getColorCountAct;
 	QAction *setBrushColorAct;
 	QAction *setBackgroundColorAct;
 	QAction *setOutlineColorAct;

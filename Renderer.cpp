@@ -224,6 +224,33 @@ bool Renderer::imageChanged()
 	return false;
 }
 
+void Renderer::countColors(QVector<QRgb> *colors, QVector<int> *counts)
+{
+	if (hasImage)
+	{
+		colors->clear();
+		counts->clear();
+		QImage newImage = image.convertToFormat(QImage::Format_Indexed8, Qt::ColorOnly);
+		
+		for (int i=0; i<image.width(); i++)
+		{
+			for (int j=0; j<image.height(); j++)
+			{
+				int location = colors->indexOf(image.pixel(i,j));
+				if (location >= 0)
+				{
+					counts->replace(location,counts->value(location)+1);
+				}
+				else
+				{
+					colors->push_back(image.pixel(i,j));
+					counts->push_back(1);
+				}
+			}
+		}
+	}
+}
+
 void Renderer::paintEvent(QPaintEvent *e)
 {
 	QPainter painter(this);

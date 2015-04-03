@@ -79,6 +79,23 @@ void MainWindow::saveFile()
 		renderWidget->saveImage(fileName);
 }
 
+void MainWindow::getColorCount()
+{
+	QVector<QRgb> *colors = new QVector<QRgb>;
+	QVector<int> *counts = new QVector<int>;
+	renderWidget->countColors(colors, counts);
+
+	// Display color counts in a dialog
+	std::cout << "Detected colors: " << colors->size() << "\n";
+	for (int i=0; i<colors->size(); i++)
+	{
+		std::cout << counts->value(i) << "\n";
+	}
+
+	delete colors;
+	delete counts;
+}
+
 void MainWindow::setBrushColor()
 {
 	QColor color = QColorDialog::getColor(Qt::white, this, tr("Select Brush Color"));
@@ -264,6 +281,10 @@ void MainWindow::createActions()
     connect(zoomNormalAct, SIGNAL(triggered()), this, SLOT(zoomNormal()));
 
 	// Color Actions
+	getColorCountAct = new QAction(tr("&Count Colors"), this);
+	getColorCountAct->setStatusTip(tr("Count colors in the image"));
+    connect(getColorCountAct, SIGNAL(triggered()), this, SLOT(getColorCount()));
+
 	setBrushColorAct = new QAction(tr("&Brush"), this);
     setBrushColorAct->setStatusTip(tr("Select a new brush color"));
     connect(setBrushColorAct, SIGNAL(triggered()), this, SLOT(setBrushColor()));
@@ -310,6 +331,7 @@ void MainWindow::createMenus()
 	zoomSubMenu->addAction(zoomNormalAct);
 
 	colorMenu = menuBar()->addMenu(tr("&Color"));
+	colorMenu->addAction(getColorCountAct);
 	colorMenu->addAction(setBrushColorAct);
 	colorMenu->addAction(setBackgroundColorAct);
 	colorMenu->addAction(setOutlineColorAct);

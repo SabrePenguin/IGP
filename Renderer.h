@@ -39,6 +39,7 @@ public:
 	QSize getImageSize();
 	bool saveImage(QString saveFileName);
 	bool imageChanged();
+	void countColors(QVector<QRgb> *colors, QVector<int> *counts);
 
 protected:
     void paintEvent(QPaintEvent *e);
