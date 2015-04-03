@@ -27,7 +27,7 @@ MainWindow::MainWindow()
 	this->setWindowIcon(QIcon("./Resources/IGP.png"));
 	this->resize(startupSize());
 
-	renderWidget->setPattern(QDir("./Patterns/Default"));
+	//renderWidget->setPattern(QDir("./Patterns/Default"));
 }
 
 void MainWindow::newFile()
