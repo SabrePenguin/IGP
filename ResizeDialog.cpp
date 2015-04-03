@@ -17,7 +17,7 @@ ResizeDialog::ResizeDialog(int setX, int setY, int minX, int minY, int maxX, int
 	heightBox->setMaximum(maxY);
 	heightBox->setValue(setY);
 
-	currentAR = setX/setY;
+	currentAR = double(setX)/setY;
 
 	aspectRatioCheckBox = new QCheckBox(tr("Keep current aspect ratio of image"));
 
@@ -53,7 +53,7 @@ int ResizeDialog::getHeight()
 
 void ResizeDialog::enforceARWidth()
 {
-	if (aspectRatioCheckBox->checkState()==Qt::Checked)
+	if (aspectRatioCheckBox->checkState()==Qt::Checked && widthBox->hasFocus())
 	{
 		heightBox->setValue(int(widthBox->value()/currentAR));
 	}
@@ -61,7 +61,7 @@ void ResizeDialog::enforceARWidth()
 
 void ResizeDialog::enforceARHeight()
 {
-	if (aspectRatioCheckBox->checkState()==Qt::Checked)
+	if (aspectRatioCheckBox->checkState()==Qt::Checked && heightBox->hasFocus())
 	{
 		widthBox->setValue(int(heightBox->value()*currentAR));
 	}
@@ -69,6 +69,6 @@ void ResizeDialog::enforceARHeight()
 
 void ResizeDialog::updateAR()
 {
-	currentAR = widthBox->value()/heightBox->value();
+	currentAR = double(widthBox->value())/heightBox->value();
 }
 
