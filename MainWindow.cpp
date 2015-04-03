@@ -60,6 +60,18 @@ void MainWindow::openFileImport()
 	renderWidget->resize(renderWidget->getMinSize());
 }
 
+void MainWindow::openFileSmart()
+{
+	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), "./Img/", tr("Image Files (*.png *.jpg *.bmp)"));
+	if (!fileName.isEmpty())
+	{
+		renderWidget->loadImage(fileName);
+		smartResizeImage();
+	}
+
+	renderWidget->resize(renderWidget->getMinSize());
+}
+
 void MainWindow::resizeImage()
 {
 	QSize currentSize = renderWidget->getImageSize();
@@ -68,6 +80,18 @@ void MainWindow::resizeImage()
 	if (resizeDialog.exec() == QDialog::Accepted)
 	{
 		renderWidget->resizeImage(resizeDialog.getWidth(),resizeDialog.getHeight());
+		renderWidget->resize(renderWidget->getMinSize());;
+	}
+}
+
+void MainWindow::smartResizeImage()
+{
+	QSize currentSize = renderWidget->getImageSize();
+	ResizeDialog resizeDialog(currentSize.width(), currentSize.height(), 1, 1, 2000, 2000);
+	
+	if (resizeDialog.exec() == QDialog::Accepted)
+	{
+		renderWidget->smartResize(resizeDialog.getWidth(),resizeDialog.getHeight());
 		renderWidget->resize(renderWidget->getMinSize());;
 	}
 }
@@ -231,6 +255,10 @@ void MainWindow::createActions()
     openImportAct->setStatusTip(tr("Open an existing image and scale it"));
     connect(openImportAct, SIGNAL(triggered()), this, SLOT(openFileImport()));
 
+	openSmartImportAct = new QAction(tr("Smart Import"), this);
+    openSmartImportAct->setStatusTip(tr("Open an existing image and scale it smartly using the opened pattern"));
+    connect(openSmartImportAct, SIGNAL(triggered()), this, SLOT(openFileSmart()));
+
 	resizeImageAct = new QAction(tr("&Resize"), this);
     resizeImageAct->setStatusTip(tr("Resize current image"));
     connect(resizeImageAct, SIGNAL(triggered()), this, SLOT(resizeImage()));
@@ -314,6 +342,7 @@ void MainWindow::createMenus()
 	fileMenu->addAction(newAct);
 	fileMenu->addAction(openAct);
 	fileMenu->addAction(openImportAct);
+	fileMenu->addAction(openSmartImportAct);
 	fileMenu->addAction(resizeImageAct);
 	fileMenu->addAction(saveAct);
 

@@ -44,36 +44,69 @@ void Renderer::newImage(int x, int y)
 	updatePatternSize();
 }
 
-void Renderer::loadImage(QString imagePath)
+bool Renderer::loadImage(QString imagePath)
 {
 	image.load(imagePath);
 	if (!image.isNull())
 	{
 		gridX = image.width();
-		gridY = image.height();
-		//std::cout << "Image loaded: " << imagePath.toStdString() << " size: " << gridX << "x" << gridY << "\n";
+		gridY = image.height();;
 
 		hasImage = true;
 		hasImageChanged = false;
+		updatePatternSize();
+		return true;
 	}
-	updatePatternSize();
+	return false;
 }
 
-void Renderer::loadImage(QString imagePath, int x, int y)
+bool Renderer::smartResize(int x, int y)
 {
-	image.load(imagePath);
-	if (!image.isNull())
+	QImage imageSource;
+	imageSource = image;
+	if (!imageSource.isNull() && hasPattern)
 	{
-		// Resize
-		image = image.scaled(x,y);
+		int pixelXCount = x/pattern.getReadX();
+		int pixelYCount = y/pattern.getReadY();
+		if (pixelXCount%pattern.getReadX()==0)
+			pixelXCount--;
+		if (pixelYCount%pattern.getReadY()==0)
+			pixelYCount--;
 
+		pixelXCount = pattern.getX()*pixelXCount+pattern.getLargestTileOffsetX();
+		pixelYCount = pattern.getY()*pixelYCount+pattern.getLargestTileOffsetY();
+
+		image = QImage(x, y, QImage::Format_RGB32);
+
+		for (int i=0; i<x; i++)
+		{
+			for (int j=0; j<y; j++)
+			{
+				int tileX = i%pattern.getReadX();
+				int tileY = j%pattern.getReadY();
+				float displaceX = pattern.getX()*(i/pattern.getReadX())+pattern.getTileW(tileX, tileY)/2.0+pattern.getTileX(tileX,tileY);
+				float displaceY = pattern.getY()*(j/pattern.getReadY())+pattern.getTileH(tileX, tileY)/2.0+pattern.getTileY(tileX,tileY);
+				int ii = int(imageSource.width()/float(pixelXCount)*displaceX);
+				int jj = int(imageSource.height()/float(pixelYCount)*displaceY);
+
+				if (ii > imageSource.width()-1)
+					ii = imageSource.width()-1;
+				if (jj > imageSource.height()-1)
+					jj = imageSource.height()-1;
+				image.setPixel(i, j, imageSource.pixel(ii, jj));
+			}
+		}
+
+		// Set the remainder of the values
 		gridX = image.width();
 		gridY = image.height();
 
 		hasImage = true;
 		hasImageChanged = true;
+		updatePatternSize();
+		return true;
 	}
-	updatePatternSize();
+	return false;
 }
 
 void Renderer::resizeImage(int x, int y)

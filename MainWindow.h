@@ -22,7 +22,9 @@ public slots:
 	void newFile();
 	void openFile();
 	void openFileImport();
+	void openFileSmart();
 	void resizeImage();
+	void smartResizeImage();
 	void saveFile();
 	void getColorCount();
 	void setBrushColor();
@@ -65,6 +67,7 @@ private:
 	QAction *newAct;
 	QAction *openAct;
 	QAction *openImportAct;
+	QAction *openSmartImportAct;
 	QAction *resizeImageAct;
 	QAction *saveAct;
 	QAction *rotateTransposeAct;
