@@ -19,8 +19,6 @@ Renderer::Renderer(QWidget *parent)
 	background = Qt::white;
 
 	this->setAttribute(Qt::WA_NoBackground);
-	//this->setAutoFillBackground(false);
-	//this->setPalette(QPalette(this->backgroundRole(), Qt::white));
 }
 
 Renderer::~Renderer()
@@ -107,6 +105,17 @@ bool Renderer::smartResize(int x, int y)
 		return true;
 	}
 	return false;
+}
+
+QSize Renderer::smartResizeTip()
+{
+	if (hasPattern && hasImage)
+	{
+		return QSize(image.width()*pattern.getReadX()/pattern.getX(),image.height()*pattern.getReadY()/pattern.getY());
+	}
+	if (hasImage)
+		return QSize(image.size());
+	return QSize(1,1);
 }
 
 void Renderer::resizeImage(int x, int y)

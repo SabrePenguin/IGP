@@ -26,6 +26,8 @@ MainWindow::MainWindow()
 	this->setWindowTitle("IGP 3.0");
 	this->setWindowIcon(QIcon("./Resources/IGP.png"));
 	this->resize(startupSize());
+
+	renderWidget->setPattern(QDir("./Patterns/Default"));
 }
 
 void MainWindow::newFile()
@@ -90,7 +92,7 @@ void MainWindow::resizeImage()
 
 void MainWindow::smartResizeImage()
 {
-	QSize currentSize = renderWidget->getImageSize();
+	QSize currentSize = renderWidget->smartResizeTip();
 	ResizeDialog resizeDialog(currentSize.width(), currentSize.height(), 1, 1, 2000, 2000);
 
 	if (resizeDialog.exec() == QDialog::Accepted)

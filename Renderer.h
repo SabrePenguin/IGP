@@ -20,6 +20,7 @@ public:
 	void newImage(int x, int y);
 	bool loadImage(QString imagePath);
 	bool smartResize(int x, int y);
+	QSize smartResizeTip();
 	void resizeImage(int x, int y);
 	void changePalette(QString colorFile);
 	void setBackgroundColor(QColor color);
