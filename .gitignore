@@ -6,3 +6,7 @@ Makefile
 moc_*.o
 moc_*.cpp
 IGP
+IGP.exe
+
+# Non-standard Resource Files
+Resources/Settings.txt

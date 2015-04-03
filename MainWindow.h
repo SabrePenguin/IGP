@@ -40,6 +40,8 @@ public slots:
 	void zoomNormal();
 	void about();
 
+	void closeEvent(QCloseEvent *);
+
 private:
 	Renderer *renderWidget;
 
@@ -47,6 +49,7 @@ private:
 	void createActions();
     void createMenus();
 	void findPatterns(QMenu *menu, QDir dir = QDir("./Patterns/."));
+	QSize startupSize();
 
 	// Menus
 	QMenu *fileMenu;

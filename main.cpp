@@ -12,7 +12,6 @@ int main(int argc, char *argv[])
 	window.showMaximized();
  #else
 	window.show();
-	window.resize(600,400);
  #endif
     return app.exec();
 }

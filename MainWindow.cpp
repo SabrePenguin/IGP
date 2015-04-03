@@ -25,6 +25,7 @@ MainWindow::MainWindow()
 
 	this->setWindowTitle("IGP 3.0");
 	this->setWindowIcon(QIcon("./Resources/IGP.png"));
+	this->resize(startupSize());
 }
 
 void MainWindow::newFile()
@@ -175,6 +176,17 @@ void MainWindow::zoomNormal()
 void MainWindow::about()
 {
 	QMessageBox::about(this, tr("About IGP 3.0"), tr("The <b>Irregular Grid Painter</b> [IGP] allows the user to paint patterned tiles. This program's first version originated within the chainmaille community at M.A.I.L. by user Zlosk using the .Net framework. The second version, written by user aganim, used javascript and HTML5. This version is written by user TrenchCoatGuy [Brian Geuther] using the QT framework."));
+}
+
+void MainWindow::closeEvent(QCloseEvent *)
+{
+	// Save current window settings
+	QFile closeFile("./Resources/Settings.txt");
+	closeFile.open(QIODevice::WriteOnly|QIODevice::Text);
+	QTextStream output(&closeFile);
+
+	output << "WindowWidth=" << QString::number(this->size().width()) << "\nWindowHeight=" << QString::number(this->size().height()) << "\n";
+	output.flush();
 }
 
 void MainWindow::createActions()
@@ -338,3 +350,36 @@ void MainWindow::findPatterns(QMenu *menu, QDir dir)
 	}
 }
 
+QSize MainWindow::startupSize()
+{
+	QFile openFile("./Resources/Settings.txt");
+	openFile.open(QIODevice::ReadOnly|QIODevice::Text);
+	QTextStream stream(&openFile);
+	QString line;
+	int width=-1, height=-1;
+
+	line = stream.readLine(100);
+	while (stream.status()==QTextStream::Ok && !line.isNull())
+	{
+		if (line.contains("="))
+		{
+			QStringList list = line.split("=");
+			QString id, value;
+			id = QString(list.at(0).toLocal8Bit().constData());
+			value = QString(list.at(1).toLocal8Bit().constData());
+			if (id=="WindowWidth")
+			{
+				width = value.toInt();
+			}
+			else if (id=="WindowHeight")
+			{
+				height = value.toInt();
+			}
+		}
+		line = stream.readLine(100);
+	}
+	if (width>0 && height>0)
+		return QSize(width, height);
+
+	return QSize(600,400);
+}
