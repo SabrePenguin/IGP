@@ -111,7 +111,7 @@ QSize Renderer::smartResizeTip()
 {
 	if (hasPattern && hasImage)
 	{
-		return QSize(image.width()*pattern.getReadX()/pattern.getX(),image.height()*pattern.getReadY()/pattern.getY());
+		return QSize(image.width()*pattern.getReadX()*20/pattern.getX(),image.height()*pattern.getReadY()*20/pattern.getY());
 	}
 	if (hasImage)
 		return QSize(image.size());
