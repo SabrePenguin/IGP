@@ -39,6 +39,8 @@ public:
 	bool saveImage(QString saveFileName);
 	bool imageChanged();
 	bool hasPatternSelected();
+	bool hasImageSelected();
+	QString getPatternName();
 	void countColors(QVector<QRgb> *colors, QVector<int> *counts);
 
 protected:

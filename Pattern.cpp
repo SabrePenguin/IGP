@@ -208,6 +208,9 @@ bool Pattern::loadPattern(QDir dir)
 					largestY = tileHeight[i][j] + tileOffsetY[i][j];
 			}
 		}
+
+		if (allFound)
+			patternName = dir.dirName();
 		return allFound;
 	}
 	return false;
@@ -266,6 +269,11 @@ QPixmap Pattern::getTile(int x, int y)
 QPixmap Pattern::getBackground()
 {
 	return background;
+}
+
+QString Pattern::getPatternName()
+{
+	return patternName;
 }
 
 int Pattern::getTileW(int x, int y)

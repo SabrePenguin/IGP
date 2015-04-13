@@ -6,6 +6,7 @@
 #include <QSignalMapper>
 #include <QScrollArea>
 #include <QIcon>
+#include <QStatusBar>
 #include "Renderer.h"
 #include "ResizeDialog.h"
 #include "ColorCountDialog.h"
@@ -52,6 +53,10 @@ private:
     void createMenus();
 	void findPatterns(QMenu *menu, QDir dir = QDir("./Patterns/."));
 	QSize startupSize();
+	void updateStatus();
+
+	// Status
+	QLabel *status;
 
 	// Menus
 	QMenu *fileMenu;

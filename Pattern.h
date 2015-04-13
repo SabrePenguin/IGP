@@ -26,7 +26,7 @@ public:
 
 	QPixmap getTile(int x, int y);
 	QPixmap getBackground();
-	char *getBackgroundName();
+	QString getPatternName();
 
 	int getTileW(int x, int y);
 	int getTileH(int x, int y);
@@ -37,6 +37,7 @@ public:
 
 protected:
 	QString description;
+	QString patternName;
 	bool loadedTiles;
 
 	int width;

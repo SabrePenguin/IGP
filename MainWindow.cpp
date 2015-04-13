@@ -22,6 +22,10 @@ MainWindow::MainWindow()
 	signalMapper = new QSignalMapper(this);
 	createActions();
 	createMenus();
+	statusBar();
+	status = new QLabel;
+	updateStatus();
+	statusBar()->addWidget(status);
 
 	this->setWindowTitle("IGP 3.0");
 	this->setWindowIcon(QIcon("./Resources/IGP.png"));
@@ -39,6 +43,7 @@ void MainWindow::newFile()
 		renderWidget->newImage(resizeDialog.getWidth(),resizeDialog.getHeight());
 		renderWidget->resize(renderWidget->getMinSize());;
 	}
+	updateStatus();
 }
 
 void MainWindow::openFile()
@@ -48,6 +53,7 @@ void MainWindow::openFile()
 		renderWidget->loadImage(fileName);
 
 	renderWidget->resize(renderWidget->getMinSize());
+	updateStatus();
 }
 
 void MainWindow::openFileImport()
@@ -60,6 +66,7 @@ void MainWindow::openFileImport()
 	}
 
 	renderWidget->resize(renderWidget->getMinSize());
+	updateStatus();
 }
 
 void MainWindow::openFileSmart()
@@ -76,6 +83,7 @@ void MainWindow::openFileSmart()
 	}
 	else
 		QMessageBox::warning(this, tr("Warning"), tr("First select a pattern from the pattern menu to use this function."));
+	updateStatus();
 }
 
 void MainWindow::resizeImage()
@@ -88,6 +96,7 @@ void MainWindow::resizeImage()
 		renderWidget->resizeImage(resizeDialog.getWidth(),resizeDialog.getHeight());
 		renderWidget->resize(renderWidget->getMinSize());;
 	}
+	updateStatus();
 }
 
 void MainWindow::smartResizeImage()
@@ -100,6 +109,7 @@ void MainWindow::smartResizeImage()
 		renderWidget->smartResize(resizeDialog.getWidth(),resizeDialog.getHeight());
 		renderWidget->resize(renderWidget->getMinSize());;
 	}
+	updateStatus();
 }
 
 void MainWindow::saveFile()
@@ -172,6 +182,7 @@ void MainWindow::openPattern(QString dir)
 		QMessageBox::warning(this, tr("Pattern Load Failed"), tr("There was an error while loading the pattern. Please select a new pattern."));
 		renderWidget->resize(renderWidget->getMinSize());
 	}
+	updateStatus();
 }
 
 void MainWindow::rotateTranspose()
@@ -184,12 +195,14 @@ void MainWindow::rotateClockwise()
 {
 	renderWidget->rotateClockwise();
 	renderWidget->resize(renderWidget->getMinSize());
+	updateStatus();
 }
 
 void MainWindow::rotateCounterClockwise()
 {
 	renderWidget->rotateCounterClockwise();
 	renderWidget->resize(renderWidget->getMinSize());
+	updateStatus();
 }
 
 void MainWindow::rotate180()
@@ -455,4 +468,24 @@ QSize MainWindow::startupSize()
 		return QSize(width, height);
 
 	return QSize(600,400);
+}
+
+void MainWindow::updateStatus()
+{
+	QString text = "";
+
+	if (renderWidget->hasImageSelected())
+		text += QString("Source Image Size: ")+QString::number(renderWidget->getImageSize().width())+QString("x")+QString::number(renderWidget->getImageSize().height())+QString("\t ");
+	else
+		text += QString("No Source Image\t ");
+
+	if (renderWidget->hasPatternSelected())
+		text += QString("Pattern: ")+renderWidget->getPatternName()+QString("\t ");
+	else
+		text += QString("No Pattern Selected\t ");
+
+	if (renderWidget->hasImageSelected())
+		text += QString("Total Tiles: ")+QString::number(renderWidget->getImageSize().width()*renderWidget->getImageSize().height());
+
+	status->setText(text);
 }
