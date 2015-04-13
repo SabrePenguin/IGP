@@ -1,8 +1,6 @@
 #include <QtGui>
 #include "Renderer.h"
 
-const int IdRole = Qt::UserRole;
-
 Renderer::Renderer(QWidget *parent)
     : QWidget(parent)
 {
@@ -307,11 +305,11 @@ void Renderer::paintEvent(QPaintEvent *e)
 		int x=0;
 		int y=0;
 		int gridCountX = int(gridX/pattern.getReadX());
-		int gridXStart = int(e->region().boundingRect().left()/zoom/zoom/pattern.getX())-1;
-		int gridXEnd = int(e->region().boundingRect().right()/zoom/zoom/pattern.getX())+2;
+		int gridXStart = int(e->region().boundingRect().left()/zoom/pattern.getX())-1;
+		int gridXEnd = int(e->region().boundingRect().right()/zoom/pattern.getX())+2;
 		int gridCountY = int(gridY/pattern.getReadY());
-		int gridYStart = int(e->region().boundingRect().top()/zoom/zoom/pattern.getY())-1;
-		int gridYEnd = int(e->region().boundingRect().bottom()/zoom/zoom/pattern.getY())+2;
+		int gridYStart = int(e->region().boundingRect().top()/zoom/pattern.getY())-1;
+		int gridYEnd = int(e->region().boundingRect().bottom()/zoom/pattern.getY())+2;
 
 		if (gridXStart<0)
 			gridXStart=0;
@@ -322,41 +320,26 @@ void Renderer::paintEvent(QPaintEvent *e)
 		if (gridYEnd>gridCountY)
 			gridYEnd=gridCountY;
 
+		painter.scale(zoom,zoom);
+
 		// Paint the outline and background
 		painter.setBackgroundMode(Qt::OpaqueMode);
 		painter.setBackground(QBrush(background));
-		for (int i=gridXStart; i<=gridXEnd+1; i++)
-		{
-			x=int(pattern.getX()*zoom)*i;
-			for (int j=gridYStart; j<=gridYEnd+1; j++)
-			{
-				y=int(pattern.getY()*zoom)*j;
-				painter.save();
-				painter.scale(zoom,zoom);
-				painter.translate(x,y);
-				painter.scale(zoom,zoom);
-
-				painter.setPen(outline);
-				painter.drawPixmap(0,0,QBitmap(pattern.getBackground()));
-
-				painter.restore();
-			}
-		}
+		painter.setPen(outline);
+		painter.drawTiledPixmap(0,0,sizeX/zoom,sizeY/zoom,QBitmap(pattern.getBackground()));
 		painter.setBackgroundMode(Qt::TransparentMode);
 
 		// Paint the imageGrid
 		for (int i=gridXStart; i<=gridXEnd; i++)
 		{
-			x=int(pattern.getX()*zoom)*i;
+			x=int(pattern.getX())*i;
 			for (int j=gridYStart; j<=gridYEnd; j++)
 			{
-				y=int(pattern.getY()*zoom)*j;
-				painter.save();
-				painter.scale(zoom,zoom);
-				painter.translate(x,y);
-				painter.scale(zoom,zoom);
+				y=int(pattern.getY())*j;
 
 				// Paint tiles
+				painter.save();
+				painter.translate(x,y);
 				for (int tileX=0; tileX < pattern.getReadX(); tileX++)
 				{
 					for (int tileY=0; tileY < pattern.getReadY(); tileY++)
@@ -382,10 +365,10 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 	if (hasImage && hasPattern)
 	{
 		// Starting positions to test
-		int eX = int(e->x()/zoom/zoom);
-		int eY = int(e->y()/zoom/zoom);
-		int startX = int(e->x()/zoom/zoom/pattern.getX());
-		int startY = int(e->y()/zoom/zoom/pattern.getY());
+		int eX = int(e->x()/zoom);
+		int eY = int(e->y()/zoom);
+		int startX = int(e->x()/zoom/pattern.getX());
+		int startY = int(e->y()/zoom/pattern.getY());
 
 		// Search 3x3 patterned area
 		for (int i=-1; i<2; i++)
@@ -440,8 +423,8 @@ void Renderer::updatePatternSize()
 		if (gridY%pattern.getReadY()==0)
 			gridYCount--;
 
-		sizeX = int((pattern.getX()*gridXCount+pattern.getLargestTileOffsetX())*zoom*zoom);
-		sizeY = int((pattern.getY()*gridYCount+pattern.getLargestTileOffsetY())*zoom*zoom);
+		sizeX = int((pattern.getX()*gridXCount+pattern.getLargestTileOffsetX())*zoom);
+		sizeY = int((pattern.getY()*gridYCount+pattern.getLargestTileOffsetY())*zoom);
 
 		paintedOutline = false;
 		update();
