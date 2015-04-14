@@ -38,6 +38,7 @@ void Renderer::newImage(int x, int y)
 	hasImageChanged = true;
 	
 	updatePatternSize();
+	update();
 }
 
 bool Renderer::loadImage(QString imagePath)
@@ -100,6 +101,7 @@ bool Renderer::smartResize(int x, int y)
 		hasImage = true;
 		hasImageChanged = true;
 		updatePatternSize();
+		update();
 		return true;
 	}
 	return false;
@@ -126,6 +128,7 @@ void Renderer::resizeImage(int x, int y)
 		gridY = image.height();
 
 		updatePatternSize();
+		update();
 		hasImageChanged = true;
 	}
 }
@@ -202,18 +205,21 @@ void Renderer::zoomIn()
 {
 	zoom*=1.1;
 	updatePatternSize();
+	update();
 }
 
 void Renderer::zoomOut()
 {
 	zoom*=0.9;
 	updatePatternSize();
+	update();
 }
 
 void Renderer::zoomNormal()
 {
 	zoom=1.0;
 	updatePatternSize();
+	update();
 }
 
 bool Renderer::setPattern(QDir dir)
@@ -224,6 +230,7 @@ bool Renderer::setPattern(QDir dir)
 		zoom = 1;
 		hasPattern = true;
 		updatePatternSize();
+		update();
 		return true;
 	}
 	else
@@ -411,7 +418,7 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 									if (pixelX < gridX && pixelY < gridY)
 									{
 										image.setPixel(pixelX,pixelY,brush.rgb());
-										update();
+										update(curX*pattern.getX()*zoom,curY*pattern.getY()*zoom,pattern.getLargestTileOffsetX()*zoom,pattern.getLargestTileOffsetY()*zoom);
 										hasImageChanged = true;
 									}
 								}
@@ -439,7 +446,6 @@ void Renderer::updatePatternSize()
 		sizeY = int((pattern.getY()*gridYCount+pattern.getLargestTileOffsetY())*zoom);
 
 		paintedOutline = false;
-		update();
 	}
 	else
 	{
@@ -459,6 +465,7 @@ void Renderer::rotate(QTransform matrix)
 		gridY = image.height();
 		
 		updatePatternSize();
+		update();
 		hasImageChanged = true;
 	}
 }
