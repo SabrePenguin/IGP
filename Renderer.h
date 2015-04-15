@@ -56,7 +56,7 @@ private:
 	bool antialiased;
 	bool hasPattern;
 	bool hasImage;
-	bool paintedOutline;
+	bool paintedBackground;
 	bool hasImageChanged;
 	Pattern pattern;
 	double zoom;
@@ -68,6 +68,10 @@ private:
 	QColor outline;
 	QColor background;
 	QColor brush;
+
+	// Scene painting
+	QPixmap *paintedScene;
+	QRegion paintedRegion;
 };
 
 #endif
