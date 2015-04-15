@@ -209,6 +209,10 @@ bool Pattern::loadPattern(QDir dir)
 			}
 		}
 
+		// Fix some data to handle nicely
+		if (background.size()!=QSize(xRepeat,yRepeat))
+			background = background.copy(QRect(0,0,xRepeat,yRepeat));
+
 		if (allFound)
 			patternName = dir.dirName();
 		return allFound;
