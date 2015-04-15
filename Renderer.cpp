@@ -215,8 +215,6 @@ void Renderer::zoomIn()
 {
 	zoom*=1.1;
 	updatePatternSize();
-	paintedBackground = false;
-	paintedRegion = QRegion();
 	update();
 }
 
@@ -224,8 +222,6 @@ void Renderer::zoomOut()
 {
 	zoom*=0.9;
 	updatePatternSize();
-	paintedBackground = false;
-	paintedRegion = QRegion();
 	update();
 }
 
@@ -233,8 +229,6 @@ void Renderer::zoomNormal()
 {
 	zoom=1.0;
 	updatePatternSize();
-	paintedBackground = false;
-	paintedRegion = QRegion();
 	update();
 }
 
@@ -337,7 +331,6 @@ void Renderer::paintEvent(QPaintEvent *e)
 {
 	QPainter painter;
 	painter.begin(paintedScene);
-	painter.scale(zoom,zoom);
 
 	if (hasPattern && hasImage && !paintedBackground)
 	{
@@ -345,7 +338,7 @@ void Renderer::paintEvent(QPaintEvent *e)
 		painter.setBackgroundMode(Qt::OpaqueMode);
 		painter.setBackground(QBrush(background));
 		painter.setPen(outline);
-		painter.drawTiledPixmap(0,0,sizeX/zoom,sizeY/zoom,QBitmap(pattern.getBackground()));
+		painter.drawTiledPixmap(0,0,sizeX,sizeY,QBitmap(pattern.getBackground()));
 		painter.setBackgroundMode(Qt::TransparentMode);
 
 		paintedBackground = true;
@@ -408,6 +401,7 @@ void Renderer::paintEvent(QPaintEvent *e)
 	if (hasPattern && hasImage)
 	{
 		painter.begin(this);
+		painter.scale(zoom,zoom);
 		painter.drawPixmap(paintedScene->rect(),*paintedScene,paintedScene->rect());
 		painter.end();
 	}
@@ -453,7 +447,7 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 									{
 										image.setPixel(pixelX,pixelY,brush.rgb());
 										paintedRegion = paintedRegion.subtracted(QRegion(curX*pattern.getX()*zoom,curY*pattern.getY()*zoom,pattern.getLargestTileOffsetX()*zoom,pattern.getLargestTileOffsetY()*zoom));
-										update(curX*pattern.getX()*zoom,curY*pattern.getY()*zoom,pattern.getLargestTileOffsetX()*zoom,pattern.getLargestTileOffsetY()*zoom);
+										update(curX*pattern.getX()*zoom,curY*pattern.getY()*zoom,pattern.getLargestTileOffsetX()*zoom,pattern.getLargestTileOffsetY()*zoom);;
 										hasImageChanged = true;
 									}
 								}
@@ -477,13 +471,17 @@ void Renderer::updatePatternSize()
 		if (gridY%pattern.getReadY()==0)
 			gridYCount--;
 
-		sizeX = int((pattern.getX()*gridXCount+pattern.getLargestTileOffsetX())*zoom);
-		sizeY = int((pattern.getY()*gridYCount+pattern.getLargestTileOffsetY())*zoom);
+		// Prior to zoom
+		sizeX = int((pattern.getX()*gridXCount+pattern.getLargestTileOffsetX()));
+		sizeY = int((pattern.getY()*gridYCount+pattern.getLargestTileOffsetY()));
 		if (paintedScene->size()!=QSize(sizeX,sizeY))
 		{
 			delete paintedScene;
 			paintedScene = new QPixmap(sizeX, sizeY);
 		}
+		// Apply zoom
+		sizeX = sizeX*zoom;
+		sizeY = sizeY*zoom;
 	}
 	else
 	{
