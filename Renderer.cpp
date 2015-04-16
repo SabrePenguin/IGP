@@ -1,6 +1,5 @@
 #include <QtGui>
 #include "Renderer.h"
-#include <iostream>
 
 Renderer::Renderer(QWidget *parent)
     : QWidget(parent)
