@@ -146,12 +146,12 @@ void Renderer::resizeImage(int x, int y)
 		gridX = image.width();
 		gridY = image.height();
 
-		updatePatternSize();
-		update();
 		paintedBackground = false;
 		hasImageChanged = true;
 		needPaintPixel = false;
 		scenePainted = false;
+		updatePatternSize();
+		update();
 	}
 }
 
@@ -258,6 +258,7 @@ bool Renderer::setPattern(QDir dir)
 		hasPattern = true;
 		updatePatternSize();
 		paintedBackground = false;
+		scenePainted = false;
 		update();
 		return true;
 	}
@@ -353,7 +354,7 @@ void Renderer::paintEvent(QPaintEvent *e)
 		painter.setBackgroundMode(Qt::OpaqueMode);
 		painter.setBackground(QBrush(background));
 		painter.setPen(outline);
-		painter.drawTiledPixmap(0,0,sizeX,sizeY,QBitmap(pattern.getBackground()));
+		painter.drawTiledPixmap(0,0,paintedScene->rect().right()+1,paintedScene->rect().bottom()+1,QBitmap(pattern.getBackground()));
 		painter.setBackgroundMode(Qt::TransparentMode);
 
 		paintedBackground = true;
