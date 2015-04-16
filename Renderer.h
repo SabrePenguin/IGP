@@ -16,7 +16,7 @@ public:
 	~Renderer();
 
 	void newImage(int x, int y);
-	bool loadImage(QString imagePath);
+	bool loadImage(QString imagePath, bool redraw = true);
 	bool smartResize(int x, int y);
 	QSize smartResizeTip();
 	void resizeImage(int x, int y);
@@ -71,7 +71,8 @@ private:
 
 	// Scene painting
 	QPixmap *paintedScene;
-	QRegion paintedRegion;
+	bool needPaintPixel;
+	bool scenePainted;
 };
 
 #endif

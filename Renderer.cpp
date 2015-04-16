@@ -1,5 +1,6 @@
 #include <QtGui>
 #include "Renderer.h"
+#include <iostream>
 
 Renderer::Renderer(QWidget *parent)
     : QWidget(parent)
@@ -10,6 +11,8 @@ Renderer::Renderer(QWidget *parent)
     antialiased = true;
 	paintedBackground = false;
 	hasImageChanged = false;
+	needPaintPixel = false;
+	scenePainted = false;
 	gridX = 1;
 	gridY = 1;
 	outline = Qt::black;
@@ -22,8 +25,9 @@ Renderer::Renderer(QWidget *parent)
 
 Renderer::~Renderer()
 {
-	if (hasImage)
+	if (hasImage && hasPattern)
 	{
+		delete paintedScene;
 		hasImage = false;
 	}
 }
@@ -37,13 +41,15 @@ void Renderer::newImage(int x, int y)
 	gridY = y;
 	hasImage = true;
 	hasImageChanged = true;
+	needPaintPixel = false;
+	scenePainted = false;
+	paintedBackground = false;
 	
 	updatePatternSize();
-	paintedRegion = QRegion();
 	update();
 }
 
-bool Renderer::loadImage(QString imagePath)
+bool Renderer::loadImage(QString imagePath, bool redraw)
 {
 	image.load(imagePath);
 	if (!image.isNull())
@@ -53,9 +59,15 @@ bool Renderer::loadImage(QString imagePath)
 
 		hasImage = true;
 		hasImageChanged = false;
+		needPaintPixel = false;
 		updatePatternSize();
-		paintedRegion = QRegion();
-		update();
+
+		if (redraw)
+		{
+			scenePainted = false;
+			paintedBackground = false;
+			update();
+		}
 		return true;
 	}
 	return false;
@@ -104,8 +116,10 @@ bool Renderer::smartResize(int x, int y)
 
 		hasImage = true;
 		hasImageChanged = true;
+		needPaintPixel = false;
+		scenePainted = false;
+		paintedBackground = false;
 		updatePatternSize();
-		paintedRegion = QRegion();
 		update();
 		return true;
 	}
@@ -133,9 +147,11 @@ void Renderer::resizeImage(int x, int y)
 		gridY = image.height();
 
 		updatePatternSize();
-		paintedRegion = QRegion();
 		update();
+		paintedBackground = false;
 		hasImageChanged = true;
+		needPaintPixel = false;
+		scenePainted = false;
 	}
 }
 
@@ -156,6 +172,7 @@ void Renderer::changePalette(QString colorFile)
 			image = image.convertToFormat(QImage::Format_RGB32, newColorTable, Qt::ColorOnly);
 			update();
 			hasImageChanged = true;
+			scenePainted = false;
 		}
 	}
 }
@@ -164,7 +181,7 @@ void Renderer::setBackgroundColor(QColor color)
 {
 	background = color;
 	paintedBackground = false;
-	paintedRegion = QRegion();
+	scenePainted = false;
 	update();
 }
 
@@ -172,7 +189,7 @@ void Renderer::setOutlineColor(QColor color)
 {
 	outline = color;
 	paintedBackground = false;
-	paintedRegion = QRegion();
+	scenePainted = false;
 	update();
 }
 
@@ -222,9 +239,6 @@ void Renderer::zoomOut()
 {
 	zoom*=0.9;
 	updatePatternSize();
-	//QTransform trans(1.1,0,0,1.1,1,1);
-	//paintedRegion = trans.map(paintedRegion);
-	paintedRegion = QRegion();
 	update();
 }
 
@@ -244,7 +258,6 @@ bool Renderer::setPattern(QDir dir)
 		hasPattern = true;
 		updatePatternSize();
 		paintedBackground = false;
-		paintedRegion = QRegion();
 		update();
 		return true;
 	}
@@ -346,56 +359,90 @@ void Renderer::paintEvent(QPaintEvent *e)
 		paintedBackground = true;
 	}
 
-	if (hasPattern && hasImage)
+	if (hasPattern && hasImage && !scenePainted)
 	{
-		if (!e->region().subtracted(paintedRegion).isEmpty())
+		int x=0;
+		int y=0;
+		int gridCountX = int(gridX/pattern.getReadX());
+		int gridCountY = int(gridY/pattern.getReadY());
+
+		// Paint the imageGrid
+		for (int i=0; i<=gridCountX; i++)
 		{
-			int x=0;
-			int y=0;
-			int gridCountX = int(gridX/pattern.getReadX());
-			int gridXStart = int(e->region().boundingRect().left()/zoom/pattern.getX())-1;
-			int gridXEnd = int(e->region().boundingRect().right()/zoom/pattern.getX())+2;
-			int gridCountY = int(gridY/pattern.getReadY());
-			int gridYStart = int(e->region().boundingRect().top()/zoom/pattern.getY())-1;
-			int gridYEnd = int(e->region().boundingRect().bottom()/zoom/pattern.getY())+2;
-
-			if (gridXStart<0)
-				gridXStart=0;
-			if (gridYStart<0)
-				gridYStart=0;
-			if (gridXEnd>gridCountX)
-				gridXEnd=gridCountX;
-			if (gridYEnd>gridCountY)
-				gridYEnd=gridCountY;
-
-			// Paint the imageGrid
-			for (int i=gridXStart; i<=gridXEnd; i++)
+			x=int(pattern.getX())*i;
+			for (int j=0; j<=gridCountY; j++)
 			{
-				x=int(pattern.getX())*i;
-				for (int j=gridYStart; j<=gridYEnd; j++)
-				{
-					y=int(pattern.getY())*j;
+				y=int(pattern.getY())*j;
 
-					// Paint tiles
-					painter.save();
-					painter.translate(x,y);
-					for (int tileX=0; tileX < pattern.getReadX(); tileX++)
+				// Paint tiles
+				painter.save();
+				painter.translate(x,y);
+				for (int tileX=0; tileX < pattern.getReadX(); tileX++)
+				{
+					for (int tileY=0; tileY < pattern.getReadY(); tileY++)
 					{
-						for (int tileY=0; tileY < pattern.getReadY(); tileY++)
+						int pixelX = i*(pattern.getReadX())+pattern.getTileReadX(tileX, tileY);
+						int pixelY = j*(pattern.getReadY())+pattern.getTileReadY(tileX, tileY);
+						if (pixelX < gridX && pixelY < gridY)
 						{
-							int pixelX = i*(pattern.getReadX())+pattern.getTileReadX(tileX, tileY);
-							int pixelY = j*(pattern.getReadY())+pattern.getTileReadY(tileX, tileY);
-							if (pixelX < gridX && pixelY < gridY)
-							{
-								painter.setPen(image.pixel(pixelX, pixelY));
-								painter.drawPixmap(pattern.getTileX(tileX, tileY),pattern.getTileY(tileX, tileY), QBitmap(pattern.getTile(tileX, tileY)));
-							}
+							painter.setPen(image.pixel(pixelX, pixelY));
+							painter.drawPixmap(pattern.getTileX(tileX, tileY),pattern.getTileY(tileX, tileY), QBitmap(pattern.getTile(tileX, tileY)));
 						}
 					}
-					painter.restore();
 				}
+				painter.restore();
 			}
-			paintedRegion = paintedRegion.united(e->region());
+		}					
+		scenePainted = true;
+	}
+
+	if (hasPattern && hasImage && needPaintPixel)
+	{
+		int x=0;
+		int y=0;
+		int gridCountX = int(gridX/pattern.getReadX());
+		int gridXStart = int(e->region().boundingRect().left()/zoom/pattern.getX())-1;
+		int gridXEnd = int(e->region().boundingRect().right()/zoom/pattern.getX())+2;
+		int gridCountY = int(gridY/pattern.getReadY());
+		int gridYStart = int(e->region().boundingRect().top()/zoom/pattern.getY())-1;
+		int gridYEnd = int(e->region().boundingRect().bottom()/zoom/pattern.getY())+2;
+
+		if (gridXStart<0)
+			gridXStart=0;
+		if (gridYStart<0)
+			gridYStart=0;
+		if (gridXEnd>gridCountX)
+			gridXEnd=gridCountX;
+		if (gridYEnd>gridCountY)
+			gridYEnd=gridCountY;
+
+		// Paint the imageGrid
+		for (int i=gridXStart; i<=gridXEnd; i++)
+		{
+			x=int(pattern.getX())*i;
+			for (int j=gridYStart; j<=gridYEnd; j++)
+			{
+				y=int(pattern.getY())*j;
+
+				// Paint tiles
+				painter.save();
+				painter.translate(x,y);
+				for (int tileX=0; tileX < pattern.getReadX(); tileX++)
+				{
+					for (int tileY=0; tileY < pattern.getReadY(); tileY++)
+					{
+						int pixelX = i*(pattern.getReadX())+pattern.getTileReadX(tileX, tileY);
+						int pixelY = j*(pattern.getReadY())+pattern.getTileReadY(tileX, tileY);
+						if (pixelX < gridX && pixelY < gridY)
+						{
+							painter.setPen(image.pixel(pixelX, pixelY));
+							painter.drawPixmap(pattern.getTileX(tileX, tileY),pattern.getTileY(tileX, tileY), QBitmap(pattern.getTile(tileX, tileY)));
+						}
+					}
+				}
+				painter.restore();
+			}
+			needPaintPixel = false;
 		}
 	}
 
@@ -448,7 +495,7 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 									if (pixelX < gridX && pixelY < gridY)
 									{
 										image.setPixel(pixelX,pixelY,brush.rgb());
-										paintedRegion = paintedRegion.subtracted(QRegion(curX*pattern.getX()*zoom,curY*pattern.getY()*zoom,pattern.getLargestTileOffsetX()*zoom,pattern.getLargestTileOffsetY()*zoom));
+										needPaintPixel = true;
 										update(curX*pattern.getX()*zoom,curY*pattern.getY()*zoom,pattern.getLargestTileOffsetX()*zoom,pattern.getLargestTileOffsetY()*zoom);
 										hasImageChanged = true;
 									}
@@ -503,7 +550,8 @@ void Renderer::rotate(QTransform matrix)
 		gridY = image.height();
 		
 		updatePatternSize();
-		paintedRegion = QRegion();
+		paintedBackground = false;
+		scenePainted = false;
 		update();
 		hasImageChanged = true;
 	}

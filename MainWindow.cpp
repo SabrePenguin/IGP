@@ -61,7 +61,7 @@ void MainWindow::openFileImport()
 	QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), "./Img/", tr("Image Files (*.png *.jpg *.bmp)"));
 	if (!fileName.isEmpty())
 	{
-		renderWidget->loadImage(fileName);
+		renderWidget->loadImage(fileName, false);
 		resizeImage();
 	}
 
@@ -76,7 +76,7 @@ void MainWindow::openFileSmart()
 		QString fileName = QFileDialog::getOpenFileName(this, tr("Open Image"), "./Img/", tr("Image Files (*.png *.jpg *.bmp)"));
 		if (!fileName.isEmpty())
 		{
-			renderWidget->loadImage(fileName);
+			renderWidget->loadImage(fileName, false);
 			smartResizeImage();
 			renderWidget->resize(renderWidget->getMinSize());
 		}
