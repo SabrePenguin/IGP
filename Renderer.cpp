@@ -222,6 +222,9 @@ void Renderer::zoomOut()
 {
 	zoom*=0.9;
 	updatePatternSize();
+	//QTransform trans(1.1,0,0,1.1,1,1);
+	//paintedRegion = trans.map(paintedRegion);
+	paintedRegion = QRegion();
 	update();
 }
 
@@ -245,8 +248,7 @@ bool Renderer::setPattern(QDir dir)
 		update();
 		return true;
 	}
-	else
-		hasPattern = false;
+	hasPattern = false;
 	updatePatternSize();
 	return false;
 }
@@ -447,7 +449,7 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 									{
 										image.setPixel(pixelX,pixelY,brush.rgb());
 										paintedRegion = paintedRegion.subtracted(QRegion(curX*pattern.getX()*zoom,curY*pattern.getY()*zoom,pattern.getLargestTileOffsetX()*zoom,pattern.getLargestTileOffsetY()*zoom));
-										update(curX*pattern.getX()*zoom,curY*pattern.getY()*zoom,pattern.getLargestTileOffsetX()*zoom,pattern.getLargestTileOffsetY()*zoom);;
+										update(curX*pattern.getX()*zoom,curY*pattern.getY()*zoom,pattern.getLargestTileOffsetX()*zoom,pattern.getLargestTileOffsetY()*zoom);
 										hasImageChanged = true;
 									}
 								}
