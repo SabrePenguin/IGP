@@ -400,21 +400,10 @@ void Renderer::paintEvent(QPaintEvent *e)
 	{
 		int x=0;
 		int y=0;
-		int gridCountX = int(gridX/pattern.getReadX());
-		int gridXStart = int(e->region().boundingRect().left()/zoom/pattern.getX())-1;
-		int gridXEnd = int(e->region().boundingRect().right()/zoom/pattern.getX())+2;
-		int gridCountY = int(gridY/pattern.getReadY());
-		int gridYStart = int(e->region().boundingRect().top()/zoom/pattern.getY())-1;
-		int gridYEnd = int(e->region().boundingRect().bottom()/zoom/pattern.getY())+2;
-
-		if (gridXStart<0)
-			gridXStart=0;
-		if (gridYStart<0)
-			gridYStart=0;
-		if (gridXEnd>gridCountX)
-			gridXEnd=gridCountX;
-		if (gridYEnd>gridCountY)
-			gridYEnd=gridCountY;
+		int gridXStart = int(e->region().boundingRect().left()/zoom/pattern.getX());
+		int gridXEnd = int(e->region().boundingRect().right()/zoom/pattern.getX());
+		int gridYStart = int(e->region().boundingRect().top()/zoom/pattern.getY());
+		int gridYEnd = int(e->region().boundingRect().bottom()/zoom/pattern.getY());
 
 		// Paint the imageGrid
 		for (int i=gridXStart; i<=gridXEnd; i++)
