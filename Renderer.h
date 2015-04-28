@@ -71,8 +71,7 @@ private:
 
 	// Scene painting
 	QPixmap *paintedScene;
-	bool needPaintPixel;
-	bool scenePainted;
+	QRegion paintedRegion;
 };
 
 #endif
