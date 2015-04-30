@@ -114,9 +114,16 @@ void MainWindow::smartResizeImage()
 
 void MainWindow::saveFile()
 {
-	QString fileName = QFileDialog::getOpenFileName(this, tr("Save Image"), "./Img/", tr("Image Files (*.png *.jpg *.bmp)"));
-	if (!fileName.isEmpty())
-		renderWidget->saveImage(fileName);
+	if (renderWidget->hasImageSelected())
+	{
+		QString fileName = QFileDialog::getSaveFileName(this, tr("Save Image"), "./Img/", tr("Image Files (*.png *.jpg *.bmp)"));
+		if (!fileName.isEmpty())
+			renderWidget->saveImage(fileName);
+	}
+	else
+	{
+		QMessageBox::warning(this, tr("No Image to Save"), tr("You have no image to save."));
+	}
 }
 
 void MainWindow::getColorCount()
