@@ -17,7 +17,12 @@ Renderer::Renderer(QWidget *parent)
 	background = Qt::white;
 	paintedScene = new QPixmap(1,1);
 
-	this->setAttribute(Qt::WA_NoBackground);
+	//this->setAttribute(Qt::WA_NoBackground);
+	//this->setAutoFillBackground(false);
+	/*QPalette p = this->palette();
+	p.setColor(this->backgroundRole(), background);
+	this->setPalette(p);
+	this->setAutoFillBackground(true);*/
 }
 
 Renderer::~Renderer()
@@ -257,7 +262,6 @@ void Renderer::zoomNormal()
 
 bool Renderer::setPattern(QDir dir)
 {
-	//std::cout << "Loaded Pattern: " << dir.dirName().toStdString() << "\n";
 	if (pattern.loadPattern(dir))
 	{
 		zoom = 1;
@@ -357,11 +361,11 @@ void Renderer::paintEvent(QPaintEvent *e)
 
 	if (hasPattern && hasImage && !paintedBackground)
 	{
-		// Paint the outline and background
+		// Paint the background
 		painter.setBackgroundMode(Qt::OpaqueMode);
 		painter.setBackground(QBrush(background));
-		painter.setPen(outline);
-		painter.drawTiledPixmap(0,0,paintedScene->rect().right()+1,paintedScene->rect().bottom()+1,QBitmap(pattern.getBackground()));
+		painter.setPen(background);
+		painter.eraseRect(QRect(0,0,sizeX,sizeY));
 		painter.setBackgroundMode(Qt::TransparentMode);
 
 		paintedBackground = true;
@@ -411,8 +415,29 @@ void Renderer::paintEvent(QPaintEvent *e)
 							int pixelY = j*(pattern.getReadY())+pattern.getTileReadY(tileX, tileY);
 							if (pixelX < gridX && pixelY < gridY)
 							{
-								painter.setPen(image.pixel(pixelX, pixelY));
-								painter.drawPixmap(pattern.getTileX(tileX, tileY),pattern.getTileY(tileX, tileY), QBitmap(pattern.getTile(tileX, tileY)));
+								if (qAlpha(image.pixel(pixelX, pixelY))>127)
+								{
+									painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+									painter.setBackgroundMode(Qt::TransparentMode);
+									QPixmap tilePixmap = pattern.getTile(tileX,tileY);
+									if (pattern.getTransparencySupport())
+									{
+										QBitmap mask = tilePixmap.createMaskFromColor(Qt::black);
+										QBitmap maskOriginal = tilePixmap.mask();
+										tilePixmap.setMask(mask);
+										tilePixmap.fill(image.pixel(pixelX,pixelY));
+										tilePixmap.setMask(maskOriginal);
+										painter.drawPixmap(pattern.getTileX(tileX, tileY),pattern.getTileY(tileX, tileY), tilePixmap);
+									}
+									else
+									{
+										QBitmap mask = tilePixmap.createMaskFromColor(Qt::white);
+										tilePixmap.setMask(mask);
+										tilePixmap.fill(image.pixel(pixelX,pixelY));
+										tilePixmap.setMask(mask);
+										painter.drawPixmap(pattern.getTileX(tileX, tileY),pattern.getTileY(tileX, tileY), tilePixmap);
+									}
+								}
 							}
 						}
 					}

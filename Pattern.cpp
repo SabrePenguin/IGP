@@ -3,6 +3,7 @@
 Pattern::Pattern()
 {
 	loadedTiles = false;
+	supportTransparency = false;
 }
 
 Pattern::~Pattern()
@@ -62,6 +63,7 @@ bool Pattern::loadPattern(QDir dir)
 	QTextStream iniFile(&file);
 	QString line;
 	bool allFound = false;
+	supportTransparency = false;
 	if (file.exists())
 	{
 		line = iniFile.readLine(100); // Ignore [General] tag
@@ -83,6 +85,10 @@ bool Pattern::loadPattern(QDir dir)
 				else if (id=="OutlineFilename")
 				{
 					background.load(QString(dir.path()+"/"+value));
+				}
+				else if (id=="Transparency")
+				{
+					supportTransparency = value.toInt();
 				}
 				else if (id=="Width")
 				{
@@ -263,6 +269,11 @@ int Pattern::getLargestTileOffsetX()
 int Pattern::getLargestTileOffsetY()
 {
 	return largestY;
+}
+
+bool Pattern::getTransparencySupport()
+{
+	return supportTransparency;
 }
 
 QPixmap Pattern::getTile(int x, int y)

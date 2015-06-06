@@ -23,6 +23,7 @@ public:
 	int getSubTileNum();
 	int getLargestTileOffsetX();
 	int getLargestTileOffsetY();
+	bool getTransparencySupport();
 
 	QPixmap getTile(int x, int y);
 	QPixmap getBackground();
@@ -39,6 +40,7 @@ protected:
 	QString description;
 	QString patternName;
 	bool loadedTiles;
+	bool supportTransparency;
 
 	int width;
 	int height;
