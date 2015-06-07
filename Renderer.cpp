@@ -367,7 +367,7 @@ void Renderer::paintEvent(QPaintEvent *e)
 			QRegion newRegion;
 			paintedRegion.swap(newRegion);
 			painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
-			painter.fillRect(QRect(0,0,sizeX/zoom/zoom,sizeY/zoom/zoom),background);
+			painter.fillRect(QRect(0,0,sizeX/zoom+1,sizeY/zoom+1),background);
 
 			// Old outline format support
 			if (!pattern.getTransparencySupport())
@@ -465,7 +465,7 @@ void Renderer::paintEvent(QPaintEvent *e)
 							{
 								if (qAlpha(image.pixel(pixelX, pixelY))>127)
 								{
-									painter.setBackgroundMode(Qt::TransparentMode);
+									//painter.setBackgroundMode(Qt::TransparentMode);
 									QPixmap tilePixmap = pattern.getTile(tileX,tileY);
 									if (pattern.getTransparencySupport())
 									{
