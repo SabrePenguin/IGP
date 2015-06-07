@@ -368,6 +368,13 @@ void Renderer::paintEvent(QPaintEvent *e)
 			paintedRegion.swap(newRegion);
 			painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
 			painter.fillRect(QRect(0,0,sizeX/zoom/zoom,sizeY/zoom/zoom),background);
+
+			// Old outline format support
+			if (!pattern.getTransparencySupport())
+			{
+				painter.setPen(outline);
+				painter.drawTiledPixmap(0,0,paintedScene->rect().right()+1,paintedScene->rect().bottom()+1,QBitmap(pattern.getBackground()));
+			}
 			paintedBackground = true;
 		}
 		QRegion remainingRegion;
@@ -416,7 +423,6 @@ void Renderer::paintEvent(QPaintEvent *e)
 								{
 									if (qAlpha(image.pixel(pixelX, pixelY))>127)
 									{
-										painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
 										QPixmap tilePixmap = pattern.getTile(tileX,tileY);
 										QBitmap mask1 = tilePixmap.createMaskFromColor(QColor(64,64,64));
 										QBitmap mask2 = tilePixmap.createMaskFromColor(QColor(191,191,191));
@@ -459,7 +465,6 @@ void Renderer::paintEvent(QPaintEvent *e)
 							{
 								if (qAlpha(image.pixel(pixelX, pixelY))>127)
 								{
-									painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
 									painter.setBackgroundMode(Qt::TransparentMode);
 									QPixmap tilePixmap = pattern.getTile(tileX,tileY);
 									if (pattern.getTransparencySupport())
