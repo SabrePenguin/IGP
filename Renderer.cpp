@@ -17,8 +17,8 @@ Renderer::Renderer(QWidget *parent)
 	background = Qt::white;
 	paintedScene = new QPixmap(1,1);
 
-	//this->setAttribute(Qt::WA_NoBackground);
-	//this->setAutoFillBackground(false);
+	this->setAttribute(Qt::WA_NoBackground);
+	this->setAutoFillBackground(false);
 	/*QPalette p = this->palette();
 	p.setColor(this->backgroundRole(), background);
 	this->setPalette(p);
@@ -46,6 +46,8 @@ void Renderer::newImage(int x, int y)
 	paintedBackground = false;
 	QRegion newRegion;
 	paintedRegion.swap(newRegion);
+	delete paintedScene;
+	paintedScene = new QPixmap(sizeX, sizeY);
 	
 	updatePatternSize();
 	update();
@@ -68,6 +70,8 @@ bool Renderer::loadImage(QString imagePath, bool redraw)
 			paintedBackground = false;
 			QRegion newRegion;
 			paintedRegion.swap(newRegion);
+			delete paintedScene;
+			paintedScene = new QPixmap(sizeX, sizeY);
 			update();
 		}
 		return true;
@@ -122,6 +126,8 @@ bool Renderer::smartResize(int x, int y)
 		updatePatternSize();
 		QRegion newRegion;
 		paintedRegion.swap(newRegion);
+		delete paintedScene;
+		paintedScene = new QPixmap(sizeX, sizeY);
 		update();
 		return true;
 	}
@@ -153,6 +159,8 @@ void Renderer::resizeImage(int x, int y)
 		updatePatternSize();
 		QRegion newRegion;
 		paintedRegion.swap(newRegion);
+		delete paintedScene;
+		paintedScene = new QPixmap(sizeX, sizeY);
 		update();
 	}
 }
@@ -174,6 +182,8 @@ void Renderer::changePalette(QString colorFile)
 			image = image.convertToFormat(QImage::Format_RGB32, newColorTable, Qt::ColorOnly);
 			QRegion newRegion;
 			paintedRegion.swap(newRegion);
+			delete paintedScene;
+			paintedScene = new QPixmap(sizeX, sizeY);
 			hasImageChanged = true;
 			update();
 		}
@@ -186,6 +196,8 @@ void Renderer::setBackgroundColor(QColor color)
 	paintedBackground = false;
 	QRegion newRegion;
 	paintedRegion.swap(newRegion);
+	delete paintedScene;
+	paintedScene = new QPixmap(sizeX, sizeY);
 	update();
 }
 
@@ -195,6 +207,8 @@ void Renderer::setOutlineColor(QColor color)
 	paintedBackground = false;
 	QRegion newRegion;
 	paintedRegion.swap(newRegion);
+	delete paintedScene;
+	paintedScene = new QPixmap(sizeX, sizeY);
 	update();
 }
 
@@ -270,6 +284,8 @@ bool Renderer::setPattern(QDir dir)
 		paintedBackground = false;
 		QRegion newRegion;
 		paintedRegion.swap(newRegion);
+		delete paintedScene;
+		paintedScene = new QPixmap(sizeX, sizeY);
 		update();
 		return true;
 	}
@@ -359,7 +375,7 @@ void Renderer::paintEvent(QPaintEvent *e)
 	QPainter painter;
 	painter.begin(paintedScene);
 
-	if (hasPattern && hasImage && !paintedBackground)
+	/*if (hasPattern && hasImage && !paintedBackground)
 	{
 		// Paint the background
 		painter.setBackgroundMode(Qt::OpaqueMode);
@@ -369,7 +385,7 @@ void Renderer::paintEvent(QPaintEvent *e)
 		painter.setBackgroundMode(Qt::TransparentMode);
 
 		paintedBackground = true;
-	}
+	}*/
 
 	if (hasPattern && hasImage)
 	{
@@ -422,17 +438,21 @@ void Renderer::paintEvent(QPaintEvent *e)
 									QPixmap tilePixmap = pattern.getTile(tileX,tileY);
 									if (pattern.getTransparencySupport())
 									{
-										QBitmap mask = tilePixmap.createMaskFromColor(Qt::black);
-										QBitmap maskOriginal = tilePixmap.mask();
-										tilePixmap.setMask(mask);
+										QBitmap mask1 = tilePixmap.createMaskFromColor(Qt::black);
+										QBitmap mask2 = tilePixmap.createMaskFromColor(Qt::white);
+
+										// Paint masks
 										tilePixmap.fill(image.pixel(pixelX,pixelY));
-										tilePixmap.setMask(maskOriginal);
+										tilePixmap.setMask(mask1.createMaskFromColor(Qt::black));
+										painter.drawPixmap(pattern.getTileX(tileX, tileY),pattern.getTileY(tileX, tileY), tilePixmap);
+
+										tilePixmap.fill(outline);
+										tilePixmap.setMask(mask2.createMaskFromColor(Qt::black));
 										painter.drawPixmap(pattern.getTileX(tileX, tileY),pattern.getTileY(tileX, tileY), tilePixmap);
 									}
 									else
 									{
 										QBitmap mask = tilePixmap.createMaskFromColor(Qt::white);
-										tilePixmap.setMask(mask);
 										tilePixmap.fill(image.pixel(pixelX,pixelY));
 										tilePixmap.setMask(mask);
 										painter.drawPixmap(pattern.getTileX(tileX, tileY),pattern.getTileY(tileX, tileY), tilePixmap);
@@ -444,6 +464,53 @@ void Renderer::paintEvent(QPaintEvent *e)
 					painter.restore();
 				}
 			}
+			// Paint the corners as needed.
+			if (pattern.getTransparencySupport())
+			{
+				for (int i=gridXStart; i<=gridXEnd; i++)
+				{
+					x=int(pattern.getX())*i;
+					for (int j=gridYStart; j<=gridYEnd; j++)
+					{
+						y=int(pattern.getY())*j;
+
+						// Paint tiles
+						painter.save();
+						painter.translate(x,y);
+						for (int tileX=0; tileX < pattern.getReadX(); tileX++)
+						{
+							for (int tileY=0; tileY < pattern.getReadY(); tileY++)
+							{
+								int pixelX = i*(pattern.getReadX())+pattern.getTileReadX(tileX, tileY);
+								int pixelY = j*(pattern.getReadY())+pattern.getTileReadY(tileX, tileY);
+								if (pixelX < gridX && pixelY < gridY)
+								{
+									if (qAlpha(image.pixel(pixelX, pixelY))>127)
+									{
+										painter.setCompositionMode(QPainter::CompositionMode_DestinationOver);
+										QPixmap tilePixmap = pattern.getTile(tileX,tileY);
+										QBitmap mask1 = tilePixmap.createMaskFromColor(QColor(64,64,64));
+										QBitmap mask2 = tilePixmap.createMaskFromColor(QColor(191,191,191));
+
+										// Paint masks
+										tilePixmap.fill(image.pixel(pixelX,pixelY));
+										tilePixmap.setMask(mask1.createMaskFromColor(Qt::black));
+										painter.drawPixmap(pattern.getTileX(tileX, tileY),pattern.getTileY(tileX, tileY), tilePixmap);
+
+										tilePixmap.fill(outline);
+										tilePixmap.setMask(mask2.createMaskFromColor(Qt::black));
+										painter.drawPixmap(pattern.getTileX(tileX, tileY),pattern.getTileY(tileX, tileY), tilePixmap);
+									}
+								}
+							}
+						}
+						painter.restore();
+					}
+				}
+			}
+			// Paint the background last
+			painter.setCompositionMode(QPainter::CompositionMode_DestinationOver);
+			painter.fillRect(remainingRegion.boundingRect(),background);
 		}
 	}
 
@@ -555,6 +622,9 @@ void Renderer::rotate(QTransform matrix)
 		paintedBackground = false;
 		QRegion newRegion;
 		paintedRegion.swap(newRegion);
+		paintedScene->detach();
+		delete paintedScene;
+		paintedScene = new QPixmap(sizeX, sizeY);
 		update();
 		hasImageChanged = true;
 	}
