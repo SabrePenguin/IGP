@@ -24,8 +24,10 @@ public:
 	int getLargestTileOffsetX();
 	int getLargestTileOffsetY();
 	bool getTransparencySupport();
+	int getLayerCount();
 
 	QPixmap getTile(int x, int y);
+	QPixmap getClickMask(int x, int y);
 	QPixmap getBackground();
 	QString getPatternName();
 
@@ -41,6 +43,7 @@ protected:
 	QString patternName;
 	bool loadedTiles;
 	bool supportTransparency;
+	int layerCount;
 
 	int width;
 	int height;
@@ -61,6 +64,7 @@ protected:
 
 	QPixmap background;
 	QPixmap **tiles;
+	QPixmap **clickMasks;
 };
 
 #endif

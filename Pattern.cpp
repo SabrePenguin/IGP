@@ -1,3 +1,4 @@
+#include "QtGui"
 #include "Pattern.h"
 
 Pattern::Pattern()
@@ -20,6 +21,7 @@ Pattern::~Pattern()
 			delete[] tileWidth[i];
 			delete[] tileHeight[i];
 			delete[] tiles[i];
+			delete[] clickMasks[i];
 		}
 		delete[] tileOffsetX;
 		delete[] tileOffsetY;
@@ -28,6 +30,7 @@ Pattern::~Pattern()
 		delete[] tileWidth;
 		delete[] tileHeight;
 		delete[] tiles;
+		delete[] clickMasks;
 	}
 }
 
@@ -46,6 +49,7 @@ bool Pattern::loadPattern(QDir dir)
 			delete[] tileWidth[i];
 			delete[] tileHeight[i];
 			delete[] tiles[i];
+			delete[] clickMasks[i];
 		}
 		delete[] tileOffsetX;
 		delete[] tileOffsetY;
@@ -54,6 +58,7 @@ bool Pattern::loadPattern(QDir dir)
 		delete[] tileWidth;
 		delete[] tileHeight;
 		delete[] tiles;
+		delete[] clickMasks;
 		loadedTiles = false;
 	}
 
@@ -89,6 +94,10 @@ bool Pattern::loadPattern(QDir dir)
 				else if (id=="Transparency")
 				{
 					supportTransparency = value.toInt();
+				}
+				else if (id=="Layers")
+				{
+					layerCount = value.toInt();
 				}
 				else if (id=="Width")
 				{
@@ -130,6 +139,7 @@ bool Pattern::loadPattern(QDir dir)
 		tileReadX = new int*[xReadWrite];
 		tileReadY = new int*[xReadWrite];
 		tiles = new QPixmap*[xReadWrite];
+		clickMasks = new QPixmap*[xReadWrite];
 
 		// Loop for the x subtiles
 		for (int i=0; i<xReadWrite; i++)
@@ -141,6 +151,7 @@ bool Pattern::loadPattern(QDir dir)
 			tileReadX[i] = new int[yReadWrite];
 			tileReadY[i] = new int[yReadWrite];
 			tiles[i] = new QPixmap[yReadWrite];
+			clickMasks[i] = new QPixmap[yReadWrite];
 		}
 		allFound = true;
 		for (int i=0; i<xReadWrite; i++)
@@ -170,6 +181,11 @@ bool Pattern::loadPattern(QDir dir)
 						if (id=="Filename")
 						{
 							tiles[i][j].load(QString(dir.path()+"/"+value));
+							QImage tileImage;
+							tileImage.load(QString(dir.path()+"/"+value));
+							clickMasks[i][j]=QPixmap().fromImage(tileImage.createMaskFromColor(QColor(0,0,0,0).rgb(),Qt::MaskOutColor));
+							// The following would work if QT supported alpha channels for QPixmaps
+							//clickMasks[i][j]=tiles[i][j].createMaskFromColor(QColor(0,0,0,0),Qt::MaskOutColor);
 						}
 						else if (id=="Width")
 						{
@@ -276,9 +292,19 @@ bool Pattern::getTransparencySupport()
 	return supportTransparency;
 }
 
+int Pattern::getLayerCount()
+{
+	return layerCount;
+}
+
 QPixmap Pattern::getTile(int x, int y)
 {
 	return tiles[x][y];
+}
+
+QPixmap Pattern::getClickMask(int x, int y)
+{
+	return clickMasks[x][y];
 }
 
 QPixmap Pattern::getBackground()

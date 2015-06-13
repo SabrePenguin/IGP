@@ -384,6 +384,7 @@ void Renderer::paintEvent(QPaintEvent *e)
 		if (!remainingRegion.isEmpty())
 		{
 			paintedRegion += e->region();
+			// Without transparency, -1/+2 works for repainting grids
 			int gridCountX = int(gridX/pattern.getReadX());
 			int gridXStart = int(remainingRegion.boundingRect().left()/zoom/pattern.getX())-1;
 			int gridXEnd = int(remainingRegion.boundingRect().right()/zoom/pattern.getX())+2;
@@ -402,6 +403,53 @@ void Renderer::paintEvent(QPaintEvent *e)
 
 			// Paint the corners as needed.
 			if (pattern.getTransparencySupport())
+			{
+				for (int k=pattern.getLayerCount(); k>=0; k--)
+				{
+					for (int i=gridXStart; i<=gridXEnd; i++)
+					{
+						x=int(pattern.getX())*i;
+						for (int j=gridYStart; j<=gridYEnd; j++)
+						{
+							y=int(pattern.getY())*j;
+
+							// Paint tiles
+							painter.save();
+							painter.translate(x,y);
+							for (int tileX=0; tileX < pattern.getReadX(); tileX++)
+							{
+								for (int tileY=0; tileY < pattern.getReadY(); tileY++)
+								{
+									int pixelX = i*(pattern.getReadX())+pattern.getTileReadX(tileX, tileY);
+									int pixelY = j*(pattern.getReadY())+pattern.getTileReadY(tileX, tileY);
+									if (pixelX < gridX && pixelY < gridY)
+									{
+										if (qAlpha(image.pixel(pixelX, pixelY))>127)
+										{
+											QPixmap tilePixmap = pattern.getTile(tileX,tileY);
+											QBitmap mask1 = tilePixmap.createMaskFromColor(QColor(k,k,k));
+											QBitmap mask2 = tilePixmap.createMaskFromColor(QColor(255-k,255-k,255-k));
+
+											// Paint masks
+											tilePixmap.fill(image.pixel(pixelX,pixelY));
+											tilePixmap.setMask(mask1.createMaskFromColor(Qt::black));
+											painter.drawPixmap(pattern.getTileX(tileX, tileY),pattern.getTileY(tileX, tileY), tilePixmap);
+
+											tilePixmap.fill(outline);
+											tilePixmap.setMask(mask2.createMaskFromColor(Qt::black));
+											painter.drawPixmap(pattern.getTileX(tileX, tileY),pattern.getTileY(tileX, tileY), tilePixmap);
+										}
+									}
+								}
+								painter.restore();
+							}
+						}
+					}
+				}
+			}
+
+			// Old File Support
+			else
 			{
 				for (int i=gridXStart; i<=gridXEnd; i++)
 				{
@@ -423,66 +471,8 @@ void Renderer::paintEvent(QPaintEvent *e)
 								{
 									if (qAlpha(image.pixel(pixelX, pixelY))>127)
 									{
+										//painter.setBackgroundMode(Qt::TransparentMode);
 										QPixmap tilePixmap = pattern.getTile(tileX,tileY);
-										QBitmap mask1 = tilePixmap.createMaskFromColor(QColor(64,64,64));
-										QBitmap mask2 = tilePixmap.createMaskFromColor(QColor(191,191,191));
-
-										// Paint masks
-										tilePixmap.fill(image.pixel(pixelX,pixelY));
-										tilePixmap.setMask(mask1.createMaskFromColor(Qt::black));
-										painter.drawPixmap(pattern.getTileX(tileX, tileY),pattern.getTileY(tileX, tileY), tilePixmap);
-
-										tilePixmap.fill(outline);
-										tilePixmap.setMask(mask2.createMaskFromColor(Qt::black));
-										painter.drawPixmap(pattern.getTileX(tileX, tileY),pattern.getTileY(tileX, tileY), tilePixmap);
-									}
-								}
-							}
-							painter.restore();
-						}
-					}
-				}
-			}
-
-			// Paint the bulk of imageGrid
-			for (int i=gridXStart; i<=gridXEnd; i++)
-			{
-				x=int(pattern.getX())*i;
-				for (int j=gridYStart; j<=gridYEnd; j++)
-				{
-					y=int(pattern.getY())*j;
-
-					// Paint tiles
-					painter.save();
-					painter.translate(x,y);
-					for (int tileX=0; tileX < pattern.getReadX(); tileX++)
-					{
-						for (int tileY=0; tileY < pattern.getReadY(); tileY++)
-						{
-							int pixelX = i*(pattern.getReadX())+pattern.getTileReadX(tileX, tileY);
-							int pixelY = j*(pattern.getReadY())+pattern.getTileReadY(tileX, tileY);
-							if (pixelX < gridX && pixelY < gridY)
-							{
-								if (qAlpha(image.pixel(pixelX, pixelY))>127)
-								{
-									//painter.setBackgroundMode(Qt::TransparentMode);
-									QPixmap tilePixmap = pattern.getTile(tileX,tileY);
-									if (pattern.getTransparencySupport())
-									{
-										QBitmap mask1 = tilePixmap.createMaskFromColor(Qt::black);
-										QBitmap mask2 = tilePixmap.createMaskFromColor(Qt::white);
-
-										// Paint masks
-										tilePixmap.fill(image.pixel(pixelX,pixelY));
-										tilePixmap.setMask(mask1.createMaskFromColor(Qt::black));
-										painter.drawPixmap(pattern.getTileX(tileX, tileY),pattern.getTileY(tileX, tileY), tilePixmap);
-
-										tilePixmap.fill(outline);
-										tilePixmap.setMask(mask2.createMaskFromColor(Qt::black));
-										painter.drawPixmap(pattern.getTileX(tileX, tileY),pattern.getTileY(tileX, tileY), tilePixmap);
-									}
-									else
-									{
 										QBitmap mask = tilePixmap.createMaskFromColor(Qt::white);
 										tilePixmap.fill(image.pixel(pixelX,pixelY));
 										tilePixmap.setMask(mask);
@@ -491,8 +481,8 @@ void Renderer::paintEvent(QPaintEvent *e)
 								}
 							}
 						}
+						painter.restore();
 					}
-					painter.restore();
 				}
 			}
 		}
@@ -530,13 +520,15 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 					{
 						for (int tileY=0; tileY<pattern.getReadY(); tileY++)
 						{
-							QBitmap tile = pattern.getTile(tileX,tileY);
+							//QBitmap mask = pattern.getTile(tileX,tileY);
+							QBitmap mask = pattern.getClickMask(tileX,tileY);
 							int xTest = eX-(curX*pattern.getX()+pattern.getTileX(tileX,tileY));
 							int yTest = eY-(curY*pattern.getY()+pattern.getTileY(tileX,tileY));
-							if (tile.rect().contains(xTest,yTest))
+							if (mask.rect().contains(xTest,yTest))
 							{
 								// Check if clicked pixel is within tile mask
-								if (QColor(tile.toImage().pixel(xTest,yTest)).black()>0)
+								// Should loop to find smallest qGray value on tiles searched.
+								if (qGray(mask.toImage().pixel(xTest,yTest))==0 /*&& qGray(tile.mask().toImage().pixel(xTest,yTest))==0*/)
 								{
 									int pixelX = curX*pattern.getReadX()+pattern.getTileReadX(tileX,tileY);
 									int pixelY = curY*pattern.getReadY()+pattern.getTileReadY(tileX,tileY);
