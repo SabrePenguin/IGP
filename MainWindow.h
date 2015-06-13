@@ -28,6 +28,7 @@ public slots:
 	void saveFile();
 	void getColorCount();
 	void setBrushColor();
+	void setEraser();
 	void setBackgroundColor();
 	void setOutlineColor();
 	void setColorPalette();
@@ -85,6 +86,7 @@ private:
 	QAction *zoomNormalAct;
 	QAction *getColorCountAct;
 	QAction *setBrushColorAct;
+	QAction *setEraserAct;
 	QAction *setBackgroundColorAct;
 	QAction *setOutlineColorAct;
 	QAction *setColorPaletteAct;

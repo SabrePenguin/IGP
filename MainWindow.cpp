@@ -158,6 +158,11 @@ void MainWindow::setBrushColor()
 		renderWidget->setBrushColor(color);
 }
 
+void MainWindow::setEraser()
+{
+	renderWidget->setBrushColor(QColor(255,255,255,0));
+}
+
 void MainWindow::setBackgroundColor()
 {
 	QColor color = QColorDialog::getColor(Qt::white, this, tr("Select Background Color"));
@@ -351,6 +356,10 @@ void MainWindow::createActions()
     setBrushColorAct->setStatusTip(tr("Select a new brush color"));
     connect(setBrushColorAct, SIGNAL(triggered()), this, SLOT(setBrushColor()));
 
+	setEraserAct = new QAction(tr("&Eraser"), this);
+    setEraserAct->setStatusTip(tr("Erase clicked tiles"));
+    connect(setEraserAct, SIGNAL(triggered()), this, SLOT(setEraser()));
+
 	setBackgroundColorAct = new QAction(tr("Back&ground"), this);
     setBackgroundColorAct->setStatusTip(tr("Select a new background color"));
     connect(setBackgroundColorAct, SIGNAL(triggered()), this, SLOT(setBackgroundColor()));
@@ -394,8 +403,9 @@ void MainWindow::createMenus()
 	zoomSubMenu->addAction(zoomNormalAct);
 
 	colorMenu = menuBar()->addMenu(tr("&Color"));
-	colorMenu->addAction(getColorCountAct);
 	colorMenu->addAction(setBrushColorAct);
+	colorMenu->addAction(setEraserAct);
+	colorMenu->addAction(getColorCountAct);
 	colorMenu->addAction(setBackgroundColorAct);
 	colorMenu->addAction(setOutlineColorAct);
 	colorMenu->addAction(setColorPaletteAct);

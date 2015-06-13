@@ -401,9 +401,12 @@ void Renderer::paintEvent(QPaintEvent *e)
 			if (gridYEnd>gridCountY)
 				gridYEnd=gridCountY;
 
-			// Paint the corners as needed.
+			// Paint supporting transparency
 			if (pattern.getTransparencySupport())
 			{
+				// Clear background
+				painter.fillRect(remainingRegion.boundingRect(),background);
+				// Paint lowest levels first
 				for (int k=pattern.getLayerCount(); k>=0; k--)
 				{
 					for (int i=gridXStart; i<=gridXEnd; i++)
@@ -469,15 +472,12 @@ void Renderer::paintEvent(QPaintEvent *e)
 								int pixelY = j*(pattern.getReadY())+pattern.getTileReadY(tileX, tileY);
 								if (pixelX < gridX && pixelY < gridY)
 								{
-									if (qAlpha(image.pixel(pixelX, pixelY))>127)
-									{
-										//painter.setBackgroundMode(Qt::TransparentMode);
-										QPixmap tilePixmap = pattern.getTile(tileX,tileY);
-										QBitmap mask = tilePixmap.createMaskFromColor(Qt::white);
-										tilePixmap.fill(image.pixel(pixelX,pixelY));
-										tilePixmap.setMask(mask);
-										painter.drawPixmap(pattern.getTileX(tileX, tileY),pattern.getTileY(tileX, tileY), tilePixmap);
-									}
+									//painter.setBackgroundMode(Qt::TransparentMode);
+									QPixmap tilePixmap = pattern.getTile(tileX,tileY);
+									QBitmap mask = tilePixmap.createMaskFromColor(Qt::white);
+									tilePixmap.fill(qAlpha(image.pixel(pixelX, pixelY))>127?image.pixel(pixelX,pixelY):background);
+									tilePixmap.setMask(mask);
+									painter.drawPixmap(pattern.getTileX(tileX, tileY),pattern.getTileY(tileX, tileY), tilePixmap);
 								}
 							}
 						}
@@ -535,7 +535,7 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 									// Make sure clicked image pixel is inside the image
 									if (pixelX < gridX && pixelY < gridY)
 									{
-										image.setPixel(pixelX,pixelY,brush.rgb());
+										image.setPixel(pixelX,pixelY,brush.rgba());
 										QRegion repaintRegion(curX*pattern.getX()*zoom,curY*pattern.getY()*zoom,pattern.getLargestTileOffsetX()*zoom,pattern.getLargestTileOffsetY()*zoom);
 										paintedRegion-=repaintRegion;
 										update(curX*pattern.getX()*zoom,curY*pattern.getY()*zoom,pattern.getLargestTileOffsetX()*zoom,pattern.getLargestTileOffsetY()*zoom);
