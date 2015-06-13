@@ -197,6 +197,11 @@ void MainWindow::openPattern(QString dir)
 	updateStatus();
 }
 
+void MainWindow::repaintAll()
+{
+	renderWidget->repaintImage();
+}
+
 void MainWindow::rotateTranspose()
 {
 	renderWidget->rotateTranspose();
@@ -279,6 +284,7 @@ void MainWindow::closeEvent(QCloseEvent *)
 
 void MainWindow::createActions()
 {
+	// --- File Menubar ---
 	// File Actions
 	newAct = new QAction(tr("&New"), this);
     newAct->setShortcuts(QKeySequence::New);
@@ -306,6 +312,12 @@ void MainWindow::createActions()
     saveAct->setShortcuts(QKeySequence::Save);
     saveAct->setStatusTip(tr("Save the opened image"));
     connect(saveAct, SIGNAL(triggered()), this, SLOT(saveFile()));
+
+	// --- Edit Menubar ---
+	repaintAllAct = new QAction(tr("&Repaint Image"), this);
+    repaintAllAct->setShortcuts(QKeySequence::Refresh);
+    repaintAllAct->setStatusTip(tr("Repaints the entire image"));
+    connect(repaintAllAct, SIGNAL(triggered()), this, SLOT(repaintAll()));
 
 	// Rotate Image Actions
 	rotateTransposeAct = new QAction(tr("Transpose Image"), this);
@@ -347,6 +359,7 @@ void MainWindow::createActions()
     zoomNormalAct->setStatusTip(tr("Resets the zoom to 100%"));
     connect(zoomNormalAct, SIGNAL(triggered()), this, SLOT(zoomNormal()));
 
+	// --- Color Menubar ---
 	// Color Actions
 	getColorCountAct = new QAction(tr("&Count Colors"), this);
 	getColorCountAct->setStatusTip(tr("Count colors in the image"));
@@ -372,6 +385,7 @@ void MainWindow::createActions()
     setColorPaletteAct->setStatusTip(tr("Limit colors to the current image"));
     connect(setColorPaletteAct, SIGNAL(triggered()), this, SLOT(setColorPalette()));
 
+	// --- About Menubar ---
 	// About Action
 	aboutAct = new QAction(tr("&About"), this);
     aboutAct->setShortcuts(QKeySequence::HelpContents);
@@ -390,6 +404,7 @@ void MainWindow::createMenus()
 	fileMenu->addAction(saveAct);
 
 	editMenu = menuBar()->addMenu(tr("&Edit"));
+	editMenu->addAction(repaintAllAct);
 	transformSubMenu = editMenu->addMenu(tr("&Transforms"));
 	transformSubMenu->addAction(rotateTransposeAct);
 	transformSubMenu->addAction(rotateClockwiseAct);

@@ -203,6 +203,14 @@ void Renderer::setBrushColor(QColor color)
 	brush = color;
 }
 
+void Renderer::repaintImage()
+{
+	QRegion newRegion;
+	paintedRegion.swap(newRegion);
+	repaint(0,0,sizeX,sizeY);
+	// doesnt quite repaint the entire image at once
+}
+
 void Renderer::rotateTranspose()
 {
 	rotate(QTransform(0,-1,-1,0,1,1));
@@ -538,7 +546,7 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 										image.setPixel(pixelX,pixelY,brush.rgba());
 										QRegion repaintRegion(curX*pattern.getX()*zoom,curY*pattern.getY()*zoom,pattern.getLargestTileOffsetX()*zoom,pattern.getLargestTileOffsetY()*zoom);
 										paintedRegion-=repaintRegion;
-										update(curX*pattern.getX()*zoom,curY*pattern.getY()*zoom,pattern.getLargestTileOffsetX()*zoom,pattern.getLargestTileOffsetY()*zoom);
+										repaint(curX*pattern.getX()*zoom,curY*pattern.getY()*zoom,pattern.getLargestTileOffsetX()*zoom,pattern.getLargestTileOffsetY()*zoom);
 										hasImageChanged = true;
 									}
 								}

@@ -24,6 +24,7 @@ public:
 	void setBackgroundColor(QColor color);
 	void setOutlineColor(QColor color);
 	void setBrushColor(QColor color);
+	void repaintImage();
 	void rotateTranspose();
 	void rotateClockwise();
 	void rotateCounterClockwise();

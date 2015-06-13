@@ -33,6 +33,7 @@ public slots:
 	void setOutlineColor();
 	void setColorPalette();
 	void openPattern(QString dir);
+	void repaintAll();
 	void rotateTranspose();
 	void rotateClockwise();
 	void rotateCounterClockwise();
@@ -75,6 +76,7 @@ private:
 	QAction *openSmartImportAct;
 	QAction *resizeImageAct;
 	QAction *saveAct;
+	QAction *repaintAllAct;
 	QAction *rotateTransposeAct;
 	QAction *rotateClockwiseAct;
 	QAction *rotateCounterClockwiseAct;
