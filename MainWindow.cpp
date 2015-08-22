@@ -126,6 +126,11 @@ void MainWindow::saveFile()
 	}
 }
 
+void MainWindow::closeProgram()
+{
+	this->close();
+}
+
 void MainWindow::getColorCount()
 {
 	QVector<QRgb> *colors = new QVector<QRgb>;
@@ -287,110 +292,115 @@ void MainWindow::createActions()
 	// --- File Menubar ---
 	// File Actions
 	newAct = new QAction(tr("&New"), this);
-    newAct->setShortcuts(QKeySequence::New);
-    newAct->setStatusTip(tr("Create a new image grid"));
-    connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
+	newAct->setShortcuts(QKeySequence::New);
+	newAct->setStatusTip(tr("Create a new image grid"));
+	connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
 
 	openAct = new QAction(tr("&Open"), this);
-    openAct->setShortcuts(QKeySequence::Open);
-    openAct->setStatusTip(tr("Open an existing image"));
-    connect(openAct, SIGNAL(triggered()), this, SLOT(openFile()));
+	openAct->setShortcuts(QKeySequence::Open);
+	openAct->setStatusTip(tr("Open an existing image"));
+	connect(openAct, SIGNAL(triggered()), this, SLOT(openFile()));
 
 	openImportAct = new QAction(tr("&Import"), this);
-    openImportAct->setStatusTip(tr("Open an existing image and scale it"));
-    connect(openImportAct, SIGNAL(triggered()), this, SLOT(openFileImport()));
+	openImportAct->setStatusTip(tr("Open an existing image and scale it"));
+	connect(openImportAct, SIGNAL(triggered()), this, SLOT(openFileImport()));
 
 	openSmartImportAct = new QAction(tr("Smart Import"), this);
-    openSmartImportAct->setStatusTip(tr("Open an existing image and scale it smartly using the opened pattern"));
-    connect(openSmartImportAct, SIGNAL(triggered()), this, SLOT(openFileSmart()));
+	openSmartImportAct->setStatusTip(tr("Open an existing image and scale it smartly using the opened pattern"));
+	connect(openSmartImportAct, SIGNAL(triggered()), this, SLOT(openFileSmart()));
 
 	resizeImageAct = new QAction(tr("&Resize"), this);
-    resizeImageAct->setStatusTip(tr("Resize current image"));
-    connect(resizeImageAct, SIGNAL(triggered()), this, SLOT(resizeImage()));
+	resizeImageAct->setStatusTip(tr("Resize current image"));
+	connect(resizeImageAct, SIGNAL(triggered()), this, SLOT(resizeImage()));
 
 	saveAct = new QAction(tr("&Save"), this);
-    saveAct->setShortcuts(QKeySequence::Save);
-    saveAct->setStatusTip(tr("Save the opened image"));
-    connect(saveAct, SIGNAL(triggered()), this, SLOT(saveFile()));
+	saveAct->setShortcuts(QKeySequence::Save);
+	saveAct->setStatusTip(tr("Save the opened image"));
+	connect(saveAct, SIGNAL(triggered()), this, SLOT(saveFile()));
+
+	closeAct = new QAction(tr("&Close"), this);
+	closeAct->setShortcuts(QKeySequence::Close);
+	closeAct->setStatusTip(tr("Quit the program"));
+	connect(closeAct, SIGNAL(triggered()), this, SLOT(closeProgram()));
 
 	// --- Edit Menubar ---
 	repaintAllAct = new QAction(tr("&Repaint Image"), this);
-    repaintAllAct->setShortcuts(QKeySequence::Refresh);
-    repaintAllAct->setStatusTip(tr("Repaints the entire image"));
-    connect(repaintAllAct, SIGNAL(triggered()), this, SLOT(repaintAll()));
+	repaintAllAct->setShortcuts(QKeySequence::Refresh);
+	repaintAllAct->setStatusTip(tr("Repaints the entire image"));
+	connect(repaintAllAct, SIGNAL(triggered()), this, SLOT(repaintAll()));
 
 	// Rotate Image Actions
 	rotateTransposeAct = new QAction(tr("Transpose Image"), this);
-    rotateTransposeAct->setStatusTip(tr("Transposes the source image file"));
-    connect(rotateTransposeAct, SIGNAL(triggered()), this, SLOT(rotateTranspose()));
+	rotateTransposeAct->setStatusTip(tr("Transposes the source image file"));
+	connect(rotateTransposeAct, SIGNAL(triggered()), this, SLOT(rotateTranspose()));
 
 	rotateClockwiseAct = new QAction(tr("Rotate Clockwise"), this);
-    rotateClockwiseAct->setStatusTip(tr("Rotates the source image file by 90 degrees clockwise"));
-    connect(rotateClockwiseAct, SIGNAL(triggered()), this, SLOT(rotateClockwise()));
+	rotateClockwiseAct->setStatusTip(tr("Rotates the source image file by 90 degrees clockwise"));
+	connect(rotateClockwiseAct, SIGNAL(triggered()), this, SLOT(rotateClockwise()));
 
 	rotateCounterClockwiseAct = new QAction(tr("Rotate Counter-Clockwise"), this);
-    rotateCounterClockwiseAct->setStatusTip(tr("Rotates the source image file by 90 degrees counter-clockwise"));
-    connect(rotateCounterClockwiseAct, SIGNAL(triggered()), this, SLOT(rotateCounterClockwise()));
+	rotateCounterClockwiseAct->setStatusTip(tr("Rotates the source image file by 90 degrees counter-clockwise"));
+	connect(rotateCounterClockwiseAct, SIGNAL(triggered()), this, SLOT(rotateCounterClockwise()));
 
 	rotate180Act = new QAction(tr("Rotate 180"), this);
-    rotate180Act->setStatusTip(tr("Rotates the source image file by 180 degrees"));
-    connect(rotate180Act, SIGNAL(triggered()), this, SLOT(rotate180()));
+	rotate180Act->setStatusTip(tr("Rotates the source image file by 180 degrees"));
+	connect(rotate180Act, SIGNAL(triggered()), this, SLOT(rotate180()));
 
 	rotateFlipXAct = new QAction(tr("Reflect X axis"), this);
-    rotateFlipXAct->setStatusTip(tr("Reflects the source image files X axis"));
-    connect(rotateFlipXAct, SIGNAL(triggered()), this, SLOT(rotateFlipX()));
+	rotateFlipXAct->setStatusTip(tr("Reflects the source image files X axis"));
+	connect(rotateFlipXAct, SIGNAL(triggered()), this, SLOT(rotateFlipX()));
 
 	rotateFlipYAct = new QAction(tr("Reflect Y axis"), this);
-    rotateFlipYAct->setStatusTip(tr("Reflects the source image files Y axis"));
-    connect(rotateFlipYAct, SIGNAL(triggered()), this, SLOT(rotateFlipY()));
+	rotateFlipYAct->setStatusTip(tr("Reflects the source image files Y axis"));
+	connect(rotateFlipYAct, SIGNAL(triggered()), this, SLOT(rotateFlipY()));
 
 	// Zoom Actions
 	zoomInAct = new QAction(tr("Zoom In"), this);
 	zoomInAct->setShortcuts(QKeySequence::ZoomIn);
-    zoomInAct->setStatusTip(tr("Increases size of image by 10%"));
-    connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
+	zoomInAct->setStatusTip(tr("Increases size of image by 10%"));
+	connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
 
 	zoomOutAct = new QAction(tr("Zoom Out"), this);
 	zoomOutAct->setShortcuts(QKeySequence::ZoomOut);
-    zoomOutAct->setStatusTip(tr("Decreases size of image by 10%"));
-    connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
+	zoomOutAct->setStatusTip(tr("Decreases size of image by 10%"));
+	connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
 
 	zoomNormalAct = new QAction(tr("Zoom Reset"), this);
-    zoomNormalAct->setStatusTip(tr("Resets the zoom to 100%"));
-    connect(zoomNormalAct, SIGNAL(triggered()), this, SLOT(zoomNormal()));
+	zoomNormalAct->setStatusTip(tr("Resets the zoom to 100%"));
+	connect(zoomNormalAct, SIGNAL(triggered()), this, SLOT(zoomNormal()));
 
 	// --- Color Menubar ---
 	// Color Actions
 	getColorCountAct = new QAction(tr("&Count Colors"), this);
 	getColorCountAct->setStatusTip(tr("Count colors in the image"));
-    connect(getColorCountAct, SIGNAL(triggered()), this, SLOT(getColorCount()));
+	connect(getColorCountAct, SIGNAL(triggered()), this, SLOT(getColorCount()));
 
 	setBrushColorAct = new QAction(tr("&Brush"), this);
-    setBrushColorAct->setStatusTip(tr("Select a new brush color"));
-    connect(setBrushColorAct, SIGNAL(triggered()), this, SLOT(setBrushColor()));
+	setBrushColorAct->setStatusTip(tr("Select a new brush color"));
+	connect(setBrushColorAct, SIGNAL(triggered()), this, SLOT(setBrushColor()));
 
 	setEraserAct = new QAction(tr("&Eraser"), this);
-    setEraserAct->setStatusTip(tr("Erase clicked tiles"));
-    connect(setEraserAct, SIGNAL(triggered()), this, SLOT(setEraser()));
+	setEraserAct->setStatusTip(tr("Erase clicked tiles"));
+	connect(setEraserAct, SIGNAL(triggered()), this, SLOT(setEraser()));
 
 	setBackgroundColorAct = new QAction(tr("Back&ground"), this);
-    setBackgroundColorAct->setStatusTip(tr("Select a new background color"));
-    connect(setBackgroundColorAct, SIGNAL(triggered()), this, SLOT(setBackgroundColor()));
+	setBackgroundColorAct->setStatusTip(tr("Select a new background color"));
+	connect(setBackgroundColorAct, SIGNAL(triggered()), this, SLOT(setBackgroundColor()));
 
 	setOutlineColorAct = new QAction(tr("&Outline"), this);
-    setOutlineColorAct->setStatusTip(tr("Select a new outline color"));
-    connect(setOutlineColorAct, SIGNAL(triggered()), this, SLOT(setOutlineColor()));
+	setOutlineColorAct->setStatusTip(tr("Select a new outline color"));
+	connect(setOutlineColorAct, SIGNAL(triggered()), this, SLOT(setOutlineColor()));
 
 	setColorPaletteAct = new QAction(tr("&Palette Change"), this);
-    setColorPaletteAct->setStatusTip(tr("Limit colors to the current image"));
-    connect(setColorPaletteAct, SIGNAL(triggered()), this, SLOT(setColorPalette()));
+	setColorPaletteAct->setStatusTip(tr("Limit colors to the current image"));
+	connect(setColorPaletteAct, SIGNAL(triggered()), this, SLOT(setColorPalette()));
 
 	// --- About Menubar ---
 	// About Action
 	aboutAct = new QAction(tr("&About"), this);
-    aboutAct->setShortcuts(QKeySequence::HelpContents);
-    aboutAct->setStatusTip(tr("Description of this program"));
-    connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
+	aboutAct->setShortcuts(QKeySequence::HelpContents);
+	aboutAct->setStatusTip(tr("Description of this program"));
+	connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
 }
 
 void MainWindow::createMenus()
@@ -402,6 +412,7 @@ void MainWindow::createMenus()
 	fileMenu->addAction(openSmartImportAct);
 	fileMenu->addAction(resizeImageAct);
 	fileMenu->addAction(saveAct);
+	fileMenu->addAction(closeAct);
 
 	editMenu = menuBar()->addMenu(tr("&Edit"));
 	editMenu->addAction(repaintAllAct);
@@ -431,8 +442,8 @@ void MainWindow::createMenus()
 	
 	menuBar()->addSeparator();
 
-    aboutMenu = menuBar()->addMenu(tr("About"));
-    aboutMenu->addAction(aboutAct);
+	aboutMenu = menuBar()->addMenu(tr("About"));
+	aboutMenu->addAction(aboutAct);
 }
 
 void MainWindow::findPatterns(QMenu *menu, QDir dir)

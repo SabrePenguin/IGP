@@ -26,6 +26,7 @@ public slots:
 	void resizeImage();
 	void smartResizeImage();
 	void saveFile();
+	void closeProgram();
 	void getColorCount();
 	void setBrushColor();
 	void setEraser();
@@ -76,6 +77,7 @@ private:
 	QAction *openSmartImportAct;
 	QAction *resizeImageAct;
 	QAction *saveAct;
+	QAction *closeAct;
 	QAction *repaintAllAct;
 	QAction *rotateTransposeAct;
 	QAction *rotateClockwiseAct;

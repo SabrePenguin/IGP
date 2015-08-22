@@ -7,7 +7,7 @@ Renderer::Renderer(QWidget *parent)
 	// Initialize a couple variables
 	hasPattern = false;
 	hasImage = false;
-    antialiased = true;
+	antialiased = true;
 	paintedBackground = false;
 	hasImageChanged = false;
 	gridX = 1;
