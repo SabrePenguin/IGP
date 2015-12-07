@@ -27,6 +27,9 @@ MainWindow::MainWindow()
 	updateStatus();
 	statusBar()->addWidget(status);
 
+	connect(scrollArea->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(update()));
+	connect(scrollArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(update()));
+
 	this->setWindowTitle("IGP 3.0");
 	this->setWindowIcon(QIcon("./Resources/IGP.png"));
 	this->resize(startupSize());

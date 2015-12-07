@@ -417,11 +417,18 @@ void Renderer::paintEvent(QPaintEvent *e)
 				// Paint lowest levels first
 				for (int k=pattern.getLayerCount(); k>=0; k--)
 				{
-					for (int i=gridXStart; i<=gridXEnd; i++)
+					int pyramid=pattern.getLayerCount()-k;
+					int endX=(gridXEnd+pyramid<gridCountX)?gridXEnd+pyramid:gridCountX;
+					for (int i=gridXStart-pyramid; i<=endX; i++)
 					{
+						if (i<0)
+							i=0;
 						x=int(pattern.getX())*i;
-						for (int j=gridYStart; j<=gridYEnd; j++)
+						int endY=(gridYEnd+pyramid<gridCountY)?gridYEnd+pyramid:gridCountY;
+						for (int j=gridYStart-pyramid; j<=endY; j++)
 						{
+							if (j<0)
+								j=0;
 							y=int(pattern.getY())*j;
 
 							// Paint tiles
