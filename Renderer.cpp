@@ -459,8 +459,8 @@ void Renderer::paintEvent(QPaintEvent *e)
 										}
 									}
 								}
-								painter.restore();
 							}
+							painter.restore();
 						}
 					}
 				}
