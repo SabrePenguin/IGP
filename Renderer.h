@@ -59,6 +59,7 @@ private:
 	bool hasImage;
 	bool paintedBackground;
 	bool hasImageChanged;
+	bool erasedRing;
 	Pattern pattern;
 	double zoom;
 	int gridX;

@@ -10,6 +10,7 @@ Renderer::Renderer(QWidget *parent)
 	antialiased = true;
 	paintedBackground = false;
 	hasImageChanged = false;
+	erasedRing=false;
 	gridX = 1;
 	gridY = 1;
 	outline = Qt::black;
@@ -412,8 +413,15 @@ void Renderer::paintEvent(QPaintEvent *e)
 			// Paint supporting transparency
 			if (pattern.getTransparencySupport())
 			{
-				// Clear background
-				painter.fillRect(remainingRegion.boundingRect(),background);
+				// Clear background for erased rings
+				if (erasedRing)
+				{
+					QRect backgroundRegion;
+					// Region not quite right, but pretty close.
+					backgroundRegion=QRect(remainingRegion.boundingRect().x()/zoom,remainingRegion.boundingRect().y()/zoom,remainingRegion.boundingRect().width()*3/zoom,remainingRegion.boundingRect().height()*3/zoom);
+					painter.fillRect(backgroundRegion,background);
+					erasedRing=false;
+				}
 				// Paint lowest levels first
 				for (int k=pattern.getLayerCount(); k>=0; k--)
 				{
@@ -553,6 +561,7 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 										image.setPixel(pixelX,pixelY,brush.rgba());
 										QRegion repaintRegion(curX*pattern.getX()*zoom,curY*pattern.getY()*zoom,pattern.getLargestTileOffsetX()*zoom,pattern.getLargestTileOffsetY()*zoom);
 										paintedRegion-=repaintRegion;
+										erasedRing=true;
 										repaint(curX*pattern.getX()*zoom,curY*pattern.getY()*zoom,pattern.getLargestTileOffsetX()*zoom,pattern.getLargestTileOffsetY()*zoom);
 										hasImageChanged = true;
 									}
