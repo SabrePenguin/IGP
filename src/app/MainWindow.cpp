@@ -9,21 +9,20 @@ MainWindow::MainWindow() :
     //Ui file does it's own thing here
     ui->setupUi(this) ;
 
-    //QScrollArea *scrollArea = new QScrollArea;
 	renderWidget = new Renderer;
 	renderWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 
-	QWidget *widget = new QWidget;
-	setCentralWidget(widget);
+    QWidget *widget = new QWidget;
+    setCentralWidget(widget);
 
-	QVBoxLayout *layout = new QVBoxLayout;
     ui->scrollArea->setWidget(renderWidget);
-    layout->addWidget(ui->scrollArea);
-	widget->setLayout(layout);
+    widget->setLayout(ui->layout);
 
 	signalMapper = new QSignalMapper(this);
 	createActions();
 	createMenus();
+
+    //Creates the status bar
 	statusBar();
     status = new QLabel;
 	updateStatus();
