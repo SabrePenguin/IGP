@@ -11,12 +11,17 @@
 #include "ResizeDialog.h"
 #include "ColorCountDialog.h"
 
+namespace Ui{
+    class MainWindow;
+}
+
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT
 
 public:
 	MainWindow();
+    ~MainWindow() ;
 
 public slots:
 	void newFile();
@@ -49,13 +54,26 @@ public slots:
 	void closeEvent(QCloseEvent *);
 
 private:
-	Renderer *renderWidget;
+    Renderer *renderWidget;
+    Ui::MainWindow *ui ;
 
 	// Initalizer Functions
 	void createActions();
     void createMenus();
+	/**
+	 * @brief Recursively adds patterns to the given menu
+	 * @param menu The menu to add to (patterns to start)
+	 * @param dir The starter directory
+	 */
 	void findPatterns(QMenu *menu, QDir dir = QDir("./Patterns/."));
+	/**
+	 * @brief Opens settings.txt and sets the size of the window to that if it exists
+	 * @return The size in the txt or 600,400
+	 */
 	QSize startupSize();
+	/**
+	 * @brief Updates the bar on the bottom of the screen
+	 */
 	void updateStatus();
 
 	// Status

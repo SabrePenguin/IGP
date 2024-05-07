@@ -1,9 +1,14 @@
 #include <QtWidgets>
 
 #include "MainWindow.h"
+#include "ui_mainwindow.h"
 
-MainWindow::MainWindow()
+MainWindow::MainWindow() :
+    ui(new Ui::MainWindow)
 {
+    //Ui file does it's own thing here
+    ui->setupUi(this) ;
+
 	QScrollArea *scrollArea = new QScrollArea;
 	renderWidget = new Renderer;
 	renderWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
@@ -34,6 +39,11 @@ MainWindow::MainWindow()
 	this->resize(startupSize());
 
 	//renderWidget->setPattern(QDir("./Patterns/Default"));
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui ;
 }
 
 void MainWindow::newFile()
