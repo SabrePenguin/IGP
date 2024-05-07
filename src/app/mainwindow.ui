@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>419</height>
+    <height>400</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -125,120 +125,192 @@
    <property name="text">
     <string>New</string>
    </property>
+   <property name="toolTip">
+    <string>Create a new image grid</string>
+   </property>
   </action>
   <action name="actionOpen">
    <property name="text">
     <string>Open</string>
+   </property>
+   <property name="toolTip">
+    <string>Open an existing image</string>
    </property>
   </action>
   <action name="actionImport">
    <property name="text">
     <string>Import</string>
    </property>
+   <property name="toolTip">
+    <string>Open an existing image and scale it</string>
+   </property>
   </action>
   <action name="actionSmart_Import">
    <property name="text">
     <string>Smart Import</string>
+   </property>
+   <property name="toolTip">
+    <string>Open an existing image and scale it smartly using the opened pattern</string>
    </property>
   </action>
   <action name="actionResize">
    <property name="text">
     <string>Resize Image</string>
    </property>
+   <property name="toolTip">
+    <string>Resize current image</string>
+   </property>
   </action>
   <action name="actionSave">
    <property name="text">
     <string>Save</string>
+   </property>
+   <property name="toolTip">
+    <string>Save the opened image</string>
    </property>
   </action>
   <action name="actionClose">
    <property name="text">
     <string>Close</string>
    </property>
+   <property name="toolTip">
+    <string>Quit the program</string>
+   </property>
   </action>
   <action name="actionRepaint_All">
    <property name="text">
-    <string>Repaint All</string>
+    <string>Repaint Image</string>
+   </property>
+   <property name="toolTip">
+    <string>Repaints the entire image</string>
    </property>
   </action>
   <action name="actionRotate_Transpose">
    <property name="text">
-    <string>Rotate Transpose</string>
+    <string>Transpose Image</string>
+   </property>
+   <property name="toolTip">
+    <string>Transposes the source image file</string>
    </property>
   </action>
   <action name="actionRotate_Clockwise">
    <property name="text">
     <string>Rotate Clockwise</string>
    </property>
+   <property name="toolTip">
+    <string>Rotates the source image file by 90 degrees clockwise</string>
+   </property>
   </action>
   <action name="actionRotate_Counterclockwise">
    <property name="text">
-    <string>Rotate Counterclockwise</string>
+    <string>Rotate Counter-Clockwise</string>
+   </property>
+   <property name="toolTip">
+    <string>Rotates the source image file by 90 degrees counter-clockwise</string>
    </property>
   </action>
   <action name="actionRotate_180">
    <property name="text">
     <string>Rotate 180</string>
    </property>
+   <property name="toolTip">
+    <string>Rotates the source image file by 180 degrees</string>
+   </property>
   </action>
   <action name="actionFlipX">
    <property name="text">
-    <string>FlipX</string>
+    <string>Reflect X axis</string>
+   </property>
+   <property name="toolTip">
+    <string>Reflects the source image files X axis</string>
    </property>
   </action>
   <action name="actionFlip_Y">
    <property name="text">
-    <string>Flip Y</string>
+    <string>Reflect Y axis</string>
+   </property>
+   <property name="toolTip">
+    <string>Reflects the source image files Y axis</string>
    </property>
   </action>
   <action name="actionZoom_In">
    <property name="text">
     <string>Zoom In</string>
    </property>
+   <property name="toolTip">
+    <string>Increases size of image by 10%</string>
+   </property>
   </action>
   <action name="actionZoom_Out">
    <property name="text">
     <string>Zoom Out</string>
+   </property>
+   <property name="toolTip">
+    <string>Decreases size of image by 10%</string>
    </property>
   </action>
   <action name="actionReset_Zoom">
    <property name="text">
     <string>Reset Zoom</string>
    </property>
+   <property name="toolTip">
+    <string>Resets the zoom to 100%</string>
+   </property>
   </action>
   <action name="actionBrush_Color">
    <property name="text">
     <string>Brush Color</string>
+   </property>
+   <property name="toolTip">
+    <string>Select a new brush color</string>
    </property>
   </action>
   <action name="actionEraser">
    <property name="text">
     <string>Eraser</string>
    </property>
+   <property name="toolTip">
+    <string>Erase clicked tiles</string>
+   </property>
   </action>
   <action name="actionColor_Count">
    <property name="text">
-    <string>Color Count</string>
+    <string>Count Colors</string>
+   </property>
+   <property name="toolTip">
+    <string>Count colors in the image</string>
    </property>
   </action>
   <action name="actionBackground_Color">
    <property name="text">
-    <string>Background Color</string>
+    <string>Background</string>
+   </property>
+   <property name="toolTip">
+    <string>Select a new background color</string>
    </property>
   </action>
   <action name="actionOutline_Color">
    <property name="text">
-    <string>Outline Color</string>
+    <string>Outline</string>
+   </property>
+   <property name="toolTip">
+    <string>Select a new outline color</string>
    </property>
   </action>
   <action name="actionColor_Pallette">
    <property name="text">
-    <string>Color Palette</string>
+    <string>Palette Change</string>
+   </property>
+   <property name="toolTip">
+    <string>Limit colors to the current image</string>
    </property>
   </action>
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+   <property name="toolTip">
+    <string>Description of this program</string>
    </property>
   </action>
  </widget>
