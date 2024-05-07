@@ -2,22 +2,10 @@
 #include "Renderer.h"
 
 Renderer::Renderer(QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent), hasPattern(false), hasImage(false), antialiased(true), paintedBackground(false),
+    hasImageChanged(false), erasedRing(false), gridX(1), gridY(1), outline(Qt::black), brush(Qt::white),
+    background(Qt::white), paintedScene(new QPixmap(1,1))
 {
-	// Initialize a couple variables
-	hasPattern = false;
-	hasImage = false;
-	antialiased = true;
-	paintedBackground = false;
-	hasImageChanged = false;
-	erasedRing=false;
-	gridX = 1;
-	gridY = 1;
-	outline = Qt::black;
-	brush = Qt::white;
-	background = Qt::white;
-	paintedScene = new QPixmap(1,1);
-
 	this->setAutoFillBackground(false);
 	/*QPalette p = this->palette();
 	p.setColor(this->backgroundRole(), background);
@@ -32,6 +20,10 @@ Renderer::~Renderer()
 		delete paintedScene;
 		hasImage = false;
 	}
+    else if(paintedScene)
+    {
+        delete paintedScene ;
+    }
 }
 
 void Renderer::newImage(int x, int y)
