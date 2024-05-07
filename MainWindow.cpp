@@ -1,4 +1,4 @@
-#include <QtGui>
+#include <QtWidgets>
 
 #include "MainWindow.h"
 
@@ -14,7 +14,6 @@ MainWindow::MainWindow()
 	setCentralWidget(widget);
 
 	QVBoxLayout *layout = new QVBoxLayout;
-	layout->setMargin(5);
 	scrollArea->setWidget(renderWidget);
 	layout->addWidget(scrollArea);
 	widget->setLayout(layout);

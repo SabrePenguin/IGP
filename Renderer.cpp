@@ -1,4 +1,4 @@
-#include <QtGui>
+#include <QtWidgets>
 #include "Renderer.h"
 
 Renderer::Renderer(QWidget *parent)
@@ -18,7 +18,6 @@ Renderer::Renderer(QWidget *parent)
 	background = Qt::white;
 	paintedScene = new QPixmap(1,1);
 
-	this->setAttribute(Qt::WA_NoBackground);
 	this->setAutoFillBackground(false);
 	/*QPalette p = this->palette();
 	p.setColor(this->backgroundRole(), background);
@@ -544,7 +543,7 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 						for (int tileY=0; tileY<pattern.getReadY(); tileY++)
 						{
 							//QBitmap mask = pattern.getTile(tileX,tileY);
-							QBitmap mask = pattern.getClickMask(tileX,tileY);
+							QBitmap mask = (QBitmap) pattern.getClickMask(tileX,tileY);
 							int xTest = eX-(curX*pattern.getX()+pattern.getTileX(tileX,tileY));
 							int yTest = eY-(curY*pattern.getY()+pattern.getTileY(tileX,tileY));
 							if (mask.rect().contains(xTest,yTest))
