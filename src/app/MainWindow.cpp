@@ -9,33 +9,29 @@ MainWindow::MainWindow() :
     //Ui file does it's own thing here
     ui->setupUi(this) ;
 
-	QScrollArea *scrollArea = new QScrollArea;
+    //QScrollArea *scrollArea = new QScrollArea;
 	renderWidget = new Renderer;
 	renderWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-
-	scrollArea->setAlignment(Qt::AlignCenter);
 
 	QWidget *widget = new QWidget;
 	setCentralWidget(widget);
 
 	QVBoxLayout *layout = new QVBoxLayout;
-	scrollArea->setWidget(renderWidget);
-	layout->addWidget(scrollArea);
+    ui->scrollArea->setWidget(renderWidget);
+    layout->addWidget(ui->scrollArea);
 	widget->setLayout(layout);
 
 	signalMapper = new QSignalMapper(this);
 	createActions();
 	createMenus();
 	statusBar();
-	status = new QLabel;
+    status = new QLabel;
 	updateStatus();
-	statusBar()->addWidget(status);
+    statusBar()->addWidget(status);
 
-	connect(scrollArea->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(update()));
-	connect(scrollArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(update()));
-
-	this->setWindowTitle("IGP 3.0");
-	this->setWindowIcon(QIcon("./Resources/IGP.png"));
+    connect(ui->scrollArea->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(update()));
+    connect(ui->scrollArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(update()));
+    this->setWindowIcon(QIcon("./Resources/IGP.png"));
 	this->resize(startupSize());
 
 	//renderWidget->setPattern(QDir("./Patterns/Default"));
