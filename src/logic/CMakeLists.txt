@@ -5,6 +5,7 @@ qt_add_library(
 	Pattern.cpp
 	Renderer.cpp
 	ResizeDialog.cpp
+        ColorCountDialog.h Pattern.h Renderer.h ResizeDialog.h
 )
 
 target_link_libraries(
