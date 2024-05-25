@@ -58,8 +58,7 @@ private:
     Ui::MainWindow *ui ;
 
 	// Initalizer Functions
-	void createActions();
-    void createMenus();
+    void createActions();
 	/**
 	 * @brief Recursively adds patterns to the given menu
 	 * @param menu The menu to add to (patterns to start)

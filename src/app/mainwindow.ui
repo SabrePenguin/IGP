@@ -26,6 +26,12 @@
     <layout class="QVBoxLayout" name="layout">
      <item>
       <widget class="QScrollArea" name="scrollArea">
+       <property name="verticalScrollBarPolicy">
+        <enum>Qt::ScrollBarAsNeeded</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy">
+        <enum>Qt::ScrollBarAsNeeded</enum>
+       </property>
        <property name="widgetResizable">
         <bool>true</bool>
        </property>
@@ -90,6 +96,7 @@
     <addaction name="actionZoom_In"/>
     <addaction name="actionZoom_Out"/>
     <addaction name="actionReset_Zoom"/>
+    <addaction name="actionCustomZoom"/>
    </widget>
    <widget class="QMenu" name="menuColor">
     <property name="title">
@@ -311,6 +318,14 @@
    </property>
    <property name="toolTip">
     <string>Description of this program</string>
+   </property>
+  </action>
+  <action name="actionCustomZoom">
+   <property name="text">
+    <string>Custom Zoom</string>
+   </property>
+   <property name="toolTip">
+    <string>Sets the zoom level</string>
    </property>
   </action>
  </widget>
