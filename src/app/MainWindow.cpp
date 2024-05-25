@@ -372,7 +372,7 @@ void MainWindow::findPatterns(QMenu *menu, QDir dir)
 		{
 			QAction *newAct = new QAction(folder, this);
 			signalMapper->setMapping(newAct, newDir.path());
-			connect(newAct, SIGNAL(triggered()), signalMapper, SLOT(map()));
+			connect(newAct, &QAction::triggered, signalMapper, qOverload<>( &QSignalMapper::map ) );
 			menu->addAction(newAct);
 			//std::cout << "Pattern Found: " << folder.toStdString() << "\n";
 		}
