@@ -1,24 +1,11 @@
-#include <QtGui>
+#include <QtWidgets>
 #include "Renderer.h"
 
 Renderer::Renderer(QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent), hasPattern(false), hasImage(false), antialiased(true), paintedBackground(false),
+    hasImageChanged(false), erasedRing(false), gridX(1), gridY(1), outline(Qt::black), brush(Qt::white),
+    background(Qt::white), paintedScene(new QPixmap(1,1))
 {
-	// Initialize a couple variables
-	hasPattern = false;
-	hasImage = false;
-	antialiased = true;
-	paintedBackground = false;
-	hasImageChanged = false;
-	erasedRing=false;
-	gridX = 1;
-	gridY = 1;
-	outline = Qt::black;
-	brush = Qt::white;
-	background = Qt::white;
-	paintedScene = new QPixmap(1,1);
-
-	this->setAttribute(Qt::WA_NoBackground);
 	this->setAutoFillBackground(false);
 	/*QPalette p = this->palette();
 	p.setColor(this->backgroundRole(), background);
@@ -33,6 +20,10 @@ Renderer::~Renderer()
 		delete paintedScene;
 		hasImage = false;
 	}
+    else if(paintedScene)
+    {
+        delete paintedScene ;
+    }
 }
 
 void Renderer::newImage(int x, int y)
@@ -544,7 +535,7 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 						for (int tileY=0; tileY<pattern.getReadY(); tileY++)
 						{
 							//QBitmap mask = pattern.getTile(tileX,tileY);
-							QBitmap mask = pattern.getClickMask(tileX,tileY);
+							QBitmap mask = (QBitmap) pattern.getClickMask(tileX,tileY);
 							int xTest = eX-(curX*pattern.getX()+pattern.getTileX(tileX,tileY));
 							int yTest = eY-(curY*pattern.getY()+pattern.getTileY(tileX,tileY));
 							if (mask.rect().contains(xTest,yTest))

@@ -1,40 +1,46 @@
-#include <QtGui>
+#include <QtWidgets>
 
 #include "MainWindow.h"
+#include "ui_mainwindow.h"
 
-MainWindow::MainWindow()
+MainWindow::MainWindow() :
+    ui(new Ui::MainWindow)
 {
-	QScrollArea *scrollArea = new QScrollArea;
+    //Ui file does it's own thing here
+    ui->setupUi(this) ;
+
 	renderWidget = new Renderer;
 	renderWidget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 
-	scrollArea->setAlignment(Qt::AlignCenter);
+    QWidget *widget = new QWidget;
+    setCentralWidget(widget);
 
-	QWidget *widget = new QWidget;
-	setCentralWidget(widget);
-
-	QVBoxLayout *layout = new QVBoxLayout;
-	layout->setMargin(5);
-	scrollArea->setWidget(renderWidget);
-	layout->addWidget(scrollArea);
-	widget->setLayout(layout);
+    ui->scrollArea->setWidget(renderWidget);
+    widget->setLayout(ui->layout);
 
 	signalMapper = new QSignalMapper(this);
 	createActions();
-	createMenus();
+
+    connect(signalMapper, &QSignalMapper::mappedString, this, &MainWindow::openPattern);
+    findPatterns(ui->menuPatterns);
+
+    //Creates the status bar
 	statusBar();
-	status = new QLabel;
+    status = new QLabel;
 	updateStatus();
-	statusBar()->addWidget(status);
+    statusBar()->addWidget(status);
 
-	connect(scrollArea->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(update()));
-	connect(scrollArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(update()));
-
-	this->setWindowTitle("IGP 3.0");
-	this->setWindowIcon(QIcon("./Resources/IGP.png"));
+    connect(ui->scrollArea->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(update()));
+    connect(ui->scrollArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(update()));
+    this->setWindowIcon(QIcon("./Resources/IGP.png"));
 	this->resize(startupSize());
 
 	//renderWidget->setPattern(QDir("./Patterns/Default"));
+}
+
+MainWindow::~MainWindow()
+{
+    delete ui ;
 }
 
 void MainWindow::newFile()
@@ -294,159 +300,57 @@ void MainWindow::createActions()
 {
 	// --- File Menubar ---
 	// File Actions
-	newAct = new QAction(tr("&New"), this);
-	newAct->setShortcuts(QKeySequence::New);
-	newAct->setStatusTip(tr("Create a new image grid"));
-	connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
+    ui->actionNew->setShortcut(QKeySequence::New) ;
+    connect(ui->actionNew, &QAction::triggered, this, &MainWindow::newFile) ;
 
-	openAct = new QAction(tr("&Open"), this);
-	openAct->setShortcuts(QKeySequence::Open);
-	openAct->setStatusTip(tr("Open an existing image"));
-	connect(openAct, SIGNAL(triggered()), this, SLOT(openFile()));
+    ui->actionOpen->setShortcut(QKeySequence::Open) ;
+    connect(ui->actionOpen, &QAction::triggered, this, &MainWindow::openFile) ;
 
-	openImportAct = new QAction(tr("&Import"), this);
-	openImportAct->setStatusTip(tr("Open an existing image and scale it"));
-	connect(openImportAct, SIGNAL(triggered()), this, SLOT(openFileImport()));
+    connect(ui->actionImport, &QAction::triggered, this, &MainWindow::openFileImport) ;
+    connect(ui->actionSmart_Import, &QAction::triggered, this, &MainWindow::openFileSmart) ;
+    connect(ui->actionResize, &QAction::triggered, this, &MainWindow::resizeImage) ;
 
-	openSmartImportAct = new QAction(tr("Smart Import"), this);
-	openSmartImportAct->setStatusTip(tr("Open an existing image and scale it smartly using the opened pattern"));
-	connect(openSmartImportAct, SIGNAL(triggered()), this, SLOT(openFileSmart()));
+    ui->actionSave->setShortcut(QKeySequence::Save) ;
+    connect(ui->actionSave, &QAction::triggered, this, &MainWindow::saveFile) ;
 
-	resizeImageAct = new QAction(tr("&Resize"), this);
-	resizeImageAct->setStatusTip(tr("Resize current image"));
-	connect(resizeImageAct, SIGNAL(triggered()), this, SLOT(resizeImage()));
-
-	saveAct = new QAction(tr("&Save"), this);
-	saveAct->setShortcuts(QKeySequence::Save);
-	saveAct->setStatusTip(tr("Save the opened image"));
-	connect(saveAct, SIGNAL(triggered()), this, SLOT(saveFile()));
-
-	closeAct = new QAction(tr("&Close"), this);
-	closeAct->setShortcuts(QKeySequence::Close);
-	closeAct->setStatusTip(tr("Quit the program"));
-	connect(closeAct, SIGNAL(triggered()), this, SLOT(closeProgram()));
+    ui->actionClose->setShortcut(QKeySequence::Close) ;
+    connect(ui->actionClose, &QAction::triggered, this, &MainWindow::closeProgram) ;
 
 	// --- Edit Menubar ---
-	repaintAllAct = new QAction(tr("&Repaint Image"), this);
-	repaintAllAct->setShortcuts(QKeySequence::Refresh);
-	repaintAllAct->setStatusTip(tr("Repaints the entire image"));
-	connect(repaintAllAct, SIGNAL(triggered()), this, SLOT(repaintAll()));
+    ui->actionRepaint_All->setShortcut(QKeySequence::Refresh) ;
+    connect(ui->actionRepaint_All, &QAction::triggered, this, &MainWindow::repaintAll) ;
 
 	// Rotate Image Actions
-	rotateTransposeAct = new QAction(tr("Transpose Image"), this);
-	rotateTransposeAct->setStatusTip(tr("Transposes the source image file"));
-	connect(rotateTransposeAct, SIGNAL(triggered()), this, SLOT(rotateTranspose()));
-
-	rotateClockwiseAct = new QAction(tr("Rotate Clockwise"), this);
-	rotateClockwiseAct->setStatusTip(tr("Rotates the source image file by 90 degrees clockwise"));
-	connect(rotateClockwiseAct, SIGNAL(triggered()), this, SLOT(rotateClockwise()));
-
-	rotateCounterClockwiseAct = new QAction(tr("Rotate Counter-Clockwise"), this);
-	rotateCounterClockwiseAct->setStatusTip(tr("Rotates the source image file by 90 degrees counter-clockwise"));
-	connect(rotateCounterClockwiseAct, SIGNAL(triggered()), this, SLOT(rotateCounterClockwise()));
-
-	rotate180Act = new QAction(tr("Rotate 180"), this);
-	rotate180Act->setStatusTip(tr("Rotates the source image file by 180 degrees"));
-	connect(rotate180Act, SIGNAL(triggered()), this, SLOT(rotate180()));
-
-	rotateFlipXAct = new QAction(tr("Reflect X axis"), this);
-	rotateFlipXAct->setStatusTip(tr("Reflects the source image files X axis"));
-	connect(rotateFlipXAct, SIGNAL(triggered()), this, SLOT(rotateFlipX()));
-
-	rotateFlipYAct = new QAction(tr("Reflect Y axis"), this);
-	rotateFlipYAct->setStatusTip(tr("Reflects the source image files Y axis"));
-	connect(rotateFlipYAct, SIGNAL(triggered()), this, SLOT(rotateFlipY()));
+    connect(ui->actionRotate_Transpose, &QAction::triggered, this, &MainWindow::rotateTranspose) ;
+    connect(ui->actionRotate_Clockwise, &QAction::triggered, this, &MainWindow::rotateClockwise) ;
+    connect(ui->actionRotate_Counterclockwise, &QAction::triggered, this, &MainWindow::rotateCounterClockwise) ;
+    connect(ui->actionRotate_180, &QAction::triggered, this, &MainWindow::rotate180) ;
+    connect(ui->actionFlipX, &QAction::triggered, this, &MainWindow::rotateFlipX) ;
+    connect(ui->actionFlip_Y, &QAction::triggered, this, &MainWindow::rotateFlipY) ;
 
 	// Zoom Actions
-	zoomInAct = new QAction(tr("Zoom In"), this);
-	zoomInAct->setShortcuts(QKeySequence::ZoomIn);
-	zoomInAct->setStatusTip(tr("Increases size of image by 10%"));
-	connect(zoomInAct, SIGNAL(triggered()), this, SLOT(zoomIn()));
+    ui->actionZoom_In->setShortcut(QKeySequence::ZoomIn) ;
+    connect(ui->actionZoom_In, &QAction::triggered, this, &MainWindow::zoomIn) ;
 
-	zoomOutAct = new QAction(tr("Zoom Out"), this);
-	zoomOutAct->setShortcuts(QKeySequence::ZoomOut);
-	zoomOutAct->setStatusTip(tr("Decreases size of image by 10%"));
-	connect(zoomOutAct, SIGNAL(triggered()), this, SLOT(zoomOut()));
+    ui->actionZoom_Out->setShortcut(QKeySequence::ZoomOut) ;
+    connect(ui->actionZoom_Out, &QAction::triggered, this, &MainWindow::zoomOut) ;
 
-	zoomNormalAct = new QAction(tr("Zoom Reset"), this);
-	zoomNormalAct->setStatusTip(tr("Resets the zoom to 100%"));
-	connect(zoomNormalAct, SIGNAL(triggered()), this, SLOT(zoomNormal()));
+    connect(ui->actionReset_Zoom, &QAction::triggered, this, &MainWindow::zoomNormal) ;
 
 	// --- Color Menubar ---
 	// Color Actions
-	getColorCountAct = new QAction(tr("&Count Colors"), this);
-	getColorCountAct->setStatusTip(tr("Count colors in the image"));
-	connect(getColorCountAct, SIGNAL(triggered()), this, SLOT(getColorCount()));
 
-	setBrushColorAct = new QAction(tr("&Brush"), this);
-	setBrushColorAct->setStatusTip(tr("Select a new brush color"));
-	connect(setBrushColorAct, SIGNAL(triggered()), this, SLOT(setBrushColor()));
-
-	setEraserAct = new QAction(tr("&Eraser"), this);
-	setEraserAct->setStatusTip(tr("Erase clicked tiles"));
-	connect(setEraserAct, SIGNAL(triggered()), this, SLOT(setEraser()));
-
-	setBackgroundColorAct = new QAction(tr("Back&ground"), this);
-	setBackgroundColorAct->setStatusTip(tr("Select a new background color"));
-	connect(setBackgroundColorAct, SIGNAL(triggered()), this, SLOT(setBackgroundColor()));
-
-	setOutlineColorAct = new QAction(tr("&Outline"), this);
-	setOutlineColorAct->setStatusTip(tr("Select a new outline color"));
-	connect(setOutlineColorAct, SIGNAL(triggered()), this, SLOT(setOutlineColor()));
-
-	setColorPaletteAct = new QAction(tr("&Palette Change"), this);
-	setColorPaletteAct->setStatusTip(tr("Limit colors to the current image"));
-	connect(setColorPaletteAct, SIGNAL(triggered()), this, SLOT(setColorPalette()));
+    connect(ui->actionColor_Count, &QAction::triggered, this, &MainWindow::getColorCount) ;
+    connect(ui->actionBrush_Color, &QAction::triggered, this, &MainWindow::setBrushColor) ;
+    connect(ui->actionEraser, &QAction::triggered, this, &MainWindow::setEraser) ;
+    connect(ui->actionBackground_Color, &QAction::triggered, this, &MainWindow::setBackgroundColor) ;
+    connect(ui->actionOutline_Color, &QAction::triggered, this, &MainWindow::setOutlineColor) ;
+    connect(ui->actionColor_Pallette, &QAction::triggered, this, &MainWindow::setColorPalette) ;
 
 	// --- About Menubar ---
 	// About Action
-	aboutAct = new QAction(tr("&About"), this);
-	aboutAct->setShortcuts(QKeySequence::HelpContents);
-	aboutAct->setStatusTip(tr("Description of this program"));
-	connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
-}
-
-void MainWindow::createMenus()
-{
-	fileMenu = menuBar()->addMenu(tr("&File"));
-	fileMenu->addAction(newAct);
-	fileMenu->addAction(openAct);
-	fileMenu->addAction(openImportAct);
-	fileMenu->addAction(openSmartImportAct);
-	fileMenu->addAction(resizeImageAct);
-	fileMenu->addAction(saveAct);
-	fileMenu->addAction(closeAct);
-
-	editMenu = menuBar()->addMenu(tr("&Edit"));
-	editMenu->addAction(repaintAllAct);
-	transformSubMenu = editMenu->addMenu(tr("&Transforms"));
-	transformSubMenu->addAction(rotateTransposeAct);
-	transformSubMenu->addAction(rotateClockwiseAct);
-	transformSubMenu->addAction(rotateCounterClockwiseAct);
-	transformSubMenu->addAction(rotate180Act);
-	transformSubMenu->addAction(rotateFlipXAct);
-	transformSubMenu->addAction(rotateFlipYAct);
-	zoomSubMenu = editMenu->addMenu(tr("&Zoom"));
-	zoomSubMenu->addAction(zoomInAct);
-	zoomSubMenu->addAction(zoomOutAct);
-	zoomSubMenu->addAction(zoomNormalAct);
-
-	colorMenu = menuBar()->addMenu(tr("&Color"));
-	colorMenu->addAction(setBrushColorAct);
-	colorMenu->addAction(setEraserAct);
-	colorMenu->addAction(getColorCountAct);
-	colorMenu->addAction(setBackgroundColorAct);
-	colorMenu->addAction(setOutlineColorAct);
-	colorMenu->addAction(setColorPaletteAct);
-
-	patternMenu = menuBar()->addMenu(tr("&Patterns"));
-	connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(openPattern(QString)));
-	findPatterns(patternMenu);
-	
-	menuBar()->addSeparator();
-
-	aboutMenu = menuBar()->addMenu(tr("About"));
-	aboutMenu->addAction(aboutAct);
+    ui->actionAbout->setShortcut(QKeySequence::HelpContents) ;
+    connect(ui->actionAbout, &QAction::triggered, this, &MainWindow::about) ;
 }
 
 void MainWindow::findPatterns(QMenu *menu, QDir dir)
@@ -468,7 +372,7 @@ void MainWindow::findPatterns(QMenu *menu, QDir dir)
 		{
 			QAction *newAct = new QAction(folder, this);
 			signalMapper->setMapping(newAct, newDir.path());
-			connect(newAct, SIGNAL(triggered()), signalMapper, SLOT(map()));
+			connect(newAct, &QAction::triggered, signalMapper, qOverload<>( &QSignalMapper::map ) );
 			menu->addAction(newAct);
 			//std::cout << "Pattern Found: " << folder.toStdString() << "\n";
 		}

@@ -10,3 +10,11 @@ IGP.exe
 
 # Non-standard Resource Files
 Resources/Settings.txt
+
+# Folders
+.vs/
+out/
+
+# CMake
+CmakeSettings.json
+CMakeLists.txt.user
