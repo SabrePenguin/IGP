@@ -30,8 +30,6 @@ MainWindow::MainWindow() :
 	updateStatus();
     statusBar()->addWidget(status);
 
-    connect(ui->scrollArea->horizontalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(update()));
-    connect(ui->scrollArea->verticalScrollBar(), SIGNAL(valueChanged(int)), this, SLOT(update()));
     this->setWindowIcon(QIcon("./Resources/IGP.png"));
 	this->resize(startupSize());
 
@@ -329,7 +327,7 @@ void MainWindow::createActions()
     connect(ui->actionFlip_Y, &QAction::triggered, this, &MainWindow::rotateFlipY) ;
 
 	// Zoom Actions
-    ui->actionZoom_In->setShortcut(QKeySequence::ZoomIn) ;
+    ui->actionZoom_In->setShortcut( QKeySequence( "Ctrl+=" ) ) ;
     connect(ui->actionZoom_In, &QAction::triggered, this, &MainWindow::zoomIn) ;
 
     ui->actionZoom_Out->setShortcut(QKeySequence::ZoomOut) ;
