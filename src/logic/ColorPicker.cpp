@@ -5,9 +5,12 @@
 #include <QSlider>
 #include <QColor>
 #include <QPalette>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 
 ColorPicker::ColorPicker( QWidget* parent )
 {
+	pickingColor = false ;
 	QBoxLayout* pickerLayout = new QVBoxLayout( this ) ;
 	pickerLayout->setContentsMargins( 0, 0, 0, 0 ) ;
 
@@ -18,6 +21,8 @@ ColorPicker::ColorPicker( QWidget* parent )
 	display->setAutoFillBackground( true ) ;
 	pickerLayout->addWidget( display ) ;
 
+
+	// Generate the RGB
 	QHBoxLayout* sliderLayout = new QHBoxLayout() ;
 
 	red = new ColorSlider( this ) ;
@@ -30,15 +35,29 @@ ColorPicker::ColorPicker( QWidget* parent )
 
 	pickerLayout->addLayout( sliderLayout ) ;
 
-	connect( red, &ColorSlider::valueChanged, this, &ColorPicker::updateColor );
-	connect( blue , &ColorSlider::valueChanged, this, &ColorPicker::updateColor );
-	connect( green, &ColorSlider::valueChanged, this, &ColorPicker::updateColor );
+	connect( red, &ColorSlider::valueChanged, this, &ColorPicker::updateColorFromSlider );
+	connect( blue , &ColorSlider::valueChanged, this, &ColorPicker::updateColorFromSlider );
+	connect( green, &ColorSlider::valueChanged, this, &ColorPicker::updateColorFromSlider );
 
-	updateColor() ;
+	// Set up the defaults for the hex input
+	hexcode = new QLineEdit( this ) ;
+	hexcode->setAlignment( Qt::AlignCenter ) ;
+	hexcode->setPlaceholderText( "#RRGGBB" ) ;
+	hexcode->setMaxLength( 7 );
+	QRegularExpression hexregex( "^#([A-Fa-f0-8]{6})$" ) ;
+	hexcode->setValidator( new QRegularExpressionValidator( hexregex, this ) ) ;
+
+	pickerLayout->addWidget( hexcode ) ;
+
+	connect( hexcode, &QLineEdit::editingFinished, this, &ColorPicker::updateColorFromHex ) ;
+
+	// Create the eyedropper
+
+	updateColorFromSlider() ;
 }
 
 
-void ColorPicker::updateColor() {
+void ColorPicker::updateColorFromSlider() {
 	QColor color( 
 		red->value(), 
 		green->value(), 
@@ -47,4 +66,17 @@ void ColorPicker::updateColor() {
 	QPalette palette = display->palette() ;
 	palette.setColor( QPalette::Window, color ) ;
 	display->setPalette( palette ) ;
+
+	hexcode->setText( color.name( QColor::HexRgb ) ) ;
+}
+
+void ColorPicker::updateColorFromHex() {
+	QString hex = hexcode->text().trimmed() ;
+	QColor color( hex ) ;
+	if( hex.startsWith("#") && color.isValid()) {
+		red->setValue( color.red() ) ;
+		green->setValue( color.green() ) ;
+		blue->setValue( color.blue() ) ;
+		updateColorFromSlider() ;
+	}
 }

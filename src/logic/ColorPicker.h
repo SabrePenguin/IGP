@@ -1,6 +1,8 @@
 #pragma once
 #include <QFrame>
 #include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
 #include "ColorSlider.h"
 
 class ColorPicker : public QFrame {
@@ -9,10 +11,14 @@ public:
 	explicit ColorPicker( QWidget* parent = nullptr ) ;
 
 private slots:
-	void updateColor() ;
+	void updateColorFromSlider() ;
+	void updateColorFromHex() ;
 private:
 	QLabel* display ;
+	QLineEdit* hexcode ;
 	ColorSlider* red ;
 	ColorSlider* green ;
 	ColorSlider* blue ;
+	QPushButton* eyedropper ; 
+	bool pickingColor ;
 };
