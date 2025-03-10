@@ -566,6 +566,11 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 	}
 }
 
+	
+void Renderer::updateBrushColor( QColor color ) {
+	setBrushColor( color ) ;
+}
+
 void Renderer::updatePatternSize()
 {
 	if (hasImage && hasPattern)

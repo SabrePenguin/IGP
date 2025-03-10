@@ -16,7 +16,11 @@ MainWindow::MainWindow() :
     setCentralWidget(widget);
 
     ui->scrollArea->setWidget(renderWidget);
+
+	// Create the custom color picker, connect to Renderer
+
 	ColorPicker* new_color = new ColorPicker( this ) ;
+	connect( new_color, &ColorPicker::colorChanged, renderWidget, &Renderer::updateBrushColor ) ;
 	ui->layout->addWidget(new_color) ;
     widget->setLayout(ui->layout);
 

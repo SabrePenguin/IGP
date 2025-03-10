@@ -44,6 +44,9 @@ public:
 	QString getPatternName();
 	void countColors(QVector<QRgb> *colors, QVector<int> *counts);
 
+public slots:
+	void updateBrushColor( QColor color ) ;
+
 protected:
     void paintEvent(QPaintEvent *e);
 	void mousePressEvent(QMouseEvent *e);

@@ -12,6 +12,9 @@ class ColorPicker : public QWidget {
 public:
 	explicit ColorPicker( QWidget* parent = nullptr ) ;
 
+signals:
+	void colorChanged( QColor color ) ;
+
 protected:
 	bool eventFilter( QObject* obj, QEvent* event ) override ;
 

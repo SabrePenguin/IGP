@@ -118,6 +118,8 @@ void ColorPicker::updateColorFromSlider() {
 	display->setPalette( palette ) ;
 
 	hexcode->setText( color.name( QColor::HexRgb ) ) ;
+
+	emit colorChanged( color ) ;
 }
 
 void ColorPicker::updateColorFromHex() {
