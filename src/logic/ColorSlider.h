@@ -10,6 +10,16 @@ class ColorSlider : public QWidget {
 public:
 	explicit ColorSlider( QWidget* parent = nullptr ) ;
 
+	int value() const ;
+	void setValue( int val ) ;
+
+signals:
+	void valueChanged( int newValue ) ;
+
+private slots:
+	void onSliderChanged( int value ) ;
+	void onTextChanged() ;
+
 private:
 	QSlider* slider ;
 	QLineEdit* lineEdit ;
