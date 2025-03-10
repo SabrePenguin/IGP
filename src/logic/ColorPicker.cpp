@@ -7,6 +7,9 @@
 #include <QPalette>
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
+#include <QApplication>
+#include <QMouseEvent>
+#include <QScreen>
 
 ColorPicker::ColorPicker( QWidget* parent )
 {
@@ -54,20 +57,36 @@ ColorPicker::ColorPicker( QWidget* parent )
 	// Create the eyedropper
 	eyedropper = new QPushButton( "Pick Color", this ) ;
 	pickerLayout->addWidget( eyedropper ) ;
-
+	
 	connect( eyedropper, &QPushButton::clicked, this, &ColorPicker::activateEyedropper ) ;
+	qApp->installEventFilter( this ) ;
 
 	updateColorFromSlider() ;
 }
 
 
-void ColorPicker::mousePressEvent( QMouseEvent* event )
+bool ColorPicker::eventFilter( QObject* obj, QEvent* event )
 {
-	if( pickingColor ) {
+	if( pickingColor && event->type() == QEvent::MouseButtonPress ) {
+		QMouseEvent* mouseEvent = static_cast< QMouseEvent * >( event ) ;
 		pickingColor = false ;
-		setCursor( Qt::ArrowCursor ) ;
+		QApplication::setOverrideCursor( Qt::ArrowCursor ) ;
+		QScreen* screen = QApplication::primaryScreen() ;
+		if( !screen ) return false ;
+		QPixmap image = screen->grabWindow( 0, mouseEvent->globalX(), mouseEvent->globalY(), 1, 1 );
 
+		QColor pickedColor = image.toImage().pixelColor( 0, 0 ) ;
+		if( pickedColor.isValid() ) {
+			red->setValue( pickedColor.red() ) ;
+			green->setValue( pickedColor.green() ) ;
+			blue->setValue( pickedColor.blue() ) ;
+
+			updateColorFromSlider() ;
+		}
+		return true ;
 	}
+
+	return QWidget::eventFilter( obj, event ) ;
 }
 
 
@@ -97,5 +116,5 @@ void ColorPicker::updateColorFromHex() {
 
 void ColorPicker::activateEyedropper() {
 	pickingColor = true ;
-	setCursor( Qt::CrossCursor ) ;
+	QApplication::setOverrideCursor( Qt::CrossCursor ) ;
 }

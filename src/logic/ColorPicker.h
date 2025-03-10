@@ -3,16 +3,17 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
-#include <QMouseEvent>
 #include "ColorSlider.h"
+#include <QEvent>
+#include <QObject>
 
-class ColorPicker : public QFrame {
+class ColorPicker : public QWidget {
 	Q_OBJECT
 public:
 	explicit ColorPicker( QWidget* parent = nullptr ) ;
 
 protected:
-	void mousePressEvent( QMouseEvent* event ) override ;
+	bool eventFilter( QObject* obj, QEvent* event ) override ;
 private slots:
 	void updateColorFromSlider() ;
 	void updateColorFromHex() ;
