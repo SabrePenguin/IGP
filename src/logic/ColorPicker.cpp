@@ -61,7 +61,7 @@ ColorPicker::ColorPicker( QWidget* parent )
 	hexcode->setAlignment( Qt::AlignCenter ) ;
 	hexcode->setPlaceholderText( "#RRGGBB" ) ;
 	hexcode->setMaxLength( 7 );
-	QRegularExpression hexregex( "^#([A-Fa-f0-8]{6})$" ) ;
+	QRegularExpression hexregex( "^#?([A-Fa-f0-8]{6})$" ) ;
 	hexcode->setValidator( new QRegularExpressionValidator( hexregex, this ) ) ;
 
 	pickerLayout->addWidget( hexcode ) ;
@@ -124,8 +124,10 @@ void ColorPicker::updateColorFromSlider() {
 
 void ColorPicker::updateColorFromHex() {
 	QString hex = hexcode->text().trimmed() ;
+	if( !hex.startsWith( "#" ) )
+		hex.prepend( "#" ) ;
 	QColor color( hex ) ;
-	if( hex.startsWith("#") && color.isValid()) {
+	if( color.isValid()) {
 		red->setValue( color.red() ) ;
 		green->setValue( color.green() ) ;
 		blue->setValue( color.blue() ) ;
