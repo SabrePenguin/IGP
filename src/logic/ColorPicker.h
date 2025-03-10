@@ -14,10 +14,13 @@ public:
 
 protected:
 	bool eventFilter( QObject* obj, QEvent* event ) override ;
+
 private slots:
 	void updateColorFromSlider() ;
 	void updateColorFromHex() ;
 	void activateEyedropper() ;
+	void togglePicker() ;
+
 private:
 	QLabel* display ;
 	QLineEdit* hexcode ;
@@ -26,4 +29,6 @@ private:
 	ColorSlider* blue ;
 	QPushButton* eyedropper ; 
 	bool pickingColor ;
+	QWidget* colorPickerWidget ;
+	QPushButton* toggleButton ;
 };

@@ -13,9 +13,21 @@
 
 ColorPicker::ColorPicker( QWidget* parent )
 {
+	QHBoxLayout* mainLayout = new QHBoxLayout( this ) ;
 	pickingColor = false ;
-	QBoxLayout* pickerLayout = new QVBoxLayout( this ) ;
+
+	toggleButton = new QPushButton( "<<", this ) ;
+	toggleButton->setFixedWidth( 20 ) ;
+	toggleButton->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding ) ;
+	mainLayout->addWidget( toggleButton ) ;
+
+	
+
+	colorPickerWidget = new QWidget( this ) ;
+	QBoxLayout* pickerLayout = new QVBoxLayout( colorPickerWidget ) ;
 	pickerLayout->setContentsMargins( 0, 0, 0, 0 ) ;
+	colorPickerWidget->setVisible( false ) ;
+	mainLayout->addWidget( colorPickerWidget ) ;
 
 
 	display = new QLabel( this ) ;
@@ -57,7 +69,8 @@ ColorPicker::ColorPicker( QWidget* parent )
 	// Create the eyedropper
 	eyedropper = new QPushButton( "Pick Color", this ) ;
 	pickerLayout->addWidget( eyedropper ) ;
-	
+
+	connect( toggleButton, &QPushButton::clicked, this, &ColorPicker::togglePicker ) ;
 	connect( eyedropper, &QPushButton::clicked, this, &ColorPicker::activateEyedropper ) ;
 	qApp->installEventFilter( this ) ;
 
@@ -117,4 +130,11 @@ void ColorPicker::updateColorFromHex() {
 void ColorPicker::activateEyedropper() {
 	pickingColor = true ;
 	QApplication::setOverrideCursor( Qt::CrossCursor ) ;
+}
+
+void ColorPicker::togglePicker()
+{
+	bool visible = colorPickerWidget->isVisible() ;
+	colorPickerWidget->setVisible( !visible ) ;
+	toggleButton->setText( visible ? "<<" : ">>" ) ;
 }
