@@ -9,10 +9,12 @@ ColorSlider::ColorSlider( QWidget* parent ) : QWidget( parent ) {
 	lineEdit = new QLineEdit( this ) ;
 	slider = new QSlider( Qt::Vertical, this ) ;
 	slider->setRange( 0, 255 ) ;
+	slider->setMinimumHeight( 30 ) ;
 	lineEdit->setPlaceholderText( "0" );
 	QRegularExpression regex( "^([0-9]{1,3}|0x[0-9A-Fa-f]{1,2})$" ) ;
 
 	lineEdit->setValidator( new QRegularExpressionValidator( regex, this ) ) ;
+	lineEdit->setMaximumWidth( 30 ) ;
 
 	layout->addWidget( lineEdit ) ;
 	layout->addWidget( slider ) ;
@@ -35,17 +37,9 @@ void ColorSlider::setValue( int val ) {
 
 void ColorSlider::onTextChanged() {
 	QString text = lineEdit->text().trimmed() ;
-	int value = 0 ;
-	if( text.startsWith( "0x", Qt::CaseInsensitive ) ) {
-		bool ok ;
-		value = text.toInt( &ok, 16 ) ;
-		if( !ok ) return ;
-	}
-	else {
-		bool ok ;
-		value = text.toInt( &ok, 10 ) ;
-		if( !ok || value < 0 || value > 255 ) return ;
-	}
+	bool ok ;
+	int value = text.toInt( &ok, 10 ) ;
+	if( !ok || value < 0 || value > 255 ) return ;
 	slider->setValue( value ) ;
 	emit valueChanged( value ) ;
 }

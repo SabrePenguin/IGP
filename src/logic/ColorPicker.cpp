@@ -3,6 +3,7 @@
 #include <QGridLayout>
 #include <QLineEdit>
 #include <QSlider>
+#include <QPoint>
 #include <QColor>
 #include <QPalette>
 #include <QRegularExpression>
@@ -27,11 +28,12 @@ ColorPicker::ColorPicker( QWidget* parent )
 	QBoxLayout* pickerLayout = new QVBoxLayout( colorPickerWidget ) ;
 	pickerLayout->setContentsMargins( 0, 0, 0, 0 ) ;
 	colorPickerWidget->setVisible( false ) ;
+	colorPickerWidget->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding ) ;
 	mainLayout->addWidget( colorPickerWidget ) ;
 
 
 	display = new QLabel( this ) ;
-	display->setMinimumSize( 100, 100 ) ;
+	display->setMinimumSize( 100, 50 ) ;
 	display->setMaximumWidth( 300 ) ;
 	display->setAutoFillBackground( true ) ;
 	pickerLayout->addWidget( display ) ;
@@ -84,9 +86,11 @@ bool ColorPicker::eventFilter( QObject* obj, QEvent* event )
 		QMouseEvent* mouseEvent = static_cast< QMouseEvent * >( event ) ;
 		pickingColor = false ;
 		QApplication::setOverrideCursor( Qt::ArrowCursor ) ;
-		QScreen* screen = QApplication::primaryScreen() ;
+		QPoint position = mouseEvent->globalPos() ;
+		QScreen* screen = QApplication::screenAt( position ) ;
 		if( !screen ) return false ;
-		QPixmap image = screen->grabWindow( 0, mouseEvent->globalX(), mouseEvent->globalY(), 1, 1 );
+
+		QPixmap image = screen->grabWindow( 0, position.x() - screen->geometry().x(), position.y() - screen->geometry().y(), 1, 1);
 
 		QColor pickedColor = image.toImage().pixelColor( 0, 0 ) ;
 		if( pickedColor.isValid() ) {
