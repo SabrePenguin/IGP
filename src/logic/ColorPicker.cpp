@@ -52,8 +52,22 @@ ColorPicker::ColorPicker( QWidget* parent )
 	connect( hexcode, &QLineEdit::editingFinished, this, &ColorPicker::updateColorFromHex ) ;
 
 	// Create the eyedropper
+	eyedropper = new QPushButton( "Pick Color", this ) ;
+	pickerLayout->addWidget( eyedropper ) ;
+
+	connect( eyedropper, &QPushButton::clicked, this, &ColorPicker::activateEyedropper ) ;
 
 	updateColorFromSlider() ;
+}
+
+
+void ColorPicker::mousePressEvent( QMouseEvent* event )
+{
+	if( pickingColor ) {
+		pickingColor = false ;
+		setCursor( Qt::ArrowCursor ) ;
+
+	}
 }
 
 
@@ -79,4 +93,9 @@ void ColorPicker::updateColorFromHex() {
 		blue->setValue( color.blue() ) ;
 		updateColorFromSlider() ;
 	}
+}
+
+void ColorPicker::activateEyedropper() {
+	pickingColor = true ;
+	setCursor( Qt::CrossCursor ) ;
 }
