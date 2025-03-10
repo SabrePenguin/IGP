@@ -16,6 +16,8 @@ MainWindow::MainWindow() :
     setCentralWidget(widget);
 
     ui->scrollArea->setWidget(renderWidget);
+	ColorPicker* new_color = new ColorPicker( this ) ;
+	ui->layout->addWidget(new_color) ;
     widget->setLayout(ui->layout);
 
 	signalMapper = new QSignalMapper(this);

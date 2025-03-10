@@ -10,6 +10,7 @@
 #include "Renderer.h"
 #include "ResizeDialog.h"
 #include "ColorCountDialog.h"
+#include "ColorPicker.h"
 
 namespace Ui{
     class MainWindow;
