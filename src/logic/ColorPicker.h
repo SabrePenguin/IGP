@@ -14,6 +14,12 @@ public:
 	explicit ColorButton( QWidget* parent = nullptr, bool selected = false, const QColor& start = Qt::black ) ;
 	void setButtonColor( const QColor& color ) ;
 	void setLabelColor( const QColor& color ) ;
+	void setInactive() ;
+	QColor getColor() ;
+signals:
+	void selectionChanged( bool selected ) ;
+public slots:
+	void onClick() ;
 private:
 	QLabel* innerColor ;
 	QColor currentColor ;
@@ -40,13 +46,15 @@ private slots:
 	void updateColorFromHex() ;
 	void activateEyedropper() ;
 	void togglePicker() ;
+	void handleButtonSelection( bool selected );
 
 private:
 	void setSliders( const QColor& color ) ;
+	void setColor( const QColor& color ) ;
 	// Sliders
-	QLabel* leftColorDisplay ;
-	QLabel* rightColorDisplay ;
 	ColorButton* leftButton ;
+	ColorButton* rightButton ;
+	ColorButton* active ;
 	QLineEdit* hexcode ;
 	ColorSlider* red ;
 	ColorSlider* green ;
