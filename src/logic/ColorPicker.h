@@ -6,11 +6,28 @@
 #include "ColorSlider.h"
 #include <QEvent>
 #include <QObject>
+#include <QColor>
+
+class ColorButton : public QPushButton {
+	Q_OBJECT
+public:
+	explicit ColorButton( QWidget* parent = nullptr, bool selected = false, const QColor& start = Qt::black ) ;
+	void setButtonColor( const QColor& color ) ;
+	void setLabelColor( const QColor& color ) ;
+private:
+	QLabel* innerColor ;
+	QColor currentColor ;
+	QColor borderColor ;
+	bool selected ;
+};
 
 class ColorPicker : public QWidget {
 	Q_OBJECT
 public:
 	explicit ColorPicker( QWidget* parent = nullptr ) ;
+
+public slots:
+	void overrideSelectedColor( QColor color ) ;
 
 signals:
 	void colorChanged( QColor color ) ;
@@ -25,13 +42,19 @@ private slots:
 	void togglePicker() ;
 
 private:
-	QLabel* display ;
+	void setSliders( const QColor& color ) ;
+	// Sliders
+	QLabel* leftColorDisplay ;
+	QLabel* rightColorDisplay ;
+	ColorButton* leftButton ;
 	QLineEdit* hexcode ;
 	ColorSlider* red ;
 	ColorSlider* green ;
 	ColorSlider* blue ;
+	// Eyedropper
 	QPushButton* eyedropper ; 
 	bool pickingColor ;
 	QWidget* colorPickerWidget ;
+	// Collapse
 	QPushButton* toggleButton ;
 };

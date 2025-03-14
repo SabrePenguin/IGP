@@ -4,7 +4,6 @@
 #include <QLineEdit>
 #include <QSlider>
 #include <QPoint>
-#include <QColor>
 #include <QPalette>
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
@@ -31,20 +30,33 @@ ColorPicker::ColorPicker( QWidget* parent )
 	colorPickerWidget->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding ) ;
 	mainLayout->addWidget( colorPickerWidget ) ;
 
+	QBoxLayout* labelLayout = new QHBoxLayout() ;
+	leftColorDisplay = new QLabel( this ) ;
+	leftColorDisplay->setMinimumSize( 100, 50 ) ;
+	leftColorDisplay->setMaximumWidth( 300 ) ;
+	leftColorDisplay->setAutoFillBackground( true ) ;
+	rightColorDisplay = new QLabel( this ) ;
+	rightColorDisplay->setMinimumSize( 100, 50 ) ;
+	rightColorDisplay->setMaximumWidth( 300 ) ;
+	rightColorDisplay->setAutoFillBackground( true ) ;
 
-	display = new QLabel( this ) ;
-	display->setMinimumSize( 100, 50 ) ;
-	display->setMaximumWidth( 300 ) ;
-	display->setAutoFillBackground( true ) ;
-	pickerLayout->addWidget( display ) ;
+	leftButton = new ColorButton( this, true ) ;
+
+	labelLayout->addWidget( leftColorDisplay ) ;
+	labelLayout->addWidget( rightColorDisplay ) ;
+	labelLayout->addWidget( leftButton ) ;
+	pickerLayout->addLayout( labelLayout ) ;
 
 
 	// Generate the RGB
 	QHBoxLayout* sliderLayout = new QHBoxLayout() ;
 
 	red = new ColorSlider( this ) ;
+	red->setValue( 255 ) ;
 	green = new ColorSlider( this ) ;
+	green->setValue( 255 ) ;
 	blue = new ColorSlider( this ) ;
+	blue->setValue( 255 ) ;
 
 	sliderLayout->addWidget( red ) ;
 	sliderLayout->addWidget( green ) ;
@@ -78,6 +90,17 @@ ColorPicker::ColorPicker( QWidget* parent )
 
 	updateColorFromSlider() ;
 }
+
+void ColorPicker::overrideSelectedColor( QColor color ) {
+	qDebug() << "Selected color: " << color.name() ;
+	setSliders( color ) ;
+	QPalette palette = leftColorDisplay->palette() ;
+	palette.setColor( QPalette::Window, color ) ;
+	leftColorDisplay->setPalette( palette ) ;
+
+	hexcode->setText( color.name( QColor::HexRgb ) ) ;
+}
+
 
 
 bool ColorPicker::eventFilter( QObject* obj, QEvent* event )
@@ -113,9 +136,10 @@ void ColorPicker::updateColorFromSlider() {
 		green->value(), 
 		blue->value() 
 	) ;
-	QPalette palette = display->palette() ;
+	QPalette palette = leftColorDisplay->palette() ;
 	palette.setColor( QPalette::Window, color ) ;
-	display->setPalette( palette ) ;
+	leftColorDisplay->setPalette( palette ) ;
+	leftButton->setLabelColor( color ) ;
 
 	hexcode->setText( color.name( QColor::HexRgb ) ) ;
 
@@ -128,9 +152,7 @@ void ColorPicker::updateColorFromHex() {
 		hex.prepend( "#" ) ;
 	QColor color( hex ) ;
 	if( color.isValid()) {
-		red->setValue( color.red() ) ;
-		green->setValue( color.green() ) ;
-		blue->setValue( color.blue() ) ;
+		setSliders( color ) ;
 		updateColorFromSlider() ;
 	}
 }
@@ -145,4 +167,54 @@ void ColorPicker::togglePicker()
 	bool visible = colorPickerWidget->isVisible() ;
 	colorPickerWidget->setVisible( !visible ) ;
 	toggleButton->setText( visible ? "<<" : ">>" ) ;
+}
+
+void ColorPicker::setSliders( const QColor& color )
+{
+	if( red && green && blue ) {
+		red->setValue( color.red() ) ;
+		green->setValue( color.green() ) ;
+		blue->setValue( color.blue() ) ;
+	}
+}
+
+ColorButton::ColorButton( QWidget* parent, bool selected, const QColor& defaultColor ) : QPushButton(parent), currentColor(defaultColor), selected( selected )
+{
+	innerColor = new QLabel( this ) ;
+	innerColor->setBackgroundRole( QPalette::Window ) ;
+	innerColor->setAlignment( Qt::AlignCenter ) ;
+	innerColor->setAutoFillBackground( true ) ;
+	setMinimumSize( 50, 50 ) ;
+	setMaximumWidth( 300 ) ;
+	
+
+	QBoxLayout* layout = new QVBoxLayout( this ) ;
+	layout->setContentsMargins( 3, 3, 3, 3 ) ;
+	layout->addWidget( innerColor ) ;
+
+	setLayout( layout ) ;
+	setAutoFillBackground( true ) ;
+	setButtonColor( Qt::black ) ;
+	setLabelColor( defaultColor ) ;
+}
+
+void ColorButton::setButtonColor( const QColor& color )
+{
+	if( !selected ) return ;
+
+	borderColor = color ;
+	QPalette pal = palette() ;
+	pal.setColor( QPalette::Button, color ) ;
+	setPalette( pal ) ;
+	update() ;
+}
+
+void ColorButton::setLabelColor( const QColor &color )
+{
+	qDebug() << "Label Color: " << color.name() ;
+	currentColor = color ;
+	QPalette palette = innerColor->palette() ;
+	palette.setColor( QPalette::Window, color ) ;
+	innerColor->setPalette( palette ) ;
+	update() ;
 }
