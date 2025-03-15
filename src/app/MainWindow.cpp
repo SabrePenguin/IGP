@@ -171,14 +171,15 @@ void MainWindow::getColorCount()
 
 void MainWindow::setBrushColor()
 {
+	// TODO: Remove the call to renderWidget and replace with an event only from colorpicker. Reason: No need to adjust sliders
 	QColor color = QColorDialog::getColor(Qt::white, this, tr("Select Brush Color"));
 	if (color.isValid())
-		renderWidget->setBrushColor(color);
+		renderWidget->setBrushColor(color, true);
 }
 
 void MainWindow::setEraser()
 {
-	renderWidget->setBrushColor(QColor(255,255,255,0));
+	renderWidget->setBrushColor(QColor(255,255,255,0), true);
 }
 
 void MainWindow::setBackgroundColor()

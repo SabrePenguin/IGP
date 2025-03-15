@@ -131,8 +131,7 @@ void ColorPicker::updateColorFromSlider() {
 	active->setLabelColor( color ) ;
 
 	hexcode->setText( color.name( QColor::HexRgb ) ) ;
-
-	emit colorChanged( color ) ;
+	emit colorChanged( color, ( active == leftButton ) ) ;
 }
 
 

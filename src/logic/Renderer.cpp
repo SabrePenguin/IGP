@@ -3,7 +3,7 @@
 
 Renderer::Renderer(QWidget *parent)
     : QWidget(parent), hasPattern(false), hasImage(false), antialiased(true), paintedBackground(false),
-    hasImageChanged(false), erasedRing(false), gridX(1), gridY(1), outline(Qt::black), brush(Qt::white),
+    hasImageChanged(false), erasedRing(false), gridX(1), gridY(1), outline(Qt::black), leftClickBrush(Qt::white),
     background(Qt::white), paintedScene(new QPixmap(1,1))
 {
 	this->setAutoFillBackground(false);
@@ -29,7 +29,7 @@ Renderer::~Renderer()
 void Renderer::newImage(int x, int y)
 {
 	image = QImage(x,y,QImage::Format_RGB32);
-	image.fill(brush.rgb());
+	image.fill(leftClickBrush.rgb());
 
 	gridX = x;
 	gridY = y;
@@ -190,9 +190,12 @@ void Renderer::setOutlineColor(QColor color)
 	update();
 }
 
-void Renderer::setBrushColor(QColor color)
+void Renderer::setBrushColor(QColor color, bool leftSide)
 {
-	brush = color;
+	if( leftSide )
+		leftClickBrush = color;
+	else
+		rightClickBrush = color;
 }
 
 void Renderer::repaintImage()
@@ -511,6 +514,16 @@ void Renderer::paintEvent(QPaintEvent *e)
 
 void Renderer::mousePressEvent(QMouseEvent *e)
 {
+	QColor targetColor ;
+	if( e->button() == Qt::LeftButton ) {
+		targetColor = leftClickBrush ;
+	}
+	else if( e->button() == Qt::RightButton ) {
+		targetColor = rightClickBrush ;
+	}
+	else if( e->button() == Qt::MiddleButton ) {
+		targetColor = Qt::white ;
+	}
 	if (hasImage && hasPattern)
 	{
 		// Starting positions to test
@@ -549,7 +562,7 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 									// Make sure clicked image pixel is inside the image
 									if (pixelX < gridX && pixelY < gridY)
 									{
-										image.setPixel(pixelX,pixelY,brush.rgba());
+										image.setPixel(pixelX,pixelY,targetColor.rgba());
 										QRegion repaintRegion(curX*pattern.getX()*zoom,curY*pattern.getY()*zoom,pattern.getLargestTileOffsetX()*zoom,pattern.getLargestTileOffsetY()*zoom);
 										paintedRegion-=repaintRegion;
 										erasedRing=true;
@@ -567,8 +580,8 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 }
 
 	
-void Renderer::updateBrushColor( QColor color ) {
-	setBrushColor( color ) ;
+void Renderer::updateBrushColor( QColor color, bool leftSide ) {
+	setBrushColor( color, leftSide ) ;
 }
 
 void Renderer::updatePatternSize()

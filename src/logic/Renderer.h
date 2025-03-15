@@ -23,7 +23,7 @@ public:
 	void changePalette(QString colorFile);
 	void setBackgroundColor(QColor color);
 	void setOutlineColor(QColor color);
-	void setBrushColor(QColor color);
+	void setBrushColor(QColor color, bool leftSide);
 	void repaintImage();
 	void rotateTranspose();
 	void rotateClockwise();
@@ -45,7 +45,7 @@ public:
 	void countColors(QVector<QRgb> *colors, QVector<int> *counts);
 
 public slots:
-	void updateBrushColor( QColor color ) ;
+	void updateBrushColor( QColor color, bool leftSide ) ;
 
 protected:
     void paintEvent(QPaintEvent *e);
@@ -72,7 +72,8 @@ private:
 	QImage image;
 	QColor outline;
 	QColor background;
-	QColor brush;
+	QColor leftClickBrush;
+	QColor rightClickBrush;
 
 	// Scene painting
 	QPixmap *paintedScene;
