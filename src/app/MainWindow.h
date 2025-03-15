@@ -57,6 +57,8 @@ public slots:
 private:
     Renderer *renderWidget;
     Ui::MainWindow *ui ;
+	// Custom Color Menu
+	ColorPicker *picker;
 
 	// Initalizer Functions
     void createActions();

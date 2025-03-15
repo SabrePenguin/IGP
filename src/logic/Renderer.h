@@ -45,6 +45,7 @@ public:
 	void countColors(QVector<QRgb> *colors, QVector<int> *counts);
 
 public slots:
+	// TODO: Add a slot to swap left and right click. Replaces bool leftSide
 	void updateBrushColor( QColor color, bool leftSide ) ;
 
 protected:

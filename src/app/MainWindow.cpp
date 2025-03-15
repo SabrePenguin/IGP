@@ -19,9 +19,9 @@ MainWindow::MainWindow() :
 
 	// Create the custom color picker, connect to Renderer
 
-	ColorPicker* new_color = new ColorPicker( this ) ;
-	connect( new_color, &ColorPicker::colorChanged, renderWidget, &Renderer::updateBrushColor ) ;
-	ui->layout->addWidget(new_color) ;
+	picker = new ColorPicker( this ) ;
+	connect( picker, &ColorPicker::colorChanged, renderWidget, &Renderer::updateBrushColor ) ;
+	ui->layout->addWidget(picker) ;
     widget->setLayout(ui->layout);
 
 	signalMapper = new QSignalMapper(this);
@@ -171,10 +171,9 @@ void MainWindow::getColorCount()
 
 void MainWindow::setBrushColor()
 {
-	// TODO: Remove the call to renderWidget and replace with an event only from colorpicker. Reason: No need to adjust sliders
 	QColor color = QColorDialog::getColor(Qt::white, this, tr("Select Brush Color"));
-	if (color.isValid())
-		renderWidget->setBrushColor(color, true);
+	if( color.isValid() )
+		picker->overrideSelectedColor( color ) ;
 }
 
 void MainWindow::setEraser()

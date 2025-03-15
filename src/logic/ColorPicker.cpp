@@ -92,6 +92,8 @@ void ColorPicker::overrideSelectedColor( QColor color ) {
 	setSliders( color ) ;
 	active->setLabelColor( color ) ;
 	hexcode->setText( color.name( QColor::HexRgb ) ) ;
+
+	emit colorChanged( color, ( active == leftButton ) ) ;
 }
 
 

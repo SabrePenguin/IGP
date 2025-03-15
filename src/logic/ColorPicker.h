@@ -31,8 +31,6 @@ class ColorPicker : public QWidget {
 	Q_OBJECT
 public:
 	explicit ColorPicker( QWidget* parent = nullptr ) ;
-
-public slots:
 	void overrideSelectedColor( QColor color ) ;
 
 signals:
