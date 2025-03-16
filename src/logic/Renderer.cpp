@@ -30,7 +30,8 @@ Renderer::~Renderer()
 void Renderer::newImage(int x, int y)
 {
 	image = QImage(x,y,QImage::Format_RGB32);
-	image.fill(leftClickBrush.rgb());
+	image.fill( Qt::white ) ;
+	//image.fill(leftClickBrush.rgb());
 
 	gridX = x;
 	gridY = y;
