@@ -1,10 +1,11 @@
 #include <QtWidgets>
+#include <utility>
 #include "Renderer.h"
 
 Renderer::Renderer(QWidget *parent)
     : QWidget(parent), hasPattern(false), hasImage(false), antialiased(true), paintedBackground(false),
-    hasImageChanged(false), erasedRing(false), gridX(1), gridY(1), outline(Qt::black), leftClickBrush(Qt::white),
-    background(Qt::white), paintedScene(new QPixmap(1,1))
+    hasImageChanged(false), erasedRing(false), gridX(1), gridY(1), outline(Qt::black), leftClickBrush(Qt::black), 
+	rightClickBrush(Qt::white), background(Qt::white), paintedScene(new QPixmap(1,1))
 {
 	this->setAutoFillBackground(false);
 	/*QPalette p = this->palette();
@@ -190,12 +191,9 @@ void Renderer::setOutlineColor(QColor color)
 	update();
 }
 
-void Renderer::setBrushColor(QColor color, bool leftSide)
+void Renderer::setBrushColor(QColor color)
 {
-	if( leftSide )
-		leftClickBrush = color;
-	else
-		rightClickBrush = color;
+	leftClickBrush = color ;
 }
 
 void Renderer::repaintImage()
@@ -579,9 +577,14 @@ void Renderer::mousePressEvent(QMouseEvent *e)
 	}
 }
 
+
+void Renderer::swapBrush()
+{
+	std::swap( leftClickBrush, rightClickBrush ) ;
+}
 	
-void Renderer::updateBrushColor( QColor color, bool leftSide ) {
-	setBrushColor( color, leftSide ) ;
+void Renderer::updateBrushColor( QColor color ) {
+	setBrushColor( color ) ;
 }
 
 void Renderer::updatePatternSize()

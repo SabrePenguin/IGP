@@ -21,6 +21,7 @@ MainWindow::MainWindow() :
 
 	picker = new ColorPicker( this ) ;
 	connect( picker, &ColorPicker::colorChanged, renderWidget, &Renderer::updateBrushColor ) ;
+	connect( picker, &ColorPicker::swappedButton, renderWidget, &Renderer::swapBrush ) ;
 	ui->layout->addWidget(picker) ;
     widget->setLayout(ui->layout);
 
@@ -178,7 +179,7 @@ void MainWindow::setBrushColor()
 
 void MainWindow::setEraser()
 {
-	renderWidget->setBrushColor(QColor(255,255,255,0), true);
+	renderWidget->setBrushColor(QColor(255,255,255,0));
 }
 
 void MainWindow::setBackgroundColor()

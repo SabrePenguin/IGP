@@ -34,7 +34,8 @@ public:
 	void overrideSelectedColor( QColor color ) ;
 
 signals:
-	void colorChanged( QColor color, bool leftSide ) ;
+	void colorChanged( QColor color ) ;
+	void swappedButton() ;
 
 protected:
 	bool eventFilter( QObject* obj, QEvent* event ) override ;
@@ -47,8 +48,7 @@ private slots:
 	void handleButtonSelection( bool selected );
 
 private:
-	void setSliders( const QColor& color ) ;
-	void setColor( const QColor& color ) ;
+	void setColor( const QColor& color, bool emitter = true ) ;
 	// Sliders
 	ColorButton* leftButton ;
 	ColorButton* rightButton ;

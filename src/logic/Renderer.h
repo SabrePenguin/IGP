@@ -23,7 +23,7 @@ public:
 	void changePalette(QString colorFile);
 	void setBackgroundColor(QColor color);
 	void setOutlineColor(QColor color);
-	void setBrushColor(QColor color, bool leftSide);
+	void setBrushColor(QColor color);
 	void repaintImage();
 	void rotateTranspose();
 	void rotateClockwise();
@@ -46,7 +46,8 @@ public:
 
 public slots:
 	// TODO: Add a slot to swap left and right click. Replaces bool leftSide
-	void updateBrushColor( QColor color, bool leftSide ) ;
+	void swapBrush( ) ;
+	void updateBrushColor( QColor color ) ;
 
 protected:
     void paintEvent(QPaintEvent *e);

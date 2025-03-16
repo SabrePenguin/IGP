@@ -10,6 +10,8 @@
 #include <QApplication>
 #include <QMouseEvent>
 #include <QScreen>
+#include <QSignalBlocker>
+
 
 ColorPicker::ColorPicker( QWidget* parent )
 {
@@ -34,7 +36,7 @@ ColorPicker::ColorPicker( QWidget* parent )
 
 	leftButton = new ColorButton( this, true ) ;
 	active = leftButton ; // Set leftButton as active in order to allow proper changes.
-	rightButton = new ColorButton( this, false ) ;
+	rightButton = new ColorButton( this, false, Qt::white ) ;
 
 	connect( leftButton, &ColorButton::selectionChanged, this, &ColorPicker::handleButtonSelection ) ;
 	connect( rightButton, &ColorButton::selectionChanged, this, &ColorPicker::handleButtonSelection ) ;
@@ -47,11 +49,8 @@ ColorPicker::ColorPicker( QWidget* parent )
 	QHBoxLayout* sliderLayout = new QHBoxLayout() ;
 
 	red = new ColorSlider( this ) ;
-	red->setValue( 255 ) ;
 	green = new ColorSlider( this ) ;
-	green->setValue( 255 ) ;
 	blue = new ColorSlider( this ) ;
-	blue->setValue( 255 ) ;
 
 	sliderLayout->addWidget( red ) ;
 	sliderLayout->addWidget( green ) ;
@@ -88,12 +87,7 @@ ColorPicker::ColorPicker( QWidget* parent )
 
 
 void ColorPicker::overrideSelectedColor( QColor color ) {
-	qDebug() << "Selected color: " << color.name() ;
-	setSliders( color ) ;
-	active->setLabelColor( color ) ;
-	hexcode->setText( color.name( QColor::HexRgb ) ) ;
-
-	emit colorChanged( color, ( active == leftButton ) ) ;
+	setColor( color ) ;
 }
 
 
@@ -130,10 +124,7 @@ void ColorPicker::updateColorFromSlider() {
 		green->value(), 
 		blue->value() 
 	) ;
-	active->setLabelColor( color ) ;
-
-	hexcode->setText( color.name( QColor::HexRgb ) ) ;
-	emit colorChanged( color, ( active == leftButton ) ) ;
+	setColor( color ) ;
 }
 
 
@@ -143,8 +134,7 @@ void ColorPicker::updateColorFromHex() {
 		hex.prepend( "#" ) ;
 	QColor color( hex ) ;
 	if( color.isValid()) {
-		setSliders( color ) ;
-		updateColorFromSlider() ;
+		setColor( color ) ;
 	}
 }
 
@@ -165,38 +155,48 @@ void ColorPicker::togglePicker()
 
 void ColorPicker::handleButtonSelection( bool selected )
 {
+	ColorButton* previous = active ;
 	if( sender() == leftButton ) 
 	{
 		active = leftButton ;
 		leftButton->setButtonColor( Qt::black ) ;
 		rightButton->setInactive() ;
-		setColor( leftButton->getColor() ) ;
+		setColor( leftButton->getColor(), false ) ;
 	}
 	else if( sender() == rightButton )
 	{
 		active = rightButton ;
 		rightButton->setButtonColor( Qt::black ) ;
 		leftButton->setInactive() ;
-		setColor( rightButton->getColor() ) ;
+		setColor( rightButton->getColor(), false ) ;
+	}
+	if( previous != active ) {
+		emit swappedButton() ;
 	}
 }
 
 
-void ColorPicker::setSliders( const QColor& color )
+void ColorPicker::setColor( const QColor& color, bool emitter )
 {
-	if( red && green && blue ) {
+	if( emitter ) {
 		red->setValue( color.red() ) ;
 		green->setValue( color.green() ) ;
 		blue->setValue( color.blue() ) ;
 	}
-}
-
-
-void ColorPicker::setColor( const QColor& color )
-{
-	setSliders( color ) ;
+	else {
+		const QSignalBlocker blockr( red ) ;
+		const QSignalBlocker blockg( green ) ;
+		const QSignalBlocker blockb( blue ) ;
+		red->setValue( color.red() ) ;
+		green->setValue( color.green() ) ;
+		blue->setValue( color.blue() ) ;
+	}
 	active->setLabelColor( color ) ;
 	hexcode->setText( color.name( QColor::HexRgb ) ) ;
+	if( emitter )
+	{
+		emit colorChanged( color ) ;
+	}
 }
 
 
