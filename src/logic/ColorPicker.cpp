@@ -206,12 +206,12 @@ ColorButton::ColorButton( QWidget* parent, bool selected, const QColor& defaultC
 	innerColor->setBackgroundRole( QPalette::Window ) ;
 	innerColor->setAlignment( Qt::AlignCenter ) ;
 	innerColor->setAutoFillBackground( true ) ;
-	setMinimumSize( 50, 50 ) ;
+	setMinimumSize( 45, 45 ) ;
 	setMaximumWidth( 300 ) ;
 	
 
 	QBoxLayout* layout = new QVBoxLayout( this ) ;
-	layout->setContentsMargins( 3, 3, 3, 3 ) ;
+	layout->setContentsMargins( 5, 5, 5, 5 ) ;
 	layout->addWidget( innerColor ) ;
 
 	setLayout( layout ) ;
