@@ -9,26 +9,6 @@
 #include <QColor>
 #include <QTabWidget>
 
-class ColorButton : public QPushButton {
-	Q_OBJECT
-public:
-	explicit ColorButton( QWidget* parent = nullptr, bool selected = false, const QColor& start = Qt::black ) ;
-	void setButtonColor( const QColor& color ) ;
-	void setLabelColor( const QColor& color ) ;
-	void setInactive() ;
-	QLabel* getLabel();
-	QColor getColor() ;
-signals:
-	void selectionChanged( bool selected ) ;
-public slots:
-	void onClick() ;
-private:
-	QLabel* innerColor ;
-	QColor currentColor ;
-	QColor borderColor ;
-	bool selected ;
-};
-
 
 class ColorTab : public QTabWidget {
 	Q_OBJECT
