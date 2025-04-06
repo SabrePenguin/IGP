@@ -32,11 +32,11 @@ ColorPicker::ColorPicker( QWidget* parent )
 	//tab->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding );
 	mainLayout->addWidget( tab );
 
-	ColorTab* left_tab = new ColorTab();
+	left_tab = new ColorTab();
 	tab->addTab( left_tab, "" );
 	tab->tabBar()->setTabButton( 0, QTabBar::LeftSide, left_tab->getLabel() );
 
-	ColorTab* right_tab = new ColorTab(nullptr, Qt::white);
+	right_tab = new ColorTab(nullptr, Qt::white);
 	tab->addTab( right_tab, "" );
 	tab->tabBar()->setTabButton( 1, QTabBar::LeftSide, right_tab->getLabel() );
 
@@ -86,11 +86,18 @@ bool ColorPicker::eventFilter( QObject* obj, QEvent* event )
 
 		QColor pickedColor = image.toImage().pixelColor( 0, 0 ) ;
 		if( pickedColor.isValid() ) {
-			/*red->setValue( pickedColor.red() ) ;
-			green->setValue( pickedColor.green() ) ;
-			blue->setValue( pickedColor.blue() ) ;
-
-			updateColorFromSlider() ;*/
+			int selected_tab = tab->currentIndex() ;
+			ColorTab* active ;
+			if( selected_tab == 0 ) {
+				active = left_tab ;
+			}
+			else if( selected_tab == 1 ) {
+				active = right_tab ;
+			}
+			else {
+				return false ;
+			}
+			active->overrideColor( pickedColor ) ;
 		}
 		return true ;
 	}
@@ -223,6 +230,11 @@ ColorTab::ColorTab( QWidget* parent, const QColor& defaultColor ) : QTabWidget(p
 QLabel* ColorTab::getLabel()
 {
 	return current_color;
+}
+
+void ColorTab::overrideColor( const QColor& color )
+{
+	setColor( color ) ;
 }
 
 

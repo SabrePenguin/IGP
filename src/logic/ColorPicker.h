@@ -35,6 +35,7 @@ class ColorTab : public QTabWidget {
 public:
 	explicit ColorTab( QWidget* parent = nullptr, const QColor& start = Qt::black ) ;
 	QLabel* getLabel();
+	void overrideColor( const QColor& color ) ;
 signals:
 	void colorChanged( QColor color ) ;
 private slots:
@@ -68,6 +69,8 @@ private slots:
 	void togglePicker() ;
 
 private:
+	ColorTab* left_tab ;
+	ColorTab* right_tab ;
 	// Eyedropper
 	QPushButton* eyedropper ; 
 	bool pickingColor ;
