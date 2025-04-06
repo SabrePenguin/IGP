@@ -11,6 +11,7 @@
 #include <QMouseEvent>
 #include <QScreen>
 #include <QSignalBlocker>
+#include <QTabBar>
 
 
 ColorPicker::ColorPicker( QWidget* parent )
@@ -23,56 +24,38 @@ ColorPicker::ColorPicker( QWidget* parent )
 	toggleButton->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding ) ;
 	mainLayout->addWidget( toggleButton ) ;
 
-	
-
+	/////////////////////////////
 	colorPickerWidget = new QWidget( this ) ;
 	QBoxLayout* pickerLayout = new QVBoxLayout( colorPickerWidget ) ;
+
+	tab = new QTabWidget( this );
+	//tab->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding );
+	mainLayout->addWidget( tab );
+
+	ColorTab* left_tab = new ColorTab();
+	tab->addTab( left_tab, "" );
+	tab->tabBar()->setTabButton( 0, QTabBar::LeftSide, left_tab->getLabel() );
+
+	ColorTab* right_tab = new ColorTab(nullptr, Qt::white);
+	tab->addTab( right_tab, "" );
+	tab->tabBar()->setTabButton( 1, QTabBar::LeftSide, right_tab->getLabel() );
+
+	
+	connect( tab->tabBar(), &QTabBar::currentChanged, this, &ColorPicker::swappedButton ) ;  //Update the active tab for eyedropper
+	connect( right_tab, &ColorTab::colorChanged, this, &ColorPicker::colorChanged) ;
+	connect( left_tab, &ColorTab::colorChanged, this, &ColorPicker::colorChanged) ;
+
+	pickerLayout->addWidget( tab );
+
+	/////////////////////////////
+
+	
 	pickerLayout->setContentsMargins( 0, 0, 0, 0 ) ;
 	colorPickerWidget->setVisible( false ) ;
 	colorPickerWidget->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding ) ;
 	mainLayout->addWidget( colorPickerWidget ) ;
 
 	QBoxLayout* labelLayout = new QHBoxLayout() ;
-
-	leftButton = new ColorButton( this, true ) ;
-	active = leftButton ; // Set leftButton as active in order to allow proper changes.
-	rightButton = new ColorButton( this, false, Qt::white ) ;
-
-	connect( leftButton, &ColorButton::selectionChanged, this, &ColorPicker::handleButtonSelection ) ;
-	connect( rightButton, &ColorButton::selectionChanged, this, &ColorPicker::handleButtonSelection ) ;
-	labelLayout->addWidget( leftButton ) ;
-	labelLayout->addWidget( rightButton ) ;
-	pickerLayout->addLayout( labelLayout ) ;
-
-
-	// Generate the RGB
-	QHBoxLayout* sliderLayout = new QHBoxLayout() ;
-
-	red = new ColorSlider( this ) ;
-	green = new ColorSlider( this ) ;
-	blue = new ColorSlider( this ) ;
-
-	sliderLayout->addWidget( red ) ;
-	sliderLayout->addWidget( green ) ;
-	sliderLayout->addWidget( blue ) ;
-
-	pickerLayout->addLayout( sliderLayout ) ;
-
-	connect( red, &ColorSlider::valueChanged, this, &ColorPicker::updateColorFromSlider );
-	connect( blue , &ColorSlider::valueChanged, this, &ColorPicker::updateColorFromSlider );
-	connect( green, &ColorSlider::valueChanged, this, &ColorPicker::updateColorFromSlider );
-
-	// Set up the defaults for the hex input
-	hexcode = new QLineEdit( this ) ;
-	hexcode->setAlignment( Qt::AlignCenter ) ;
-	hexcode->setPlaceholderText( "#RRGGBB" ) ;
-	hexcode->setMaxLength( 7 );
-	QRegularExpression hexregex( "^#?([A-Fa-f0-8]{6})$" ) ;
-	hexcode->setValidator( new QRegularExpressionValidator( hexregex, this ) ) ;
-
-	pickerLayout->addWidget( hexcode ) ;
-
-	connect( hexcode, &QLineEdit::editingFinished, this, &ColorPicker::updateColorFromHex ) ;
 
 	// Create the eyedropper
 	eyedropper = new QPushButton( "Pick Color", this ) ;
@@ -81,13 +64,11 @@ ColorPicker::ColorPicker( QWidget* parent )
 	connect( toggleButton, &QPushButton::clicked, this, &ColorPicker::togglePicker ) ;
 	connect( eyedropper, &QPushButton::clicked, this, &ColorPicker::activateEyedropper ) ;
 	qApp->installEventFilter( this ) ;
-
-	updateColorFromSlider() ;
 }
 
 
 void ColorPicker::overrideSelectedColor( QColor color ) {
-	setColor( color ) ;
+	//setColor( color ) ;
 }
 
 
@@ -105,37 +86,16 @@ bool ColorPicker::eventFilter( QObject* obj, QEvent* event )
 
 		QColor pickedColor = image.toImage().pixelColor( 0, 0 ) ;
 		if( pickedColor.isValid() ) {
-			red->setValue( pickedColor.red() ) ;
+			/*red->setValue( pickedColor.red() ) ;
 			green->setValue( pickedColor.green() ) ;
 			blue->setValue( pickedColor.blue() ) ;
 
-			updateColorFromSlider() ;
+			updateColorFromSlider() ;*/
 		}
 		return true ;
 	}
 
 	return QWidget::eventFilter( obj, event ) ;
-}
-
-
-void ColorPicker::updateColorFromSlider() {
-	QColor color( 
-		red->value(), 
-		green->value(), 
-		blue->value() 
-	) ;
-	setColor( color ) ;
-}
-
-
-void ColorPicker::updateColorFromHex() {
-	QString hex = hexcode->text().trimmed() ;
-	if( !hex.startsWith( "#" ) )
-		hex.prepend( "#" ) ;
-	QColor color( hex ) ;
-	if( color.isValid()) {
-		setColor( color ) ;
-	}
 }
 
 
@@ -153,59 +113,13 @@ void ColorPicker::togglePicker()
 }
 
 
-void ColorPicker::handleButtonSelection( bool selected )
-{
-	ColorButton* previous = active ;
-	if( sender() == leftButton ) 
-	{
-		active = leftButton ;
-		leftButton->setButtonColor( Qt::black ) ;
-		rightButton->setInactive() ;
-		setColor( leftButton->getColor(), false ) ;
-	}
-	else if( sender() == rightButton )
-	{
-		active = rightButton ;
-		rightButton->setButtonColor( Qt::black ) ;
-		leftButton->setInactive() ;
-		setColor( rightButton->getColor(), false ) ;
-	}
-	if( previous != active ) {
-		emit swappedButton() ;
-	}
-}
-
-
-void ColorPicker::setColor( const QColor& color, bool emitter )
-{
-	if( emitter ) {
-		red->setValue( color.red() ) ;
-		green->setValue( color.green() ) ;
-		blue->setValue( color.blue() ) ;
-	}
-	else {
-		const QSignalBlocker blockr( red ) ;
-		const QSignalBlocker blockg( green ) ;
-		const QSignalBlocker blockb( blue ) ;
-		red->setValue( color.red() ) ;
-		green->setValue( color.green() ) ;
-		blue->setValue( color.blue() ) ;
-	}
-	active->setLabelColor( color ) ;
-	hexcode->setText( color.name( QColor::HexRgb ) ) ;
-	if( emitter )
-	{
-		emit colorChanged( color ) ;
-	}
-}
-
-
 ColorButton::ColorButton( QWidget* parent, bool selected, const QColor& defaultColor ) : QPushButton(parent), currentColor(defaultColor), selected( selected )
 {
 	innerColor = new QLabel( this ) ;
 	innerColor->setBackgroundRole( QPalette::Window ) ;
 	innerColor->setAlignment( Qt::AlignCenter ) ;
 	innerColor->setAutoFillBackground( true ) ;
+	innerColor->setMinimumSize( 45, 45 );
 	setMinimumSize( 45, 45 ) ;
 	setMaximumWidth( 300 ) ;
 	
@@ -248,6 +162,11 @@ void ColorButton::setInactive()
 	setButtonColor( Qt::gray ) ;
 }
 
+QLabel* ColorButton::getLabel()
+{
+	return innerColor;
+}
+
 
 QColor ColorButton::getColor()
 {
@@ -260,5 +179,101 @@ void ColorButton::onClick()
 	if( !selected ) {
 		selected = !selected ;
 		emit selectionChanged( selected ) ;
+	}
+}
+
+
+ColorTab::ColorTab( QWidget* parent, const QColor& defaultColor ) : QTabWidget(parent)
+{
+	QBoxLayout* mainLayout = new QVBoxLayout( this );
+	QHBoxLayout* sliderLayout = new QHBoxLayout() ;
+
+	red = new ColorSlider( this ) ;
+	green = new ColorSlider( this ) ;
+	blue = new ColorSlider( this ) ;
+
+	sliderLayout->addWidget( red ) ;
+	sliderLayout->addWidget( green ) ;
+	sliderLayout->addWidget( blue ) ;
+
+	connect( red, &ColorSlider::valueChanged, this, &ColorTab::updateColorFromSlider );
+	connect( green, &ColorSlider::valueChanged, this, &ColorTab::updateColorFromSlider );
+	connect( blue, &ColorSlider::valueChanged, this, &ColorTab::updateColorFromSlider );
+
+	mainLayout->addLayout( sliderLayout );
+	current_color = new QLabel( this ) ;
+	current_color->setBackgroundRole( QPalette::Window ) ;
+	current_color->setAlignment( Qt::AlignCenter ) ;
+	current_color->setAutoFillBackground( true ) ;
+	current_color->setMinimumSize( 45, 45 );
+	
+
+	hexcode = new QLineEdit( this ) ;
+	hexcode->setAlignment( Qt::AlignCenter ) ;
+	hexcode->setPlaceholderText( "#RRGGBB" ) ;
+	hexcode->setMaxLength( 7 );
+	QRegularExpression hexregex( "^#?([A-Fa-f0-8]{6})$" ) ;
+	hexcode->setValidator( new QRegularExpressionValidator( hexregex, this ) ) ;
+
+	mainLayout->addWidget( hexcode );
+
+	setColor( defaultColor );
+}
+
+QLabel* ColorTab::getLabel()
+{
+	return current_color;
+}
+
+
+void ColorTab::updateColorFromSlider()
+{
+	QColor color(
+		red->value(),
+		green->value(),
+		blue->value()
+	) ;
+	setColor( color ) ;
+}
+
+void ColorTab::updateColorFromHex()
+{
+	QString hex = hexcode->text().trimmed() ;
+	if( !hex.startsWith( "#" ) )
+		hex.prepend( "#" ) ;
+	QColor color( hex ) ;
+	if( color.isValid() ) {
+		setColor( color ) ;
+	}
+}
+
+void ColorTab::setColor( const QColor& new_color, bool emitter )
+{
+	if( emitter ) {
+		red->setValue( new_color.red() ) ;
+		green->setValue( new_color.green() ) ;
+		blue->setValue( new_color.blue() ) ;
+	}
+	else {
+		const QSignalBlocker blockr( red ) ;
+		const QSignalBlocker blockg( green ) ;
+		const QSignalBlocker blockb( blue ) ;
+		red->setValue( new_color.red() ) ;
+		green->setValue( new_color.green() ) ;
+		blue->setValue( new_color.blue() ) ;
+	}
+	
+	QPalette palette = current_color->palette() ;
+	palette.setColor( QPalette::Window, new_color ) ;
+	current_color->setPalette( palette ) ;
+	update() ;
+	red->setValue( new_color.red() ) ;
+	green->setValue( new_color.green() ) ;
+	blue->setValue( new_color.blue() ) ;
+	hexcode->setText( new_color.name( QColor::HexRgb ) ) ;
+
+	if( emitter )
+	{
+		emit colorChanged( new_color ) ;
 	}
 }

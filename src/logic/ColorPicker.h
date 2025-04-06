@@ -7,6 +7,7 @@
 #include <QEvent>
 #include <QObject>
 #include <QColor>
+#include <QTabWidget>
 
 class ColorButton : public QPushButton {
 	Q_OBJECT
@@ -15,6 +16,7 @@ public:
 	void setButtonColor( const QColor& color ) ;
 	void setLabelColor( const QColor& color ) ;
 	void setInactive() ;
+	QLabel* getLabel();
 	QColor getColor() ;
 signals:
 	void selectionChanged( bool selected ) ;
@@ -26,6 +28,27 @@ private:
 	QColor borderColor ;
 	bool selected ;
 };
+
+
+class ColorTab : public QTabWidget {
+	Q_OBJECT
+public:
+	explicit ColorTab( QWidget* parent = nullptr, const QColor& start = Qt::black ) ;
+	QLabel* getLabel();
+signals:
+	void colorChanged( QColor color ) ;
+private slots:
+	void updateColorFromSlider() ;
+	void updateColorFromHex() ;
+	void setColor( const QColor& new_color, bool emitter = true );
+private:
+	ColorSlider* red;
+	ColorSlider* blue;
+	ColorSlider* green;
+	QLabel* current_color;
+	QLineEdit* hexcode;
+};
+
 
 class ColorPicker : public QWidget {
 	Q_OBJECT
@@ -41,26 +64,15 @@ protected:
 	bool eventFilter( QObject* obj, QEvent* event ) override ;
 
 private slots:
-	void updateColorFromSlider() ;
-	void updateColorFromHex() ;
 	void activateEyedropper() ;
 	void togglePicker() ;
-	void handleButtonSelection( bool selected );
 
 private:
-	void setColor( const QColor& color, bool emitter = true ) ;
-	// Sliders
-	ColorButton* leftButton ;
-	ColorButton* rightButton ;
-	ColorButton* active ;
-	QLineEdit* hexcode ;
-	ColorSlider* red ;
-	ColorSlider* green ;
-	ColorSlider* blue ;
 	// Eyedropper
 	QPushButton* eyedropper ; 
 	bool pickingColor ;
 	QWidget* colorPickerWidget ;
+	QTabWidget* tab;
 	// Collapse
 	QPushButton* toggleButton ;
 };
