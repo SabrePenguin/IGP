@@ -29,6 +29,18 @@ ColorPicker::ColorPicker( QWidget* parent )
 	QBoxLayout* pickerLayout = new QVBoxLayout( colorPickerWidget ) ;
 
 	tab = new QTabWidget( this );
+	tab->tabBar()->setStyleSheet(R"(
+		QTabBar::tab {
+			height: 50px;
+			width: 85px;
+			border: 1px solid lightgray;
+			background-color: white;
+			margin: 0px;
+		}
+		QTabBar::tab:selected {
+			background-color: #b0b0d0;
+		}
+	)");
 	//tab->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding );
 	mainLayout->addWidget( tab );
 
@@ -152,7 +164,7 @@ ColorTab::ColorTab( QWidget* parent, const QColor& defaultColor ) : QWidget(pare
 	current_color->setBackgroundRole( QPalette::Window ) ;
 	current_color->setAlignment( Qt::AlignCenter ) ;
 	current_color->setAutoFillBackground( true ) ;
-	current_color->setMinimumSize( 45, 45 );
+	current_color->setMinimumSize( 79, 44 );
 	
 
 	hexcode = new QLineEdit( this ) ;
