@@ -159,14 +159,14 @@ void ColorPicker::handleButtonSelection( bool selected )
 	if( sender() == leftButton ) 
 	{
 		active = leftButton ;
-		leftButton->setButtonColor( Qt::black ) ;
+		leftButton->setButtonColor( Qt::blue ) ;
 		rightButton->setInactive() ;
 		setColor( leftButton->getColor(), false ) ;
 	}
 	else if( sender() == rightButton )
 	{
 		active = rightButton ;
-		rightButton->setButtonColor( Qt::black ) ;
+		rightButton->setButtonColor( Qt::blue ) ;
 		leftButton->setInactive() ;
 		setColor( rightButton->getColor(), false ) ;
 	}
@@ -216,7 +216,10 @@ ColorButton::ColorButton( QWidget* parent, bool selected, const QColor& defaultC
 
 	setLayout( layout ) ;
 	setAutoFillBackground( true ) ;
-	setButtonColor( Qt::black ) ;
+	if( selected )
+		setButtonColor( Qt::blue ) ;
+	else
+		setButtonColor( Qt::gray ) ;
 	setLabelColor( defaultColor ) ;
 	connect( this, &ColorButton::clicked, this, &ColorButton::onClick ) ;
 }
