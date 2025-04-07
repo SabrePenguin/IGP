@@ -34,11 +34,11 @@ ColorPicker::ColorPicker( QWidget* parent )
 			height: 50px;
 			width: 85px;
 			border: 1px solid lightgray;
-			background-color: white;
+			background-color: #f0f0f0;
 			margin: 0px;
 		}
 		QTabBar::tab:selected {
-			background-color: #b0b0d0;
+			background-color: #ffffff;
 		}
 	)");
 	//tab->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding );
