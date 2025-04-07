@@ -130,7 +130,7 @@ void ColorPicker::togglePicker()
 }
 
 
-ColorTab::ColorTab( QWidget* parent, const QColor& defaultColor ) : QTabWidget(parent)
+ColorTab::ColorTab( QWidget* parent, const QColor& defaultColor ) : QWidget(parent)
 {
 	QBoxLayout* mainLayout = new QVBoxLayout( this );
 	QHBoxLayout* sliderLayout = new QHBoxLayout() ;

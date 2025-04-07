@@ -10,7 +10,7 @@
 #include <QTabWidget>
 
 
-class ColorTab : public QTabWidget {
+class ColorTab : public QWidget {
 	Q_OBJECT
 public:
 	explicit ColorTab( QWidget* parent = nullptr, const QColor& start = Qt::black ) ;
