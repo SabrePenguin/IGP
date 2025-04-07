@@ -68,7 +68,17 @@ ColorPicker::ColorPicker( QWidget* parent )
 
 
 void ColorPicker::overrideSelectedColor( QColor color ) {
-	//setColor( color ) ;
+	int selected_tab = tab->currentIndex() ;
+	ColorTab* active ;
+	if( selected_tab == 0 ) {
+		active = left_tab ;
+	}
+	else if( selected_tab == 1 ) {
+		active = right_tab ;
+	}
+	else
+		return ;
+	active->overrideColor( color ) ;
 }
 
 
