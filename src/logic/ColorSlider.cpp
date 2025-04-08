@@ -1,9 +1,12 @@
 #include "ColorSlider.h"
 #include <QLayout>
+#include <QLinearGradient>
+#include <QRect>
+#include <QString>
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
 
-ColorSlider::ColorSlider( QWidget* parent ) : QWidget( parent ) {
+ColorSlider::ColorSlider( QWidget* parent, const QColor& color ) : QWidget( parent ) {
 	QVBoxLayout* layout = new QVBoxLayout( this ) ;
 
 	lineEdit = new QLineEdit( this ) ;
@@ -19,6 +22,22 @@ ColorSlider::ColorSlider( QWidget* parent ) : QWidget( parent ) {
 	layout->addWidget( lineEdit ) ;
 	layout->addWidget( slider ) ;
 
+	QString style = QString( 
+		"QSlider::groove:vertical { "
+		"  border: 1px solid #999999;"
+		"  width: 10px; "
+		"  background: qlineargradient(x1:0, y1:0, x2:0, y2:1 stop:0 %1, stop:1 black); "
+        "}"
+		"QSlider::handle:vertical { "
+		"  border: 1px solid #5c5c5c;"
+		"  width: 20px; "
+		"  background: white; "
+		"  height: 10px; "
+		"  border-radius: 5px; "
+		""
+		"}"
+	).arg( color.name() ) ;
+	setStyleSheet( style );
 	connect( slider, &QSlider::valueChanged, this, &ColorSlider::onSliderChanged ) ;
 	connect( lineEdit, &QLineEdit::editingFinished, this, &ColorSlider::onTextChanged ) ;
 }

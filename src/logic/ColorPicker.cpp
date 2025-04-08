@@ -48,9 +48,9 @@ ColorPicker::ColorPicker( QWidget* parent )
 	// Generate the RGB
 	QHBoxLayout* sliderLayout = new QHBoxLayout() ;
 
-	red = new ColorSlider( this ) ;
-	green = new ColorSlider( this ) ;
-	blue = new ColorSlider( this ) ;
+	red = new ColorSlider( this, Qt::red ) ;
+	green = new ColorSlider( this, Qt::green ) ;
+	blue = new ColorSlider( this, Qt::blue ) ;
 
 	sliderLayout->addWidget( red ) ;
 	sliderLayout->addWidget( green ) ;

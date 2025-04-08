@@ -3,12 +3,13 @@
 #include <QWidget>
 #include <QSlider>
 #include <QLineEdit>
+#include <QColor>
 
 class ColorSlider : public QWidget {
 	Q_OBJECT
 
 public:
-	explicit ColorSlider( QWidget* parent = nullptr ) ;
+	explicit ColorSlider( QWidget* parent = nullptr, const QColor& color = Qt::red ) ;
 
 	int value() const ;
 	void setValue( int val ) ;
