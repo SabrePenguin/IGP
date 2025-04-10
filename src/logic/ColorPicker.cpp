@@ -76,6 +76,8 @@ ColorPicker::ColorPicker( QWidget* parent )
 
 	// Create the eyedropper
 	eyedropper = new QPushButton( "Pick Color", this ) ;
+	eyedropper->setIcon( QIcon("./Resources/eyedropper.svg"));
+	eyedropper->setIconSize( QSize( 16, 16 ) );
 	pickerLayout->addWidget( eyedropper ) ;
 
 	connect( toggleButton, &QPushButton::clicked, this, &ColorPicker::togglePicker ) ;
